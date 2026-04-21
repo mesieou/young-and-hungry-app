@@ -1,15 +1,19 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import { getSupabaseAdminConfig } from "@/lib/database/supabase/config";
 
 export function createSupabaseAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY;
+  const { url, serviceKey } = getSupabaseAdminConfig();
 
-  if (!url || !key) {
-    throw new Error("Missing Supabase admin environment variables.");
+  if (!url) {
+    throw new Error("SUPABASE_URL is not set");
   }
 
-  return createClient(url, key, {
+  if (!serviceKey) {
+    throw new Error("SUPABASE_SECRET_KEY is not set");
+  }
+
+  return createClient(url, serviceKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false

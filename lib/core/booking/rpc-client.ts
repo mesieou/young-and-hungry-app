@@ -18,7 +18,7 @@ type RpcError = {
   details?: string;
 };
 
-type RpcClient = {
+export type RpcClient = {
   rpc: (fn: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: RpcError | null }>;
 };
 

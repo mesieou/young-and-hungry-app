@@ -9,9 +9,16 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "jest",
+    "test:unit": "jest --testPathIgnorePatterns integration '<rootDir>/.next/' '<rootDir>/node_modules/' '<rootDir>/.worktrees/' '/__tests__/helpers/' '<rootDir>/lib/testing/'",
+    "test:integration": "jest integration",
+    "test:db": "DOTENV_CONFIG_PATH=.env.local node scripts/run-db-tests.cjs",
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "db:q": "DOTENV_CONFIG_PATH=.env.local node scripts/db-query.cjs",
+    "db:q:prod": "DOTENV_CONFIG_PATH=.env.production node scripts/db-query.cjs",
     "db:dry-run": "supabase db push --dry-run",
     "db:push": "supabase db push",
-    "db:schema": "echo \"TODO: wire schema doc generation after Supabase project link\""
+    "db:schema": "DOTENV_CONFIG_PATH=.env.local node scripts/generate-schema-docs.cjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.2",

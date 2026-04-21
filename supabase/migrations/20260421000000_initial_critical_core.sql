@@ -208,7 +208,7 @@ language sql
 immutable
 strict
 as $$
-  select encode(digest(p_command::text, 'sha256'), 'hex');
+  select encode(extensions.digest(p_command::text, 'sha256'), 'hex');
 $$;
 
 create or replace function app_private.get_command_replay(

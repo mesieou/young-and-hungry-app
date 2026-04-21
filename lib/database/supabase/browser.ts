@@ -1,12 +1,21 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-export function createSupabaseBrowserClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+let client: ReturnType<typeof createBrowserClient> | null = null;
 
-  if (!url || !key) {
-    throw new Error("Missing Supabase browser environment variables.");
+export function initSupabaseBrowserClient(url: string, key: string) {
+  if (!client && url && key) {
+    client = createBrowserClient(url, key);
   }
 
-  return createBrowserClient(url, key);
+  return client;
+}
+
+export function createSupabaseBrowserClient() {
+  if (!client) {
+    throw new Error(
+      "[Supabase] Client not initialised. Pass SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY through the app provider before using browser Supabase."
+    );
+  }
+
+  return client;
 }
