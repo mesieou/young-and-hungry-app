@@ -38,4 +38,6 @@ MVP uses Vercel Cron to call protected API routes for:
 - notification retries
 - alert retries
 
+Current Hobby-compatible cron schedule is daily in `vercel.json`. Increase frequency only after moving to Vercel Pro or a dedicated worker.
+
 Move workers to a dedicated Young and Hungry server only when job volume or long-running processing requires it.
