@@ -1,0 +1,15 @@
+export const criticalFailureCodes = [
+  "QUOTE_NOT_FOUND",
+  "QUOTE_NOT_ACCEPTED",
+  "QUOTE_EXPIRED",
+  "BOOKING_ALREADY_EXISTS_FOR_QUOTE",
+  "BUCKET_CONFLICT",
+  "BOOKING_NOT_PENDING_DEPOSIT",
+  "BOOKING_HOLD_EXPIRED",
+  "PAYMENT_ALREADY_PROCESSED",
+  "PAYMENT_TARGET_INVALID",
+  "IDEMPOTENCY_CONFLICT",
+  "INTERNAL_TRANSITION_FAILED"
+] as const;
+
+export type CriticalFailureCode = (typeof criticalFailureCodes)[number];

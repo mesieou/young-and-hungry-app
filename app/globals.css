@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --yh-ink: #0b0f1a;
+  --yh-navy: #0f1629;
+  --yh-panel: #121a2b;
+  --yh-border: #1e2a3d;
+  --yh-border-hover: #2b3a55;
+  --yh-text: #ffffff;
+  --yh-text-secondary: #a9b4c7;
+  --yh-text-muted: #6b778c;
+  --yh-disabled: #3a465a;
+  --yh-violet: #7c3aed;
+  --yh-blue: #3b82f6;
+  --yh-violet-soft: #a855f7;
+  --yh-blue-soft: #60a5fa;
+  --yh-success: #22c55e;
+  --yh-warning: #f59e0b;
+  --yh-error: #ef4444;
+  --yh-info: #3b82f6;
+  --font-display: "Space Grotesk";
+  --font-sans: "Instrument Sans";
+  --font-mono: "JetBrains Mono";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(124, 58, 237, 0.24), transparent 30rem),
+    radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.22), transparent 32rem),
+    linear-gradient(180deg, #0b0f1a 0%, #0d1322 48%, #0b0f1a 100%);
+  color: var(--yh-text);
+}
+
+::selection {
+  background: rgba(96, 165, 250, 0.35);
+  color: #ffffff;
+}
+
+.yh-gradient-text {
+  background: linear-gradient(100deg, var(--yh-violet-soft), var(--yh-blue-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.yh-gradient-border {
+  position: relative;
+  border: 1px solid rgba(30, 42, 61, 0.94);
+}
+
+.yh-gradient-border::before {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(120deg, rgba(124, 58, 237, 0.24), rgba(59, 130, 246, 0.24));
+  content: "";
+}
+
+.yh-grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent 72%);
+}

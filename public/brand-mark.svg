@@ -1,0 +1,20 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="128" height="128" rx="28" fill="#0B0F1A"/>
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="url(#border)" stroke-opacity="0.5" stroke-width="2"/>
+  <path d="M33 37L50.5 67.5V91H65.5V67.5L83 37H66.5L58 54.5L49.5 37H33Z" fill="url(#mark)"/>
+  <path d="M75 91V37H90V58H95.5C105.165 58 113 65.835 113 75.5C113 85.165 105.165 93 95.5 93H75V91ZM90 71.5V79.5H95.5C97.7091 79.5 99.5 77.7091 99.5 75.5C99.5 73.2909 97.7091 71.5 95.5 71.5H90Z" fill="url(#mark2)"/>
+  <defs>
+    <linearGradient id="mark" x1="33" y1="37" x2="79" y2="93" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A855F7"/>
+      <stop offset="1" stop-color="#60A5FA"/>
+    </linearGradient>
+    <linearGradient id="mark2" x1="75" y1="37" x2="114" y2="91" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="border" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+</svg>
