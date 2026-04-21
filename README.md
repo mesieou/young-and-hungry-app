@@ -15,6 +15,15 @@ npm install
 npm run dev
 ```
 
+## Supabase
+
+Young and Hungry uses its own Supabase project, separate from Skedy.
+
+- Project ref: `ukrcintphnfxvcxikvwb`
+- Project URL: `https://ukrcintphnfxvcxikvwb.supabase.co`
+
+Read [docs/SUPABASE.md](./docs/SUPABASE.md) before changing migrations, env vars, or database deployment.
+
 ## Git Remote
 
 ```bash

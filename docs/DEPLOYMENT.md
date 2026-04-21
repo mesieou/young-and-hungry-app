@@ -6,7 +6,22 @@
 - Production domain: `youngandh.co`.
 - Preview deployments for pull requests.
 - Production deploys from `main`.
-- Use a separate Supabase project and separate secrets from Skedy.
+- Use the dedicated Young and Hungry Supabase project, separate from Skedy.
+
+## Supabase
+
+- Project ref: `ukrcintphnfxvcxikvwb`
+- Project URL: `https://ukrcintphnfxvcxikvwb.supabase.co`
+- Postgres major version: `17`
+
+Required deployment secrets:
+
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SECRET_KEY`
+- `DATABASE_URL`
+
+Never commit Supabase passwords or keys. Store them in `.env.local` locally and in the deployment platform secret store.
 
 ## Not On Skedy Server
 

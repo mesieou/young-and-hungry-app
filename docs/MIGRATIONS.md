@@ -17,3 +17,16 @@ Rules:
 - Run `npm run test:db` against a migrated database before applying booking/payment migrations remotely.
 - `npm run db:q -- "SELECT ..."` uses Skedy's direct `DATABASE_URL` style for fast inspection.
 - `npm run db:reset` is only needed when using the local Supabase Docker stack from scratch.
+
+## Linked Project
+
+This repo is linked to the Young and Hungry Supabase project:
+
+- Project ref: `ukrcintphnfxvcxikvwb`
+- Project URL: `https://ukrcintphnfxvcxikvwb.supabase.co`
+- Postgres major version: `17`
+
+Current remote migrations:
+
+- `20260421000000_initial_critical_core.sql`
+- `20260421001000_add_business_identity.sql`
