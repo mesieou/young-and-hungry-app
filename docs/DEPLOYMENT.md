@@ -8,6 +8,27 @@
 - Production deploys from `main`.
 - Use the dedicated Young and Hungry Supabase project, separate from Skedy.
 
+## Vercel
+
+- Team: `skedys-projects`
+- Project: `young-and-hungry-app`
+- Project ID: `prj_QEfKzf9RgHlLoEepBEF1S5lBoeSZ`
+- Production URL: `https://young-and-hungry-app.vercel.app`
+- GitHub repo: `mesieou/young-and-hungry-app`
+- Git connection: connected through Vercel, so pushes to `main` deploy to production.
+- Local project link lives in `.vercel/` and must remain uncommitted.
+
+Custom domain status:
+
+- `youngandh.co` is added to the Vercel project.
+- `www.youngandh.co` is added to the Vercel project.
+- DNS still needs to be configured at the domain provider.
+
+Required DNS records from Vercel:
+
+- `A youngandh.co 76.76.21.21`
+- `A www.youngandh.co 76.76.21.21`
+
 ## Supabase
 
 - Project ref: `ukrcintphnfxvcxikvwb`
