@@ -7,7 +7,7 @@ describe("QuoteSuccessModal", () => {
 
     expect(screen.getByRole("dialog", { name: "We received your move details." })).toBeTruthy();
     expect(screen.getByText("Quote request sent")).toBeTruthy();
-    expect(screen.getByText(/return to the main page automatically/i)).toBeTruthy();
+    expect(screen.getByText(/stays here until you choose where to go next/i)).toBeTruthy();
     expect(screen.queryByText(/quote id/i)).toBeNull();
   });
 

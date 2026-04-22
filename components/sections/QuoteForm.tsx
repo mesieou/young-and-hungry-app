@@ -1,7 +1,7 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useRef } from "react";
-import { CheckCircle2, Home, Loader2 } from "lucide-react";
+import { startTransition, useActionState, useRef } from "react";
+import { CheckCircle2, Home } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { submitQuoteRequest } from "@/app/quote/actions";
 import { Button } from "@/components/ui/Button";
@@ -21,20 +21,6 @@ export function QuoteForm() {
   const idempotencyKey = useRef(createClientIdempotencyKey());
   const [state, formAction, isPending] = useActionState(submitQuoteRequest, initialQuoteFormState);
   const isSuccess = state.status === "success";
-
-  useEffect(() => {
-    if (!isSuccess) {
-      return;
-    }
-
-    const redirectTimer = window.setTimeout(() => {
-      startTransition(() => {
-        router.push("/");
-      });
-    }, 4500);
-
-    return () => window.clearTimeout(redirectTimer);
-  }, [isSuccess, router]);
 
   return (
     <>
@@ -133,13 +119,10 @@ export function QuoteSuccessModal({ onReturnHome }: { onReturnHome: () => void }
             We received your move details.
           </h2>
           <p className="mt-4 leading-7 text-text-secondary">
-            Young & Hungry will review the job and contact you with the next step. You will return to the main page automatically.
+            Young & Hungry will review the job and contact you with the next step. This confirmation stays here until you choose where to go next.
           </p>
           <div className="mt-7 rounded-2xl border border-line bg-ink/70 p-4 text-sm text-text-secondary">
-            <div className="flex items-center justify-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin text-blue-soft" />
-              Redirecting to home in a few seconds
-            </div>
+            Your request has been sent to our team. You can safely return to the main page.
           </div>
           <Button type="button" size="lg" className="mt-6 w-full" onClick={onReturnHome}>
             <Home className="h-4 w-4" />
