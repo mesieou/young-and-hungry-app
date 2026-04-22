@@ -22,7 +22,7 @@ Custom domain status:
 
 - `youngandh.co` is added to the Vercel project.
 - `www.youngandh.co` is added to the Vercel project.
-- DNS still needs to be configured at the domain provider.
+- DNS resolves to Vercel and HTTPS is serving the app.
 
 Required DNS records from Vercel:
 

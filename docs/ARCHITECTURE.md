@@ -6,6 +6,17 @@ Postgres RPCs are the source of truth for quote, booking, payment, hold, expiry,
 
 Application code calls typed command wrappers in `lib/core/booking/rpc-client.ts`. It must not write critical tables directly.
 
+## Quote Checkout Bridge
+
+Customer quote checkout lives at `/quote/[quoteId]`.
+
+The page can read quote and booking state for rendering, but it does not mutate critical tables. The checkout action calls:
+
+- `accept_quote`
+- `begin_booking_checkout`
+
+The action uses separate idempotency keys for each RPC, derived from the same customer checkout attempt key. `begin_booking_checkout` is still the only place that creates booking holds and bucket locks.
+
 ## Boundaries
 
 - `young-and-hungry-app` owns website, design system, SEO/content, ops UI, business-specific pricing/content config, and brand components.

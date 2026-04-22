@@ -224,4 +224,39 @@ describeDb("booking/payment RPC integration", () => {
     expect(checkoutB.ok).toBe(false);
     expect(checkoutB.code).toBe("BUCKET_CONFLICT");
   });
+
+  it("rejects checkout for accepted quotes without a scheduled job window", async () => {
+    const quote = await createQuote(rpcClient, {
+      idempotencyKey: key("not-bookable-create"),
+      actor: { type: "customer" },
+      businessId: YH_DEFAULT_BUSINESS.id,
+      customerName: "Not Bookable",
+      customerEmail: "not-bookable@example.com",
+      pickupAddress: "Prahran VIC",
+      dropoffAddress: "Windsor VIC",
+      serviceType: "apartment_move",
+      depositCents: 10000,
+      pricingVersion: "integration-v1"
+    });
+
+    requireOk(quote);
+    quoteIds.push(quote.data.quoteId);
+
+    const accepted = await acceptQuote(rpcClient, {
+      idempotencyKey: key("not-bookable-accept"),
+      actor: { type: "customer" },
+      quoteId: quote.data.quoteId
+    });
+    expect(accepted.ok).toBe(true);
+
+    const checkout = await beginBookingCheckout(rpcClient, {
+      idempotencyKey: key("not-bookable-checkout"),
+      actor: { type: "customer" },
+      quoteId: quote.data.quoteId,
+      holdMinutes: 15
+    });
+
+    expect(checkout.ok).toBe(false);
+    expect(checkout.code).toBe("QUOTE_NOT_BOOKABLE");
+  });
 });

@@ -2,9 +2,9 @@
 -- PostgreSQL database dump
 --
 
-\restrict eY9VCm1ygmEsutiGNt5ZyKzFDuZmG5ixDfESaqIHbbm8v1cBjCYmP5wYiYo17Lr
+\restrict mYjHWdQFIU0JJawqE2AG0p8ch3BYLPKSm584FCLkgkTLdJgS6qkPGVVQGmm8X0g
 
--- Dumped from database version 15.8
+-- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
 
 SET statement_timeout = 0;
@@ -221,7 +221,15 @@ begin
   end if;
 
   if v_quote.job_start_at is null or v_quote.job_block_minutes is null then
-    v_result := app_private.rpc_failure('INTERNAL_TRANSITION_FAILED', 'Quote is missing scheduling fields.', jsonb_build_object('quoteId', v_quote.id));
+    v_result := app_private.rpc_failure(
+      'QUOTE_NOT_BOOKABLE',
+      'Quote is missing scheduling fields.',
+      jsonb_build_object(
+        'quoteId', v_quote.id,
+        'hasJobStartAt', v_quote.job_start_at is not null,
+        'hasJobBlockMinutes', v_quote.job_block_minutes is not null
+      )
+    );
     return app_private.remember_command_result(v_command_name, v_idempotency_key, v_request_hash, v_result);
   end if;
 
@@ -1374,5 +1382,5 @@ ALTER TABLE public.quotes ENABLE ROW LEVEL SECURITY;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict eY9VCm1ygmEsutiGNt5ZyKzFDuZmG5ixDfESaqIHbbm8v1cBjCYmP5wYiYo17Lr
+\unrestrict mYjHWdQFIU0JJawqE2AG0p8ch3BYLPKSm584FCLkgkTLdJgS6qkPGVVQGmm8X0g
 

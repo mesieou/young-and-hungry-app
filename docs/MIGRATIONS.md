@@ -30,3 +30,4 @@ Current remote migrations:
 
 - `20260421000000_initial_critical_core.sql`
 - `20260421001000_add_business_identity.sql`
+- `20260422000000_quote_not_bookable_failure.sql`

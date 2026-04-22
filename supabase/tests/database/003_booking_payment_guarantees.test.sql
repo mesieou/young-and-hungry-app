@@ -1,6 +1,6 @@
 begin;
 
-select plan(18);
+select plan(19);
 
 create temp table test_results (
   name text primary key,
@@ -80,6 +80,51 @@ values (
     'quoteId', (select result #>> '{data,quoteId}' from test_results where name = 'quote_b'),
     'holdMinutes', 15
   ))
+);
+
+insert into test_results (name, result)
+values (
+  'unscheduled_quote',
+  create_quote(jsonb_build_object(
+    'idempotencyKey', 'pgtap-unscheduled-quote',
+    'correlationId', 'pgtap-unscheduled-quote',
+    'actor', jsonb_build_object('type', 'customer'),
+    'businessId', '00000000-0000-4000-8000-000000000001',
+    'customerName', 'Unscheduled Quote',
+    'customerEmail', 'unscheduled@example.com',
+    'pickupAddress', 'Prahran VIC',
+    'dropoffAddress', 'Windsor VIC',
+    'serviceType', 'apartment_move',
+    'depositCents', 10000,
+    'pricingVersion', 'pgtap-v1'
+  ))
+);
+
+insert into test_results (name, result)
+values (
+  'unscheduled_accept',
+  accept_quote(jsonb_build_object(
+    'idempotencyKey', 'pgtap-unscheduled-accept',
+    'actor', jsonb_build_object('type', 'customer'),
+    'quoteId', (select result #>> '{data,quoteId}' from test_results where name = 'unscheduled_quote')
+  ))
+);
+
+insert into test_results (name, result)
+values (
+  'unscheduled_checkout',
+  begin_booking_checkout(jsonb_build_object(
+    'idempotencyKey', 'pgtap-unscheduled-checkout',
+    'actor', jsonb_build_object('type', 'customer'),
+    'quoteId', (select result #>> '{data,quoteId}' from test_results where name = 'unscheduled_quote'),
+    'holdMinutes', 15
+  ))
+);
+
+select is(
+  (select result->>'code' from test_results where name = 'unscheduled_checkout'),
+  'QUOTE_NOT_BOOKABLE',
+  'checkout returns QUOTE_NOT_BOOKABLE when quote has no scheduled job window'
 );
 
 select ok(

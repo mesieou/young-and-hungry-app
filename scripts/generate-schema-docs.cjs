@@ -33,6 +33,12 @@ Last updated: ${updatedAt}
 
 This file is updated by \`npm run db:schema\`.
 
+## Cloud Project
+
+- Project ref: \`ukrcintphnfxvcxikvwb\`
+- Project URL: \`https://ukrcintphnfxvcxikvwb.supabase.co\`
+- Postgres major version: \`17\`
+
 ## Source Of Truth
 
 - Migrations live in \`supabase/migrations\`.

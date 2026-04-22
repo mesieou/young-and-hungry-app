@@ -25,6 +25,7 @@ describe("critical-core contracts", () => {
   it("defines required critical failure codes", () => {
     expect(criticalFailureCodes).toContain("BUCKET_CONFLICT");
     expect(criticalFailureCodes).toContain("IDEMPOTENCY_CONFLICT");
+    expect(criticalFailureCodes).toContain("QUOTE_NOT_BOOKABLE");
     expect(criticalFailureCodes).toContain("PAYMENT_TARGET_INVALID");
   });
 

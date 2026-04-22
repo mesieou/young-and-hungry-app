@@ -6,6 +6,7 @@ import {
   parseQuoteRequestFormData,
   type QuoteFormState
 } from "@/lib/core/booking/quote-request";
+import { createSupabaseRpcClient } from "@/lib/core/booking/supabase-rpc-client";
 import { YH_DEFAULT_BUSINESS } from "@/lib/business/config";
 import { createSupabaseAdminClient } from "@/lib/database/supabase/admin";
 
@@ -25,13 +26,7 @@ export async function submitQuoteRequest(
 
   try {
     const supabase = createSupabaseAdminClient();
-    const rpcClient = {
-      rpc: async (fn: string, args?: Record<string, unknown>) => {
-        const { data, error } = await supabase.rpc(fn, args);
-
-        return { data, error };
-      }
-    };
+    const rpcClient = createSupabaseRpcClient(supabase);
 
     const result = await createQuote(rpcClient, {
       idempotencyKey: parsed.data.idempotencyKey,

@@ -20,8 +20,11 @@ Required local/deployment environment variables:
 - `SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SECRET_KEY`
 - `DATABASE_URL`
+- `SUPABASE_DB_PASSWORD`
 
 Use `.env.local` for local development and the hosting provider secret store for preview/production.
+
+`SUPABASE_DB_PASSWORD` is required by the Supabase CLI for `supabase db push --dry-run` and `supabase db push`.
 
 ## Local Supabase
 
@@ -37,6 +40,12 @@ Commands:
 npm run db:start
 npm run db:reset
 npm run test:db
+```
+
+The cloud direct database host currently resolves as IPv6-only from this machine. If `npm run test:db` cannot resolve `db.ukrcintphnfxvcxikvwb.supabase.co`, run pgTAP against the local stack after `npm run db:reset`:
+
+```bash
+DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55422/postgres npm run test:db
 ```
 
 ## Remote Migration Workflow
@@ -65,6 +74,7 @@ Applied to the cloud project:
 
 - `20260421000000_initial_critical_core.sql`
 - `20260421001000_add_business_identity.sql`
+- `20260422000000_quote_not_bookable_failure.sql`
 
 The remote database now contains the MVP critical-core schema:
 
