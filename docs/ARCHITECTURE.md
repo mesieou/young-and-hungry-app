@@ -6,9 +6,22 @@ Postgres RPCs are the source of truth for quote, booking, payment, hold, expiry,
 
 Application code calls typed command wrappers in `lib/core/booking/rpc-client.ts`. It must not write critical tables directly.
 
+## MVP Quote Review
+
+The first MVP does not need a quote-review dashboard or public deposit checkout.
+
+Flow:
+
+- Customer submits `/quote`.
+- The server action calls `create_quote`.
+- The app sends an ops quote-review email with the full job payload.
+- Ops reviews the email and follows up manually with pricing, timing, and confirmation.
+
+The email delivery attempt is also recorded in `notifications`. Failed email attempts create an `ops_issue`.
+
 ## Quote Checkout Bridge
 
-Customer quote checkout lives at `/quote/[quoteId]`.
+Customer quote checkout lives at `/quote/[quoteId]`, but it is not the active MVP path.
 
 The page can read quote and booking state for rendering, but it does not mutate critical tables. The checkout action calls:
 

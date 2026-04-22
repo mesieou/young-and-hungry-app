@@ -21,10 +21,15 @@ Required local/deployment environment variables:
 - `SUPABASE_SECRET_KEY`
 - `DATABASE_URL`
 - `SUPABASE_DB_PASSWORD`
+- `OPS_QUOTE_EMAIL`
+- `EMAIL_FROM`
+- `RESEND_API_KEY`
 
 Use `.env.local` for local development and the hosting provider secret store for preview/production.
 
 `SUPABASE_DB_PASSWORD` is required by the Supabase CLI for `supabase db push --dry-run` and `supabase db push`.
+
+`OPS_QUOTE_EMAIL`, `EMAIL_FROM`, and `RESEND_API_KEY` are required for the MVP quote-review email workflow.
 
 ## Local Supabase
 

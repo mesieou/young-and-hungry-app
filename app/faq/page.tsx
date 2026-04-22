@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 const faqs = [
   ["Is this a directory?", "No. The product direction is an execution layer for physical jobs, not a listing site."],
-  ["When is a booking confirmed?", "The MVP booking rule is deposit confirms booking, after a valid availability hold exists."],
-  ["How do you prevent double bookings?", "Confirmed bookings and active holds occupy normalized 15-minute buckets enforced by Postgres constraints."]
+  ["What happens after I request a quote?", "Young & Hungry receives the full job details by email, reviews the move, then follows up with pricing and timing."],
+  ["How do you prevent double bookings later?", "The booking core already uses normalized 15-minute buckets and Postgres constraints for the automated booking phase."]
 ];
 
 export default function FaqPage() {

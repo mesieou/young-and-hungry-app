@@ -8,15 +8,15 @@ import { TrustStrip } from "@/components/sections/TrustStrip";
 
 const processSteps = [
   "Tell us what is moving",
-  "Get a clear quote",
-  "Lock the slot with a deposit",
-  "Track the job to completion"
+  "Ops reviews the job details",
+  "Receive a clear quote",
+  "Confirm the job directly"
 ];
 
 const platformFeatures: Array<[string, string, LucideIcon]> = [
-  ["Deterministic availability", "Every bookable job occupies normalized 15-minute buckets.", Clock3],
-  ["Deposit-backed bookings", "A slot is reserved before payment and confirmed only while the hold is valid.", ShieldCheck],
-  ["Operational visibility", "Failures create structured diagnostics instead of silent manual cleanup.", Sparkles]
+  ["Structured quote intake", "Every enquiry captures the details ops need to price and schedule the job.", Clock3],
+  ["Ops-reviewed quotes", "Young & Hungry reviews the move before confirming timing, pricing, and next steps.", ShieldCheck],
+  ["Operational visibility", "Quote requests are stored in Supabase and sent to ops by email for follow-up.", Sparkles]
 ];
 
 export default function HomePage() {
@@ -31,7 +31,7 @@ export default function HomePage() {
               <span className="yh-gradient-text">real-time clarity.</span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-text-secondary">
-              Young & Hungry turns moving enquiries into priced, scheduled, deposit-backed jobs. No directory chaos, no vague callbacks, no double booking.
+              Young & Hungry turns moving enquiries into structured quote requests that can be reviewed, priced, and confirmed without directory chaos.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -62,7 +62,7 @@ export default function HomePage() {
                     ["Pickup", "South Yarra", "09:00"],
                     ["Dropoff", "Richmond", "10:20"],
                     ["Crew", "Verified team", "2 people"],
-                    ["Status", "Deposit pending", "15 min hold"]
+                    ["Status", "Ops review", "quote email"]
                   ].map(([label, value, meta]) => (
                     <div key={label} className="flex items-center justify-between rounded-xl border border-line bg-navy px-4 py-3">
                       <div>
@@ -110,9 +110,9 @@ export default function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
               <Badge tone="gradient">MVP path</Badge>
-              <h2 className="mt-5 font-display text-4xl font-semibold tracking-[-0.04em]">Quote now. Book correctly next.</h2>
+              <h2 className="mt-5 font-display text-4xl font-semibold tracking-[-0.04em]">Quote now. Confirm cleanly next.</h2>
               <p className="mt-4 leading-7 text-text-secondary">
-                The frontend starts with lead capture and quote requests. The critical booking core is already shaped around Postgres RPCs so payment and availability can be added without rewriting the foundation.
+                The frontend starts with lead capture and quote-review emails. The critical booking core stays ready for availability and payment later without making deposit checkout part of the first MVP.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">

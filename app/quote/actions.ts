@@ -7,6 +7,7 @@ import {
   type QuoteFormState
 } from "@/lib/core/booking/quote-request";
 import { createSupabaseRpcClient } from "@/lib/core/booking/supabase-rpc-client";
+import { notifyOpsQuoteReview } from "@/lib/core/notifications/ops-quote-review";
 import { YH_DEFAULT_BUSINESS } from "@/lib/business/config";
 import { createSupabaseAdminClient } from "@/lib/database/supabase/admin";
 
@@ -59,6 +60,11 @@ export async function submitQuoteRequest(
         fieldErrors: undefined
       };
     }
+
+    await notifyOpsQuoteReview(supabase, {
+      quoteId: result.data.quoteId,
+      request: parsed.data
+    });
 
     return {
       status: "success",

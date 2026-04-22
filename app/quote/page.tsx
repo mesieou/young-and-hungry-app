@@ -14,7 +14,7 @@ export default function QuotePage() {
           <p className="font-mono text-sm uppercase tracking-[0.3em] text-blue-soft">Instant quote request</p>
           <h1 className="mt-5 font-display text-5xl font-semibold tracking-[-0.05em]">Tell us what needs moving.</h1>
           <p className="mt-5 leading-8 text-text-secondary">
-            Stage 1 captures the job cleanly. Stage 2 will calculate versioned quotes. Stage 3 will reserve availability and confirm bookings with deposit-backed holds.
+            Stage 1 captures the job cleanly and emails the full request to Young & Hungry for review. Automated booking and payment can come later.
           </p>
         </div>
         <QuoteForm />

@@ -41,8 +41,13 @@ Required deployment secrets:
 - `SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SECRET_KEY`
 - `DATABASE_URL`
+- `OPS_QUOTE_EMAIL`
+- `EMAIL_FROM`
+- `RESEND_API_KEY`
 
 Never commit Supabase passwords or keys. Store them in `.env.local` locally and in the deployment platform secret store.
+
+`OPS_QUOTE_EMAIL`, `EMAIL_FROM`, and `RESEND_API_KEY` are required before relying on live quote requests, because the MVP review workflow is email-only.
 
 ## Not On Skedy Server
 

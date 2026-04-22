@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Transparent removalist pricing with versioned quotes and deposit-backed bookings."
+  description: "Transparent removalist pricing through ops-reviewed quote requests."
 };
 
 export default function PricingPage() {

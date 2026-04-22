@@ -1,12 +1,25 @@
 import { submitQuoteRequest } from "@/app/quote/actions";
 import { YH_DEFAULT_BUSINESS } from "@/lib/business/config";
 import { createSupabaseAdminClient } from "@/lib/database/supabase/admin";
+import { notifyOpsQuoteReview } from "@/lib/core/notifications/ops-quote-review";
 
 jest.mock("@/lib/database/supabase/admin", () => ({
   createSupabaseAdminClient: jest.fn()
 }));
 
+jest.mock("@/lib/core/notifications/ops-quote-review", () => ({
+  notifyOpsQuoteReview: jest.fn(async () => ({
+    ok: true,
+    email: {
+      ok: true,
+      provider: "resend",
+      providerMessageId: "email_123"
+    }
+  }))
+}));
+
 const mockCreateSupabaseAdminClient = jest.mocked(createSupabaseAdminClient);
+const mockNotifyOpsQuoteReview = jest.mocked(notifyOpsQuoteReview);
 
 function makeFormData(values: Record<string, string>) {
   const formData = new FormData();
@@ -34,6 +47,10 @@ function validFormData(overrides: Record<string, string> = {}) {
 }
 
 describe("submitQuoteRequest", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("does not call Supabase when validation fails", async () => {
     const result = await submitQuoteRequest(
       { status: "idle", message: "" },
@@ -48,9 +65,10 @@ describe("submitQuoteRequest", () => {
     expect(result.status).toBe("error");
     expect(result.fieldErrors?.name).toBe("Enter your name.");
     expect(mockCreateSupabaseAdminClient).not.toHaveBeenCalled();
+    expect(mockNotifyOpsQuoteReview).not.toHaveBeenCalled();
   });
 
-  it("submits valid requests through the create_quote RPC", async () => {
+  it("submits valid requests through the create_quote RPC and emails ops", async () => {
     const rpc = jest.fn(async () => ({
       data: {
         ok: true,
@@ -96,6 +114,19 @@ describe("submitQuoteRequest", () => {
         })
       })
     });
+    expect(mockNotifyOpsQuoteReview).toHaveBeenCalledWith(
+      { rpc },
+      {
+        quoteId: "11111111-1111-4111-8111-111111111111",
+        request: expect.objectContaining({
+          name: "Juan Customer",
+          email: "juan@example.com",
+          pickupAddress: "South Yarra VIC",
+          dropoffAddress: "Richmond VIC",
+          notes: "Two flights of stairs."
+        })
+      }
+    );
   });
 
   it("returns a safe error when the RPC rejects the quote request", async () => {
@@ -114,5 +145,6 @@ describe("submitQuoteRequest", () => {
 
     expect(result.status).toBe("error");
     expect(result.message).toContain("could not submit");
+    expect(mockNotifyOpsQuoteReview).not.toHaveBeenCalled();
   });
 });

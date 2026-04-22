@@ -82,7 +82,7 @@ export function QuoteForm() {
             </div>
           ) : (
             <p className="text-sm text-text-muted">
-              Quote capture now submits through the `create_quote` RPC path once Supabase env vars and migrations are applied.
+              Quote capture submits through the `create_quote` RPC and emails the full request to ops for review.
             </p>
           )}
         </form>

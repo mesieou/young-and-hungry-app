@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 const steps = [
   ["Quote request", "Capture addresses, inventory, access notes, and preferred job time."],
-  ["Deterministic pricing", "Use versioned pricebooks so every accepted quote remains reproducible."],
-  ["Availability hold", "Reserve normalized 15-minute buckets before requesting payment."],
-  ["Deposit confirmation", "Confirm the booking only when payment lands while the hold is still valid."]
+  ["Ops review email", "Send the full quote payload to Young & Hungry for review and follow-up."],
+  ["Clear quote", "Confirm pricing, timing, and any access constraints directly with the customer."],
+  ["Manual confirmation", "Lock in the accepted job manually while the automated booking core remains ready for later."]
 ];
 
 export default function HowItWorksPage() {
