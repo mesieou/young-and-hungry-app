@@ -37,6 +37,8 @@ Required DNS records from Vercel:
 
 Required deployment secrets:
 
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
+- `YH_OPERATIONS_BASE_ADDRESS`
 - `SUPABASE_URL`
 - `SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SECRET_KEY`
@@ -46,6 +48,10 @@ Required deployment secrets:
 - `RESEND_API_KEY`
 
 Never commit Supabase passwords or keys. Store them in `.env.local` locally and in the deployment platform secret store.
+
+`NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` enables address autocomplete. If it is missing, quote forms still work as manual address inputs, but the live UX will not match the Skedy-style dashboard autocomplete.
+
+`YH_OPERATIONS_BASE_ADDRESS` is used by server-side route estimates to calculate base-to-pickup travel and return-to-base travel. Keep it accurate before relying on live quote estimates.
 
 `OPS_QUOTE_EMAIL`, `EMAIL_FROM`, and `RESEND_API_KEY` are required before relying on live quote requests, because the MVP review workflow is email-only.
 

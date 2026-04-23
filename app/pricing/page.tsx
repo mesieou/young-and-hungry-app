@@ -9,26 +9,46 @@ export const metadata: Metadata = {
 };
 
 export default function PricingPage() {
+  const pricingRules = [
+    ["Free pickup travel", "The first hour from base to pickup is included."],
+    ["Charged route", "Estimate includes pickup to dropoff and return to base."],
+    ["Half-hour billing", "Total time rounds up to the next half-hour block."],
+    ["Reviewed estimate", "Final pricing is reviewed against inventory, stairs, parking, and access."]
+  ];
+
   return (
     <section className="px-6 py-20">
       <div className="mx-auto max-w-5xl">
         <h1 className="font-display text-5xl font-semibold tracking-[-0.05em]">Pricing built for clarity.</h1>
         <p className="mt-5 max-w-2xl leading-8 text-text-secondary">
-          MVP pricing starts with quote requests, then moves to versioned pricebooks so accepted quotes remain reproducible even after rates change.
+          The quote flow shows a reviewed estimate range before contact details. It uses route data, truck size, move type, return-base travel, and simple billing rules that are easy to understand.
         </p>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {["Small move", "Apartment move", "House move"].map((name) => (
+        <div className="mt-10 grid gap-4 md:grid-cols-2">
+          {pricingRules.map(([name, description]) => (
             <Card key={name} className="transition duration-200 hover:-translate-y-1 hover:shadow-lift">
               <CardContent className="p-6">
                 <h2 className="font-display text-2xl font-semibold">{name}</h2>
-                <p className="mt-3 text-text-secondary">Request a quote with addresses, inventory, stairs, and access notes.</p>
-                <Button asChild className="mt-6 w-full">
-                  <Link href="/quote">Start quote</Link>
-                </Button>
+                <p className="mt-3 text-text-secondary">{description}</p>
               </CardContent>
             </Card>
           ))}
         </div>
+        <Card className="mt-10 border-blue/30 bg-blue/10">
+          <CardContent className="p-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.22em] text-blue-soft">Estimate formula</p>
+              <p className="mt-3 text-lg font-semibold text-white">
+                Truck/crew time + charged route km + booking/admin fee
+              </p>
+              <p className="mt-2 text-text-secondary">
+                Labour time includes loading/unloading baseline, move type, chargeable travel, and half-hour rounding.
+              </p>
+            </div>
+            <Button asChild className="mt-6 w-full sm:mt-0 sm:w-auto">
+              <Link href="/quote">Start quote</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

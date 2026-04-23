@@ -1,8 +1,9 @@
-import { ArrowRight, Clock3, ShieldCheck, Sparkles, Truck, type LucideIcon } from "lucide-react";
+import { ArrowRight, Clock3, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { HomeRouteQuoteForm } from "@/components/sections/HomeRouteQuoteForm";
 import { ServiceGrid } from "@/components/sections/ServiceGrid";
 import { TrustStrip } from "@/components/sections/TrustStrip";
 
@@ -34,46 +35,20 @@ export default function HomePage() {
               Young & Hungry turns moving enquiries into structured quote requests that can be reviewed, priced, and confirmed without directory chaos.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="/quote">
-                  Start a quote <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
               <Button asChild variant="secondary" size="lg">
                 <Link href="/how-it-works">See how it works</Link>
+              </Button>
+              <Button asChild variant="ghost" size="lg">
+                <Link href="/pricing">
+                  View pricing logic <ArrowRight className="h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </div>
 
           <Card className="animate-fade-up yh-gradient-border shadow-glow [animation-delay:120ms]">
             <CardContent className="p-6 sm:p-8">
-              <div className="rounded-2xl border border-line bg-ink/60 p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-mono text-xs uppercase tracking-[0.3em] text-text-muted">Live job block</p>
-                    <h2 className="mt-2 font-display text-3xl font-semibold">Apartment move</h2>
-                  </div>
-                  <div className="rounded-2xl bg-gradient-to-br from-violet to-blue p-3 shadow-glow">
-                    <Truck className="h-7 w-7" />
-                  </div>
-                </div>
-                <div className="mt-8 grid gap-3">
-                  {[
-                    ["Pickup", "South Yarra", "09:00"],
-                    ["Dropoff", "Richmond", "10:20"],
-                    ["Crew", "Verified team", "2 people"],
-                    ["Status", "Ops review", "quote email"]
-                  ].map(([label, value, meta]) => (
-                    <div key={label} className="flex items-center justify-between rounded-xl border border-line bg-navy px-4 py-3">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">{label}</p>
-                        <p className="mt-1 font-medium text-white">{value}</p>
-                      </div>
-                      <p className="font-mono text-sm text-blue-soft">{meta}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <HomeRouteQuoteForm />
             </CardContent>
           </Card>
         </div>

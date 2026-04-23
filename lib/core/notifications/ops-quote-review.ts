@@ -1,5 +1,13 @@
-import type { QuoteRequestInput } from "@/lib/core/booking/quote-request";
+import {
+  getPreferredTimeWindowLabel,
+  getTruckClassLabel,
+  type QuoteRequestInput
+} from "@/lib/core/booking/quote-request";
 import { sendEmailWithResend, type EmailDeliveryResult } from "@/lib/core/notifications/email";
+import {
+  calculateYoungHungryQuoteEstimate,
+  type YoungHungryQuoteEstimate
+} from "@/lib/core/pricing/young-hungry-pricebook";
 
 type DbError = {
   message: string;
@@ -21,6 +29,7 @@ type NotificationDbClient = {
 export type OpsQuoteReviewEmailInput = {
   quoteId: string;
   request: QuoteRequestInput;
+  quoteEstimate?: YoungHungryQuoteEstimate | null;
   submittedAt?: Date;
 };
 
@@ -54,16 +63,23 @@ function formatLabel(label: string, value: string | undefined) {
 
 export function buildOpsQuoteReviewEmail(input: OpsQuoteReviewEmailInput) {
   const submittedAt = input.submittedAt ?? new Date();
+  const truckClassLabel = getTruckClassLabel(input.request.truckClass) ?? input.request.truckClass;
+  const timeWindowLabel = getPreferredTimeWindowLabel(input.request.preferredTimeWindow);
+  const quoteEstimate = input.quoteEstimate ?? calculateYoungHungryQuoteEstimate(input.request);
   const rows = [
     ["Quote ID", input.quoteId],
     ["Submitted", submittedAt.toISOString()],
     ["Name", input.request.name],
     ["Email", normalizeOptional(input.request.email)],
     ["Phone", normalizeOptional(input.request.phone)],
-    ["Service type", input.request.serviceType],
     ["Pickup", input.request.pickupAddress],
     ["Dropoff", input.request.dropoffAddress],
+    ["Truck class", truckClassLabel],
+    ["Estimated quote", quoteEstimate ? `${quoteEstimate.rangeLabel} (${quoteEstimate.detail})` : "Not calculated"],
+    ["Pricing version", quoteEstimate?.pricingVersion ?? "Not calculated"],
+    ["Service type", input.request.serviceType],
     ["Preferred date", normalizeOptional(input.request.preferredDate)],
+    ["Preferred time", timeWindowLabel],
     ["Notes", normalizeOptional(input.request.notes)]
   ] as const;
 
@@ -76,10 +92,14 @@ export function buildOpsQuoteReviewEmail(input: OpsQuoteReviewEmailInput) {
     formatLabel("Name", input.request.name),
     formatLabel("Email", input.request.email),
     formatLabel("Phone", input.request.phone),
-    formatLabel("Service type", input.request.serviceType),
     formatLabel("Pickup", input.request.pickupAddress),
     formatLabel("Dropoff", input.request.dropoffAddress),
+    formatLabel("Truck class", truckClassLabel),
+    formatLabel("Estimated quote", quoteEstimate ? `${quoteEstimate.rangeLabel} (${quoteEstimate.detail})` : undefined),
+    formatLabel("Pricing version", quoteEstimate?.pricingVersion),
+    formatLabel("Service type", input.request.serviceType),
     formatLabel("Preferred date", input.request.preferredDate),
+    formatLabel("Preferred time", timeWindowLabel),
     "",
     "Notes:",
     normalizeOptional(input.request.notes)

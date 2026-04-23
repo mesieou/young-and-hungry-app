@@ -21,10 +21,12 @@ describe("ops quote review email", () => {
     phone: "+61400000000",
     pickupAddress: "South Yarra VIC",
     dropoffAddress: "Richmond VIC",
+    truckClass: "six_tonne",
     serviceType: "apartment_move",
     preferredDate: "2026-05-01",
+    preferredTimeWindow: "afternoon_1300_1600",
     notes: "Two flights of stairs."
-  };
+  } as const;
 
   it("builds a structured email with all quote review details", () => {
     const email = buildOpsQuoteReviewEmail({
@@ -38,7 +40,11 @@ describe("ops quote review email", () => {
     expect(email.text).toContain("Name: Juan Customer");
     expect(email.text).toContain("Email: juan@example.com");
     expect(email.text).toContain("Phone: +61400000000");
+    expect(email.text).toContain("Truck class: 6 tonne truck");
+    expect(email.text).toContain("Estimated quote: $448 - $617");
+    expect(email.text).toContain("Pricing version: yh-pricebook-2026-04-23-v1");
     expect(email.text).toContain("Preferred date: 2026-05-01");
+    expect(email.text).toContain("Preferred time: Afternoon");
     expect(email.text).toContain("Two flights of stairs.");
     expect(email.html).toContain("New quote request");
   });

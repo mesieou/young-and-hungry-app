@@ -12,12 +12,38 @@ The first MVP does not need a quote-review dashboard or public deposit checkout.
 
 Flow:
 
-- Customer submits `/quote`.
+- Customer enters pickup and dropoff on the homepage hero.
+- The homepage submits those route fields to `/quote` as `pickupAddress` and `dropoffAddress`.
+- `/quote` preserves the route and continues the five-step quote flow at job type and truck selection.
+- A prominent reviewed-estimate range appears after route, job type, and truck selection, matching Lugg's low-friction pattern while staying explicit about Y&H billing rules.
+- The server recalculates the same estimate before calling `create_quote`; client-provided pricing is not trusted.
 - The server action calls `create_quote`.
 - The app sends an ops quote-review email with the full job payload.
 - Ops reviews the email and follows up manually with pricing, timing, and confirmation.
 
 The email delivery attempt is also recorded in `notifications`. Failed email attempts create an `ops_issue`.
+
+Field conventions follow the Skedy dashboard patterns where possible:
+
+- Address fields use Google Places autocomplete restricted to Australia when `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is configured.
+- Address fields fall back to manual text entry if the Google Maps key or script is unavailable.
+- Phone input shows the Australian country code and the server normalizes valid Australian numbers to E.164, for example `0412 345 678` becomes `+61412345678`.
+- Client validation only improves UX; `quoteRequestSchema` remains the server-side source of truth for submitted quote data.
+
+Pricing conventions:
+
+- Pricebook: `yh-pricebook-2026-04-23-v1`.
+- The visible estimate follows the Lugg-style shape: truck/labor time, route distance, route duration, service adjustment, booking/admin fee, and weekday/weekend rate.
+- Current formula: `labor/truck cost + charged route km + booking/admin fee`.
+- Labor/truck cost uses frozen pricebook hourly rates, minimum billable minutes, load/unload baseline, service-type adjustment, and chargeable travel time.
+- Billable time rounds up to half-hour blocks.
+- The first 60 minutes of travel from base to pickup is free. Only base-to-pickup time over 60 minutes is chargeable.
+- Charged travel includes pickup to dropoff and dropoff back to base. Any chargeable base-to-pickup excess is included when the pickup is more than 60 minutes from base.
+- Route charge uses Google Distance Matrix kilometers when available.
+- `/api/quote/route-estimate` calls Google Distance Matrix server-side for base-to-pickup, pickup-to-dropoff, and dropoff-to-base legs and returns distance/duration for the live quote UI.
+- `submitQuoteRequest` recalculates Google distance and quote price server-side before calling `create_quote`; client-side route/pricing data is never trusted.
+- The stored quote receives `price_cents`, `job_block_minutes`, `pricing_version`, and the full `routeDistance` and `quoteEstimate` breakdown.
+- If route distance is unavailable, the quote remains deterministic but marks route pricing as pending so ops can review it instead of silently guessing.
 
 ## Quote Checkout Bridge
 

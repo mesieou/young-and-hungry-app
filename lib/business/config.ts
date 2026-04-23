@@ -7,6 +7,7 @@ export const YH_DEFAULT_BUSINESS = {
   name: "Young & Hungry",
   domain: "youngandh.co",
   timezone: "Australia/Melbourne",
+  operationsBaseAddress: process.env.YH_OPERATIONS_BASE_ADDRESS ?? "Melbourne VIC, Australia",
   defaultCurrency: "AUD",
   defaultDepositCents: 10000,
   defaultJobBlockMinutes: 120

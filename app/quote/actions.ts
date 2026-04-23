@@ -8,6 +8,8 @@ import {
 } from "@/lib/core/booking/quote-request";
 import { createSupabaseRpcClient } from "@/lib/core/booking/supabase-rpc-client";
 import { notifyOpsQuoteReview } from "@/lib/core/notifications/ops-quote-review";
+import { getMoveRouteDistanceEstimate } from "@/lib/core/pricing/google-distance";
+import { calculateYoungHungryQuoteEstimate } from "@/lib/core/pricing/young-hungry-pricebook";
 import { YH_DEFAULT_BUSINESS } from "@/lib/business/config";
 import { createSupabaseAdminClient } from "@/lib/database/supabase/admin";
 
@@ -28,6 +30,17 @@ export async function submitQuoteRequest(
   try {
     const supabase = createSupabaseAdminClient();
     const rpcClient = createSupabaseRpcClient(supabase);
+    const routeDistance = await getMoveRouteDistanceEstimate({
+      baseAddress: YH_DEFAULT_BUSINESS.operationsBaseAddress,
+      pickupAddress: parsed.data.pickupAddress,
+      dropoffAddress: parsed.data.dropoffAddress
+    });
+    const quoteEstimate = calculateYoungHungryQuoteEstimate({
+      ...parsed.data,
+      baseToPickup: routeDistance.ok ? routeDistance.baseToPickup : null,
+      pickupToDropoff: routeDistance.ok ? routeDistance.pickupToDropoff : null,
+      dropoffToBase: routeDistance.ok ? routeDistance.dropoffToBase : null
+    });
 
     const result = await createQuote(rpcClient, {
       idempotencyKey: parsed.data.idempotencyKey,
@@ -42,12 +55,22 @@ export async function submitQuoteRequest(
       pickupAddress: parsed.data.pickupAddress,
       dropoffAddress: parsed.data.dropoffAddress,
       serviceType: parsed.data.serviceType,
-      jobBlockMinutes: YH_DEFAULT_BUSINESS.defaultJobBlockMinutes,
+      jobBlockMinutes: quoteEstimate?.billableMinutes ?? YH_DEFAULT_BUSINESS.defaultJobBlockMinutes,
       depositCents: YH_DEFAULT_BUSINESS.defaultDepositCents,
-      pricingVersion: "lead-capture-v1",
+      priceCents: quoteEstimate?.priceCents,
+      pricingVersion: quoteEstimate?.pricingVersion ?? "lead-capture-v1",
       breakdown: {
         source: "youngandh.co/quote",
+        quoteFlowVersion: "lugg_style_5_step_v1",
+        routeDistance,
+        quoteEstimate,
         preferredDate: parsed.data.preferredDate,
+        preferredTimeWindow: parsed.data.preferredTimeWindow,
+        pricingInputs: {
+          truckClass: parsed.data.truckClass,
+          preferredTimeWindow: parsed.data.preferredTimeWindow,
+          serviceType: parsed.data.serviceType
+        },
         notes: parsed.data.notes,
         mode: "lead_capture"
       }
@@ -63,7 +86,8 @@ export async function submitQuoteRequest(
 
     await notifyOpsQuoteReview(supabase, {
       quoteId: result.data.quoteId,
-      request: parsed.data
+      request: parsed.data,
+      quoteEstimate
     });
 
     return {

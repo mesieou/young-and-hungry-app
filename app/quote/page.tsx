@@ -3,21 +3,26 @@ import { QuoteForm } from "@/components/sections/QuoteForm";
 
 export const metadata: Metadata = {
   title: "Start A Quote",
-  description: "Request a Young & Hungry removalist quote."
+  description: "Request a Young & Hungry removalist quote through a guided moving flow."
 };
 
-export default function QuotePage() {
+type QuotePageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function getSingleSearchParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function QuotePage({ searchParams }: QuotePageProps) {
+  const params = (await searchParams) ?? {};
+  const pickupAddress = getSingleSearchParam(params.pickupAddress) ?? "";
+  const dropoffAddress = getSingleSearchParam(params.dropoffAddress) ?? "";
+
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-        <div>
-          <p className="font-mono text-sm uppercase tracking-[0.3em] text-blue-soft">Instant quote request</p>
-          <h1 className="mt-5 font-display text-5xl font-semibold tracking-[-0.05em]">Tell us what needs moving.</h1>
-          <p className="mt-5 leading-8 text-text-secondary">
-            Stage 1 captures the job cleanly and emails the full request to Young & Hungry for review. Automated booking and payment can come later.
-          </p>
-        </div>
-        <QuoteForm />
+    <section className="px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto max-w-6xl">
+        <QuoteForm initialPickupAddress={pickupAddress} initialDropoffAddress={dropoffAddress} />
       </div>
     </section>
   );

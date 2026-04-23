@@ -15,6 +15,8 @@ import { YH_DEFAULT_BUSINESS } from "@/lib/business/config";
 const hasDbEnv = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
 const describeDb = hasDbEnv ? describe : describe.skip;
 
+jest.setTimeout(30000);
+
 describeDb("booking/payment RPC integration", () => {
   let supabase: ReturnType<typeof createClient>;
   let rpcClient: RpcClient;
