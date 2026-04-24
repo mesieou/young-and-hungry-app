@@ -20,10 +20,11 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { submitQuoteRequest } from "@/app/quote/actions";
+import { StepShell } from "@/components/layout/StepShell";
 import { AddressAutocompleteInput } from "@/components/ui/AddressAutocompleteInput";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
 import { PhoneInput } from "@/components/ui/PhoneInput";
+import { ResponsiveDrawer } from "@/components/ui/ResponsiveDrawer";
 import {
   getPreferredTimeWindowLabel,
   getTruckClassLabel,
@@ -120,7 +121,7 @@ const serviceOptions = [
 ] as const;
 
 const inputClass =
-  "rounded-2xl border border-line bg-ink/70 px-4 py-4 text-white outline-none transition focus:border-blue focus:ring-4 focus:ring-blue/30";
+  "w-full min-w-0 rounded-2xl border border-line bg-ink/70 px-4 py-4 text-white outline-none transition focus:border-blue focus:ring-4 focus:ring-blue/30";
 
 type FormSnapshot = Record<string, string>;
 
@@ -173,6 +174,7 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
     dropoffAddress: initialDropoffAddress
   });
   const [routeEstimate, setRouteEstimate] = useState<RouteEstimateState>({ status: "idle" });
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const isSuccess = state.status === "success";
   const isFinalStep = currentStep === quoteSteps.length - 1;
   const pickupAddress = formSnapshot.pickupAddress;
@@ -259,6 +261,10 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
       controller.abort();
     };
   }, [dropoffAddress, pickupAddress]);
+
+  useEffect(() => {
+    setIsSummaryOpen(false);
+  }, [currentStep, isSuccess]);
 
   function updateSnapshotValue(name: string, value: string) {
     setFormSnapshot((previous) => ({
@@ -374,210 +380,229 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
 
   return (
     <>
-      <Card className="overflow-hidden rounded-[2rem] border-line bg-panel shadow-card">
-        <CardContent className="p-0">
-          <form
-            ref={formRef}
-            action={formAction}
-            onChange={syncSummary}
-            onInput={syncSummary}
-            onSubmit={handleSubmit}
-            className="grid min-h-[760px] lg:grid-cols-[25rem_minmax(0,1fr)]"
-          >
-            <input type="hidden" name="idempotencyKey" value={idempotencyKey.current} />
+      <form
+        ref={formRef}
+        action={formAction}
+        onChange={syncSummary}
+        onInput={syncSummary}
+        onSubmit={handleSubmit}
+      >
+        <input type="hidden" name="idempotencyKey" value={idempotencyKey.current} />
 
-            <QuoteSummary snapshot={formSnapshot} routeEstimate={routeEstimate} currentStep={currentStep} />
-
-            <div className="flex min-h-[760px] flex-col bg-panel">
-              <main className="flex-1 p-5 sm:p-8 lg:p-12">
-                <StepProgress currentStep={currentStep} isSuccess={isSuccess} onStepClick={goToStep} />
-                <StepIntro step={quoteSteps[currentStep]} />
-
-                {stepError ? (
-                  <div className="mt-5 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning" role="alert">
-                    {stepError}
-                  </div>
-                ) : null}
-
-                <section className={currentStep === 0 ? "mt-8 grid gap-5 animate-fade-up" : "hidden"}>
-                  <div className="rounded-[1.5rem] border border-line bg-ink/55 p-4 sm:p-5">
-                    <div className="grid gap-4">
-                      <AddressAutocompleteInput
-                        id="pickupAddress"
-                        name="pickupAddress"
-                        label="Pickup address"
-                        defaultValue={initialPickupAddress}
-                        placeholder="Pickup suburb/address"
-                        required
-                        error={state.fieldErrors?.pickupAddress}
-                        disabled={isSuccess}
-                        onValueChange={(value) => updateSnapshotValue("pickupAddress", value)}
-                      />
-                      <div className="ml-5 h-7 w-px bg-gradient-to-b from-blue to-violet" aria-hidden="true" />
-                      <AddressAutocompleteInput
-                        id="dropoffAddress"
-                        name="dropoffAddress"
-                        label="Dropoff address"
-                        defaultValue={initialDropoffAddress}
-                        placeholder="Dropoff suburb/address"
-                        required
-                        error={state.fieldErrors?.dropoffAddress}
-                        disabled={isSuccess}
-                        onValueChange={(value) => updateSnapshotValue("dropoffAddress", value)}
-                      />
-                    </div>
-                  </div>
-                </section>
-
-                <section className={currentStep === 1 ? "mt-8 grid gap-6 animate-fade-up" : "hidden"}>
-                  <fieldset className="grid gap-3">
-                    <legend className="text-sm font-medium text-text-secondary">Job type</legend>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {serviceOptions.map((option) => (
-                        <label key={option.value} className="cursor-pointer rounded-2xl border border-line bg-ink/60 p-4 transition hover:border-line-hover hover:bg-navy has-[:checked]:border-blue/80 has-[:checked]:bg-blue/10">
-                          <input
-                            className="peer sr-only"
-                            type="radio"
-                            name="serviceType"
-                            value={option.value}
-                            defaultChecked={option.value === "removal"}
-                            disabled={isSuccess}
-                          />
-                          <span className="font-semibold text-white peer-checked:text-blue-soft">{option.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium text-text-secondary">Truck and crew</p>
-                    <p className="text-sm leading-6 text-text-muted">Choose the closest size. The reviewed quote can adjust truck size if the notes show a better fit.</p>
-                  </div>
-                  <div className="grid gap-4 xl:grid-cols-2">
-                    {truckClassOptions.map((option) => (
-                      <label key={option.value} className="group relative cursor-pointer rounded-[1.5rem] border border-line bg-ink/60 p-5 transition hover:-translate-y-0.5 hover:border-line-hover hover:bg-navy hover:shadow-lift has-[:checked]:border-blue/80 has-[:checked]:bg-blue/10">
-                        <input className="peer sr-only" type="radio" name="truckClass" value={option.value} disabled={isSuccess} />
-                        <span className="absolute right-4 top-4 flex h-5 w-5 items-center justify-center rounded-full border border-line peer-checked:border-blue peer-checked:bg-blue">
-                          <span className="h-2 w-2 rounded-full bg-white opacity-0 peer-checked:opacity-100" />
-                        </span>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet/20 to-blue/20 text-blue-soft">
-                          <Truck className="h-6 w-6" />
-                        </div>
-                        <span className="mt-5 block font-display text-2xl font-semibold tracking-[-0.03em] text-white">{option.label}</span>
-                        <span className="mt-2 block min-h-12 text-sm leading-6 text-text-secondary">{option.description}</span>
-                        <span className="mt-5 block rounded-2xl border border-line bg-panel/70 p-4 text-sm font-semibold text-white">{option.rateSummary}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {state.fieldErrors?.truckClass ? <p className="text-sm text-error">{state.fieldErrors.truckClass}</p> : null}
-                </section>
-
-                <section className={currentStep === 2 ? "mt-8 animate-fade-up" : "hidden"}>
-                  <EstimateReveal snapshot={formSnapshot} routeEstimate={routeEstimate} />
-                </section>
-
-                <section className={currentStep === 3 ? "mt-8 grid gap-8 animate-fade-up" : "hidden"}>
-                  <div className="grid gap-2">
-                    <label htmlFor="preferredDate" className="text-sm font-medium text-text-secondary">Preferred date</label>
-                    <input id="preferredDate" name="preferredDate" type="date" className={inputClass} disabled={isSuccess} />
-                  </div>
-
-                  <fieldset className="grid gap-3">
-                    <legend className="text-sm font-medium text-text-secondary">Preferred time window</legend>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {preferredTimeWindowOptions.map((option) => (
-                        <label key={option.value} className="cursor-pointer rounded-2xl border border-line bg-ink/60 p-4 transition hover:border-line-hover hover:bg-navy has-[:checked]:border-blue/80 has-[:checked]:bg-blue/10">
-                          <input
-                            className="peer sr-only"
-                            type="radio"
-                            name="preferredTimeWindow"
-                            value={option.value}
-                            defaultChecked={option.value === "flexible"}
-                            disabled={isSuccess}
-                          />
-                          <span className="block font-semibold text-white peer-checked:text-blue-soft">{option.label}</span>
-                          <span className="mt-1 block text-sm text-text-secondary">{option.description}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-                </section>
-
-                <section className={currentStep === 4 ? "mt-8 grid gap-6 animate-fade-up" : "hidden"}>
-                  <div className="grid gap-2">
-                    <label htmlFor="notes" className="text-sm font-medium text-text-secondary">What are you moving?</label>
-                    <textarea id="notes" name="notes" rows={6} className={inputClass} placeholder="Inventory, stairs, lift, parking, access, fragile items..." aria-invalid={Boolean(state.fieldErrors?.notes)} disabled={isSuccess} />
-                    {state.fieldErrors?.notes ? <p className="text-sm text-error">{state.fieldErrors.notes}</p> : null}
-                  </div>
-
-                  <div className="grid gap-2">
-                    <label htmlFor="name" className="text-sm font-medium text-text-secondary">Name</label>
-                    <div className="relative">
-                      <UserRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-                      <input id="name" name="name" className={`${inputClass} w-full pl-11`} placeholder="Your name" aria-invalid={Boolean(state.fieldErrors?.name)} disabled={isSuccess} />
-                    </div>
-                    {state.fieldErrors?.name ? <p className="text-sm text-error">{state.fieldErrors.name}</p> : null}
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="grid gap-2">
-                      <label htmlFor="email" className="text-sm font-medium text-text-secondary">Email</label>
-                      <div className="relative">
-                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-                        <input id="email" name="email" type="email" className={`${inputClass} w-full pl-11`} placeholder="you@example.com" aria-invalid={Boolean(state.fieldErrors?.email)} disabled={isSuccess} />
-                      </div>
-                      {state.fieldErrors?.email ? <p className="text-sm text-error">{state.fieldErrors.email}</p> : null}
-                    </div>
-                    <PhoneInput
-                      id="phone"
-                      name="phone"
-                      label="Phone"
-                      disabled={isSuccess}
-                      error={state.fieldErrors?.phone}
-                      onValueChange={(value) => updateSnapshotValue("phone", value)}
-                    />
-                  </div>
-                </section>
-              </main>
-
-              <div className="border-t border-line bg-panel/95 p-5 backdrop-blur sm:flex sm:items-center sm:justify-between sm:gap-4 lg:px-12">
-                {state.status === "error" && state.message ? (
-                  <div className="mb-4 rounded-2xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error sm:mb-0">
-                    <p>{state.message}</p>
-                  </div>
-                ) : (
-                  <p className="mb-4 font-mono text-xs uppercase tracking-[0.22em] text-text-muted sm:mb-0">
-                    Step {currentStep + 1} of {quoteSteps.length}
-                  </p>
-                )}
-
-                <div className="flex gap-3">
-                  <Button type="button" variant="secondary" size="lg" disabled={currentStep === 0 || isPending || isSuccess} onClick={goBack}>
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </Button>
-                  {isFinalStep ? (
-                    <Button type="submit" size="lg" disabled={isPending || isSuccess}>
-                      {isPending ? "Submitting..." : "Request reviewed quote"}
-                    </Button>
-                  ) : (
-                    <Button type="button" size="lg" disabled={isPending || isSuccess} onClick={goNext}>
-                      {currentStep === 0
-                        ? "Next: job & truck"
-                        : currentStep === 1
-                          ? "Next: review estimate"
-                          : currentStep === 2
-                            ? "Next: schedule"
-                            : "Next: details"}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  )}
+        <StepShell
+          sidebar={<QuoteSummary snapshot={formSnapshot} routeEstimate={routeEstimate} currentStep={currentStep} mode="desktop" />}
+          mobileAccessory={
+            <MobileSummaryBar
+              snapshot={formSnapshot}
+              routeEstimate={routeEstimate}
+              onOpen={() => setIsSummaryOpen(true)}
+            />
+          }
+          footer={
+            <div className="flex flex-col gap-4">
+              {state.status === "error" && state.message ? (
+                <div className="rounded-2xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+                  <p>{state.message}</p>
                 </div>
+              ) : (
+                <p className="font-mono text-xs uppercase tracking-[0.22em] text-text-muted">
+                  Step {currentStep + 1} of {quoteSteps.length}
+                </p>
+              )}
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="lg"
+                  className="w-full sm:w-auto"
+                  disabled={currentStep === 0 || isPending || isSuccess}
+                  onClick={goBack}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </Button>
+                {isFinalStep ? (
+                  <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isPending || isSuccess}>
+                    {isPending ? "Submitting..." : "Request reviewed quote"}
+                  </Button>
+                ) : (
+                  <Button type="button" size="lg" className="w-full sm:w-auto" disabled={isPending || isSuccess} onClick={goNext}>
+                    {currentStep === 0
+                      ? "Next: job & truck"
+                      : currentStep === 1
+                        ? "Next: review estimate"
+                        : currentStep === 2
+                          ? "Next: schedule"
+                          : "Next: details"}
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          }
+          contentClassName="p-4 sm:p-8 lg:p-12"
+        >
+          <StepProgress currentStep={currentStep} isSuccess={isSuccess} onStepClick={goToStep} />
+          <StepIntro step={quoteSteps[currentStep]} />
+
+          {stepError ? (
+            <div className="mt-5 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning" role="alert">
+              {stepError}
+            </div>
+          ) : null}
+
+          <section className={currentStep === 0 ? "mt-6 grid gap-5 animate-fade-up sm:mt-8" : "hidden"}>
+            <div className="rounded-[1.5rem] border border-line bg-ink/55 p-4 sm:p-5">
+              <div className="grid gap-4">
+                <AddressAutocompleteInput
+                  id="pickupAddress"
+                  name="pickupAddress"
+                  label="Pickup address"
+                  defaultValue={initialPickupAddress}
+                  placeholder="Pickup suburb/address"
+                  required
+                  error={state.fieldErrors?.pickupAddress}
+                  disabled={isSuccess}
+                  onValueChange={(value) => updateSnapshotValue("pickupAddress", value)}
+                />
+                <div className="ml-5 h-7 w-px bg-gradient-to-b from-blue to-violet" aria-hidden="true" />
+                <AddressAutocompleteInput
+                  id="dropoffAddress"
+                  name="dropoffAddress"
+                  label="Dropoff address"
+                  defaultValue={initialDropoffAddress}
+                  placeholder="Dropoff suburb/address"
+                  required
+                  error={state.fieldErrors?.dropoffAddress}
+                  disabled={isSuccess}
+                  onValueChange={(value) => updateSnapshotValue("dropoffAddress", value)}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className={currentStep === 1 ? "mt-6 grid min-w-0 gap-6 animate-fade-up sm:mt-8" : "hidden"}>
+            <fieldset className="grid gap-3">
+              <legend className="text-sm font-medium text-text-secondary">Job type</legend>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {serviceOptions.map((option) => (
+                  <label key={option.value} className="flex min-h-14 w-full min-w-0 items-center rounded-2xl border border-line bg-ink/60 p-4 text-sm transition hover:border-line-hover hover:bg-navy has-[:checked]:border-blue/80 has-[:checked]:bg-blue/10 sm:text-base">
+                    <input
+                      className="peer sr-only"
+                      type="radio"
+                      name="serviceType"
+                      value={option.value}
+                      defaultChecked={option.value === "removal"}
+                      disabled={isSuccess}
+                    />
+                    <span className="block min-w-0 break-words font-semibold leading-5 text-white peer-checked:text-blue-soft">{option.label}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div className="grid gap-2">
+              <p className="text-sm font-medium text-text-secondary">Truck and crew</p>
+              <p className="text-sm leading-6 text-text-muted">Choose the closest size. The reviewed quote can adjust truck size if the notes show a better fit.</p>
+            </div>
+            <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+              {truckClassOptions.map((option) => (
+                <label key={option.value} className="group relative block w-full min-w-0 overflow-hidden rounded-[1.5rem] border border-line bg-ink/60 p-4 transition hover:-translate-y-0.5 hover:border-line-hover hover:bg-navy hover:shadow-lift has-[:checked]:border-blue/80 has-[:checked]:bg-blue/10 sm:p-5">
+                  <input className="peer sr-only" type="radio" name="truckClass" value={option.value} disabled={isSuccess} />
+                  <span className="absolute right-4 top-4 flex h-5 w-5 items-center justify-center rounded-full border border-line peer-checked:border-blue peer-checked:bg-blue">
+                    <span className="h-2 w-2 rounded-full bg-white opacity-0 peer-checked:opacity-100" />
+                  </span>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet/20 to-blue/20 text-blue-soft sm:h-12 sm:w-12">
+                    <Truck className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </div>
+                  <span className="mt-4 block min-w-0 break-words font-display text-xl font-semibold tracking-[-0.03em] text-white sm:mt-5 sm:text-2xl">{option.label}</span>
+                  <span className="mt-2 block min-w-0 break-words text-sm leading-6 text-text-secondary sm:min-h-12">{option.description}</span>
+                  <span className="mt-4 block min-w-0 break-words rounded-2xl border border-line bg-panel/70 p-4 text-sm font-semibold leading-6 text-white sm:mt-5">{option.rateSummary}</span>
+                </label>
+              ))}
+            </div>
+            {state.fieldErrors?.truckClass ? <p className="text-sm text-error">{state.fieldErrors.truckClass}</p> : null}
+          </section>
+
+          <section className={currentStep === 2 ? "mt-6 animate-fade-up sm:mt-8" : "hidden"}>
+            <EstimateReveal snapshot={formSnapshot} routeEstimate={routeEstimate} />
+          </section>
+
+          <section className={currentStep === 3 ? "mt-6 grid gap-8 animate-fade-up sm:mt-8" : "hidden"}>
+            <div className="grid gap-2">
+              <label htmlFor="preferredDate" className="text-sm font-medium text-text-secondary">Preferred date</label>
+              <input id="preferredDate" name="preferredDate" type="date" className={inputClass} disabled={isSuccess} />
+            </div>
+
+            <fieldset className="grid gap-3">
+              <legend className="text-sm font-medium text-text-secondary">Preferred time window</legend>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {preferredTimeWindowOptions.map((option) => (
+                  <label key={option.value} className="cursor-pointer rounded-2xl border border-line bg-ink/60 p-4 transition hover:border-line-hover hover:bg-navy has-[:checked]:border-blue/80 has-[:checked]:bg-blue/10">
+                    <input
+                      className="peer sr-only"
+                      type="radio"
+                      name="preferredTimeWindow"
+                      value={option.value}
+                      defaultChecked={option.value === "flexible"}
+                      disabled={isSuccess}
+                    />
+                    <span className="block font-semibold text-white peer-checked:text-blue-soft">{option.label}</span>
+                    <span className="mt-1 block text-sm text-text-secondary">{option.description}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </section>
+
+          <section className={currentStep === 4 ? "mt-6 grid gap-6 animate-fade-up sm:mt-8" : "hidden"}>
+            <div className="grid gap-2">
+              <label htmlFor="notes" className="text-sm font-medium text-text-secondary">What are you moving?</label>
+              <textarea id="notes" name="notes" rows={6} className={inputClass} placeholder="Inventory, stairs, lift, parking, access, fragile items..." aria-invalid={Boolean(state.fieldErrors?.notes)} disabled={isSuccess} />
+              {state.fieldErrors?.notes ? <p className="text-sm text-error">{state.fieldErrors.notes}</p> : null}
+            </div>
+
+            <div className="grid gap-2">
+              <label htmlFor="name" className="text-sm font-medium text-text-secondary">Name</label>
+              <div className="relative">
+                <UserRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+                <input id="name" name="name" className={`${inputClass} w-full pl-11`} placeholder="Your name" aria-invalid={Boolean(state.fieldErrors?.name)} disabled={isSuccess} />
+              </div>
+              {state.fieldErrors?.name ? <p className="text-sm text-error">{state.fieldErrors.name}</p> : null}
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <label htmlFor="email" className="text-sm font-medium text-text-secondary">Email</label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+                  <input id="email" name="email" type="email" className={`${inputClass} w-full pl-11`} placeholder="you@example.com" aria-invalid={Boolean(state.fieldErrors?.email)} disabled={isSuccess} />
+                </div>
+                {state.fieldErrors?.email ? <p className="text-sm text-error">{state.fieldErrors.email}</p> : null}
+              </div>
+              <PhoneInput
+                id="phone"
+                name="phone"
+                label="Phone"
+                disabled={isSuccess}
+                error={state.fieldErrors?.phone}
+                onValueChange={(value) => updateSnapshotValue("phone", value)}
+              />
+            </div>
+          </section>
+        </StepShell>
+      </form>
+
+      <ResponsiveDrawer
+        open={isSummaryOpen}
+        onOpenChange={setIsSummaryOpen}
+        title="Your move summary"
+        description="Route, truck, timing, and estimate details update as you progress."
+        side="bottom"
+      >
+        <QuoteSummary snapshot={formSnapshot} routeEstimate={routeEstimate} currentStep={currentStep} mode="mobile" />
+      </ResponsiveDrawer>
 
       {isSuccess ? (
         <QuoteSuccessModal
@@ -606,7 +631,11 @@ function StepProgress({
       <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-blue-soft">
         Step {currentStep + 1}/{quoteSteps.length}
       </p>
-      <div className="mt-4 grid grid-cols-5 gap-2" aria-label="Quote steps">
+      <div className="mt-3 grid gap-1 sm:hidden">
+        <p className="text-sm font-semibold text-white">{quoteSteps[currentStep]?.title}</p>
+        <p className="text-[11px] leading-5 text-text-muted">Tap completed steps to edit.</p>
+      </div>
+      <div className="mt-4 grid grid-cols-5 gap-1.5 sm:gap-2" aria-label="Quote steps">
         {quoteSteps.map((step, index) => {
           const isActive = currentStep === index;
           const isComplete = currentStep > index || isSuccess;
@@ -660,13 +689,13 @@ function StepIntro({ step }: { step: QuoteStep }) {
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet to-blue text-white shadow-glow">
-          <Icon className="h-6 w-6" />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet to-blue text-white shadow-glow sm:h-12 sm:w-12">
+          <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
         <div>
-          <h2 className="font-display text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">{step.title}</h2>
-          <p className="mt-3 text-base leading-7 text-text-secondary">{step.description}</p>
+          <h2 className="font-display text-3xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">{step.title}</h2>
+          <p className="mt-3 text-sm leading-6 text-text-secondary sm:text-base sm:leading-7">{step.description}</p>
         </div>
       </div>
     </div>
@@ -700,7 +729,7 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
   if (!quoteEstimate) {
     return (
       <div className="rounded-[2rem] border border-line bg-ink/65 p-6 sm:p-8">
-        <p className="font-display text-3xl font-semibold tracking-[-0.04em] text-white">Choose a job type and truck first.</p>
+        <p className="font-display text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">Choose a job type and truck first.</p>
         <p className="mt-3 max-w-2xl leading-7 text-text-secondary">
           The estimate appears here after the route, job type, and truck are selected.
         </p>
@@ -722,16 +751,16 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
         <div className="relative">
           <div className="max-w-3xl">
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-blue-soft">Estimated total</p>
-            <p className="mt-3 font-display text-5xl font-semibold tracking-[-0.06em] text-white sm:text-7xl">
+            <p className="mt-3 font-display text-4xl font-semibold tracking-[-0.06em] text-white sm:text-7xl">
               {quoteEstimate.rangeLabel}
             </p>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-text-secondary">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg sm:leading-8">
               Estimated total for this move.
             </p>
           </div>
 
           <div className="mt-8 border-t border-white/10 pt-6">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">Estimate breakdown</p>
               <p className="text-sm text-text-muted">Rounded dollars</p>
             </div>
@@ -785,7 +814,7 @@ function BreakdownRow({
   value: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div className="min-w-0">
         <p className="text-sm font-semibold text-white">{label}</p>
         {detail ? <p className="mt-1 max-w-xl text-sm leading-6 text-text-secondary">{detail}</p> : null}
@@ -798,11 +827,13 @@ function BreakdownRow({
 function QuoteSummary({
   snapshot,
   routeEstimate,
-  currentStep
+  currentStep,
+  mode = "desktop"
 }: {
   snapshot: FormSnapshot;
   routeEstimate: RouteEstimateState;
   currentStep: number;
+  mode?: "desktop" | "mobile";
 }) {
   const truckLabel = getTruckClassLabel(snapshot.truckClass);
   const timeWindowLabel = getPreferredTimeWindowLabel(snapshot.preferredTimeWindow);
@@ -819,29 +850,37 @@ function QuoteSummary({
             ? "Estimate updates after route and truck selection"
             : "Estimate appears after job type and truck";
 
+  const content = (
+    <div className={mode === "desktop" ? "mx-auto max-w-sm lg:mx-0" : "grid gap-6"}>
+      <p className="font-display text-3xl font-semibold tracking-[-0.04em] text-white">Your move</p>
+      <MapPreview pickup={snapshot.pickupAddress} dropoff={snapshot.dropoffAddress} compact={mode === "mobile"} />
+      <div className="mt-2 grid gap-6">
+        <SummaryTimelineItem icon={ArrowUp} label="Pickup" value={displayValue(snapshot.pickupAddress)} accent="blue" />
+        <SummaryTimelineItem icon={ArrowDown} label="Drop-off" value={displayValue(snapshot.dropoffAddress)} accent="violet" />
+        <SummaryTimelineItem icon={Truck} label="Vehicle" value={truckLabel ?? "Choose a truck"} detail="Crew reviewed before confirmation" />
+        <SummaryTimelineItem
+          icon={DollarSign}
+          label="Quote"
+          value={quoteEstimate?.rangeLabel ?? "Choose a truck"}
+          detail={quoteDetail}
+        />
+        <SummaryTimelineItem icon={CalendarDays} label="Arrival window" value={timingValue} />
+        <SummaryTimelineItem icon={PackageOpen} label="What you're moving" value={displayValue(snapshot.notes, "Add move details")} detail={getServiceTypeLabel(snapshot.serviceType)} />
+      </div>
+    </div>
+  );
+
+  if (mode === "mobile") {
+    return <div>{content}</div>;
+  }
+
   return (
     <aside
-      className={`border-b border-line bg-ink/70 p-6 transition duration-300 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r lg:p-8 ${
+      className={`border-r border-line bg-ink/70 p-6 transition duration-300 lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-y-auto lg:p-8 ${
         currentStep === 2 ? "opacity-60 saturate-50" : "opacity-100"
       }`}
     >
-      <div className="mx-auto max-w-sm lg:mx-0">
-        <p className="font-display text-3xl font-semibold tracking-[-0.04em] text-white">Your move</p>
-        <MapPreview pickup={snapshot.pickupAddress} dropoff={snapshot.dropoffAddress} />
-        <div className="mt-8 grid gap-6">
-          <SummaryTimelineItem icon={ArrowUp} label="Pickup" value={displayValue(snapshot.pickupAddress)} accent="blue" />
-          <SummaryTimelineItem icon={ArrowDown} label="Drop-off" value={displayValue(snapshot.dropoffAddress)} accent="violet" />
-          <SummaryTimelineItem icon={Truck} label="Vehicle" value={truckLabel ?? "Choose a truck"} detail="Crew reviewed before confirmation" />
-          <SummaryTimelineItem
-            icon={DollarSign}
-            label="Quote"
-            value={quoteEstimate?.rangeLabel ?? "Choose a truck"}
-            detail={quoteDetail}
-          />
-          <SummaryTimelineItem icon={CalendarDays} label="Arrival window" value={timingValue} />
-          <SummaryTimelineItem icon={PackageOpen} label="What you're moving" value={displayValue(snapshot.notes, "Add move details")} detail={getServiceTypeLabel(snapshot.serviceType)} />
-        </div>
-      </div>
+      {content}
     </aside>
   );
 }
@@ -854,11 +893,37 @@ function formatLineItemAmount(cents: number) {
   }).format(cents / 100);
 }
 
-function MapPreview({ pickup, dropoff }: { pickup?: string; dropoff?: string }) {
+function MobileSummaryBar({
+  snapshot,
+  routeEstimate,
+  onOpen
+}: {
+  snapshot: FormSnapshot;
+  routeEstimate: RouteEstimateState;
+  onOpen: () => void;
+}) {
+  const quoteEstimate = getQuoteEstimate(snapshot, routeEstimate);
+  const routeLabel = `${displayValue(snapshot.pickupAddress, "Add pickup")} -> ${displayValue(snapshot.dropoffAddress, "Add drop-off")}`;
+
+  return (
+    <div className="flex items-center gap-4">
+      <div className="min-w-0 flex-1">
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-blue-soft">Move summary</p>
+        <p className="mt-1 text-sm font-semibold text-white">{quoteEstimate?.rangeLabel ?? "Estimate after job & truck"}</p>
+        <p className="mt-1 truncate text-xs text-text-muted">{routeLabel}</p>
+      </div>
+      <Button type="button" variant="secondary" size="sm" className="shrink-0" onClick={onOpen}>
+        View
+      </Button>
+    </div>
+  );
+}
+
+function MapPreview({ pickup, dropoff, compact = false }: { pickup?: string; dropoff?: string; compact?: boolean }) {
   const hasRoute = Boolean(pickup?.trim() && dropoff?.trim());
 
   return (
-    <div className="relative mt-8 h-40 overflow-hidden rounded-[1.5rem] border border-line bg-navy shadow-card">
+    <div className={`relative mt-8 overflow-hidden rounded-[1.5rem] border border-line bg-navy shadow-card ${compact ? "h-32" : "h-40"}`}>
       <div
         className="absolute inset-0 opacity-30"
         style={{
@@ -933,9 +998,10 @@ function SummaryTimelineItem({
 
 export function QuoteSuccessModal({ onReturnHome }: { onReturnHome: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/85 px-6 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="quote-success-title">
-      <div className="yh-gradient-border w-full max-w-lg animate-fade-up rounded-3xl bg-panel p-[1px] shadow-glow">
-        <div className="rounded-3xl bg-panel p-7 text-center sm:p-9">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-ink/85 px-4 py-6 backdrop-blur-md sm:px-6 sm:py-10" role="dialog" aria-modal="true" aria-labelledby="quote-success-title">
+      <div className="flex min-h-full items-center justify-center">
+        <div className="yh-gradient-border w-full max-w-lg animate-fade-up rounded-3xl bg-panel p-[1px] shadow-glow">
+          <div className="max-h-[calc(100vh-3rem)] overflow-y-auto rounded-3xl bg-panel p-7 text-center sm:max-h-[calc(100vh-5rem)] sm:p-9">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-success/10 text-success shadow-glow">
             <CheckCircle2 className="h-9 w-9" />
           </div>
@@ -953,6 +1019,7 @@ export function QuoteSuccessModal({ onReturnHome }: { onReturnHome: () => void }
             <Home className="h-4 w-4" />
             Back to home now
           </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -7,15 +7,15 @@ import { Button } from "@/components/ui/Button";
 export function HomeRouteQuoteForm() {
   return (
     <div className="rounded-2xl border border-line bg-ink/60 p-5">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-text-muted">Get an estimate</p>
-          <h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.04em] text-white">Start with the route</h2>
+          <h2 className="mt-2 font-display text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">Start with the route</h2>
           <p className="mt-2 text-sm leading-6 text-text-secondary">
             Enter pickup and dropoff here. The next screen continues with truck, timing, move details, and contact.
           </p>
         </div>
-        <div className="rounded-2xl bg-gradient-to-br from-violet to-blue p-3 shadow-glow">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet to-blue shadow-glow">
           <Route className="h-7 w-7" />
         </div>
       </div>

@@ -80,8 +80,8 @@ describe("QuoteForm", () => {
     });
 
     expect(screen.getByRole("button", { name: /request reviewed quote/i })).toBeTruthy();
-    expect(screen.getByText(/South Yarra VIC/)).toBeTruthy();
-    expect(screen.getByText(/Richmond VIC/)).toBeTruthy();
+    expect(screen.getAllByText(/South Yarra VIC/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Richmond VIC/).length).toBeGreaterThan(0);
   });
 
   it("lets the user click back to earlier steps and edit them", () => {

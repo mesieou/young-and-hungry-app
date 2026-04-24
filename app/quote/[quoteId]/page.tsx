@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { PageSection } from "@/components/layout/PageSection";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
 import { QuoteCheckoutForm } from "@/components/sections/QuoteCheckoutForm";
@@ -129,11 +130,11 @@ export default async function QuoteCheckoutPage({ params }: { params: Promise<{ 
     Boolean(quote.job_start_at && quote.job_block_minutes);
 
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+    <PageSection>
+      <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
           <Badge tone="gradient">Quote checkout</Badge>
-          <h1 className="mt-5 font-display text-5xl font-semibold tracking-[-0.05em]">
+          <h1 className="mt-5 font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">
             Review the job before reserving the slot.
           </h1>
           <p className="mt-5 leading-8 text-text-secondary">
@@ -183,7 +184,7 @@ export default async function QuoteCheckoutPage({ params }: { params: Promise<{ 
           </CardContent>
         </Card>
       </div>
-    </section>
+    </PageSection>
   );
 }
 
@@ -191,7 +192,7 @@ function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-line bg-navy p-4">
       <p className="text-xs uppercase tracking-[0.2em] text-text-muted">{label}</p>
-      <p className="mt-2 capitalize text-white">{value}</p>
+      <p className="mt-2 break-words text-white">{value}</p>
     </div>
   );
 }

@@ -14,12 +14,31 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/"
   },
+  icons: {
+    icon: "/young-and-hungry-logo-icon.svg",
+    shortcut: "/young-and-hungry-logo-icon.svg",
+    apple: "/young-and-hungry-logo-icon.svg"
+  },
   openGraph: {
     title: "Young & Hungry",
     description: "Removalist booking without the back-and-forth.",
     url: "https://youngandh.co",
     siteName: "Young & Hungry",
-    type: "website"
+    type: "website",
+    images: [
+      {
+        url: "/young-and-hungry-horizontal-logo.svg",
+        width: 1200,
+        height: 300,
+        alt: "Young & Hungry"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Young & Hungry",
+    description: "Removalist booking without the back-and-forth.",
+    images: ["/young-and-hungry-horizontal-logo.svg"]
   }
 };
 

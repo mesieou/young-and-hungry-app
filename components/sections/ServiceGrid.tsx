@@ -1,4 +1,5 @@
 import { Building2, Home, PackageCheck, Truck, type LucideIcon } from "lucide-react";
+import { PageSection } from "@/components/layout/PageSection";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
 
@@ -11,12 +12,12 @@ const services: Array<[string, string, LucideIcon]> = [
 
 export function ServiceGrid({ showIntro = false }: { showIntro?: boolean }) {
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto max-w-7xl">
+    <PageSection>
+      <div>
         {showIntro ? (
           <div className="mb-10 max-w-2xl">
             <Badge tone="gradient">Services</Badge>
-            <h1 className="mt-5 font-display text-5xl font-semibold tracking-[-0.05em]">Removalist services with platform discipline.</h1>
+            <h1 className="mt-5 font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Removalist services with platform discipline.</h1>
           </div>
         ) : null}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -33,6 +34,6 @@ export function ServiceGrid({ showIntro = false }: { showIntro?: boolean }) {
           ))}
         </div>
       </div>
-    </section>
+    </PageSection>
   );
 }

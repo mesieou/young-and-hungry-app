@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageSection } from "@/components/layout/PageSection";
 import { Card, CardContent } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
@@ -14,9 +15,9 @@ const faqs = [
 
 export default function FaqPage() {
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto max-w-4xl">
-        <h1 className="font-display text-5xl font-semibold tracking-[-0.05em]">FAQ</h1>
+    <PageSection width="compact">
+      <div>
+        <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">FAQ</h1>
         <div className="mt-10 grid gap-4">
           {faqs.map(([question, answer]) => (
             <Card key={question}>
@@ -28,6 +29,6 @@ export default function FaqPage() {
           ))}
         </div>
       </div>
-    </section>
+    </PageSection>
   );
 }

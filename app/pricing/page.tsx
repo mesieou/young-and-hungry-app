@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageSection } from "@/components/layout/PageSection";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 
@@ -17,9 +18,9 @@ export default function PricingPage() {
   ];
 
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="font-display text-5xl font-semibold tracking-[-0.05em]">Pricing built for clarity.</h1>
+    <PageSection width="narrow">
+      <div>
+        <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Pricing built for clarity.</h1>
         <p className="mt-5 max-w-2xl leading-8 text-text-secondary">
           The quote flow shows a reviewed estimate range before contact details. It uses route data, truck size, move type, return-base travel, and simple billing rules that are easy to understand.
         </p>
@@ -50,6 +51,6 @@ export default function PricingPage() {
           </CardContent>
         </Card>
       </div>
-    </section>
+    </PageSection>
   );
 }

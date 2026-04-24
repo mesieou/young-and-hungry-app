@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageSection } from "@/components/layout/PageSection";
 import { QuoteForm } from "@/components/sections/QuoteForm";
 
 export const metadata: Metadata = {
@@ -20,10 +21,10 @@ export default async function QuotePage({ searchParams }: QuotePageProps) {
   const dropoffAddress = getSingleSearchParam(params.dropoffAddress) ?? "";
 
   return (
-    <section className="px-4 py-8 sm:px-6 sm:py-12">
+    <PageSection padding="compact">
       <div className="mx-auto max-w-6xl">
         <QuoteForm initialPickupAddress={pickupAddress} initialDropoffAddress={dropoffAddress} />
       </div>
-    </section>
+    </PageSection>
   );
 }

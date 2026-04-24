@@ -1,5 +1,6 @@
 import { ArrowRight, Clock3, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { PageSection } from "@/components/layout/PageSection";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -23,11 +24,11 @@ const platformFeatures: Array<[string, string, LucideIcon]> = [
 export default function HomePage() {
   return (
     <div className="overflow-hidden">
-      <section className="relative px-6 py-20 sm:py-28">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <PageSection padding="hero" className="relative">
+        <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div className="animate-fade-up">
             <Badge tone="gradient">Removalist execution platform</Badge>
-            <h1 className="mt-7 max-w-4xl font-display text-5xl font-semibold tracking-[-0.05em] text-white sm:text-6xl lg:text-7xl">
+            <h1 className="mt-7 max-w-4xl font-display text-4xl font-semibold tracking-[-0.05em] text-white sm:text-6xl lg:text-7xl">
               Moving jobs booked with{" "}
               <span className="yh-gradient-text">real-time clarity.</span>
             </h1>
@@ -52,15 +53,15 @@ export default function HomePage() {
             </CardContent>
           </Card>
         </div>
-      </section>
+      </PageSection>
 
       <TrustStrip />
 
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-7xl">
+      <PageSection>
+        <div>
           <div className="max-w-2xl">
             <Badge>Built for execution</Badge>
-            <h2 className="mt-5 font-display text-4xl font-semibold tracking-[-0.04em]">Not a mover directory. A booking system for physical jobs.</h2>
+            <h2 className="mt-5 font-display text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">Not a mover directory. A booking system for physical jobs.</h2>
           </div>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {platformFeatures.map(([title, body, Icon]) => (
@@ -76,16 +77,16 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </PageSection>
 
       <ServiceGrid />
 
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-7xl rounded-2xl border border-line bg-panel p-6 shadow-card sm:p-10">
+      <PageSection>
+        <div className="rounded-2xl border border-line bg-panel p-6 shadow-card sm:p-10">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
               <Badge tone="gradient">MVP path</Badge>
-              <h2 className="mt-5 font-display text-4xl font-semibold tracking-[-0.04em]">Quote now. Confirm cleanly next.</h2>
+              <h2 className="mt-5 font-display text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">Quote now. Confirm cleanly next.</h2>
               <p className="mt-4 leading-7 text-text-secondary">
                 The frontend starts with lead capture and quote-review emails. The critical booking core stays ready for availability and payment later without making deposit checkout part of the first MVP.
               </p>
@@ -100,7 +101,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </PageSection>
     </div>
   );
 }

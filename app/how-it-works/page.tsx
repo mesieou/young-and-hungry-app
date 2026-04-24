@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageSection } from "@/components/layout/PageSection";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
 
@@ -16,10 +17,10 @@ const steps = [
 
 export default function HowItWorksPage() {
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto max-w-5xl">
+    <PageSection width="narrow">
+      <div>
         <Badge tone="gradient">Operational flow</Badge>
-        <h1 className="mt-5 font-display text-5xl font-semibold tracking-[-0.05em]">A safer path from lead to confirmed job.</h1>
+        <h1 className="mt-5 font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">A safer path from lead to confirmed job.</h1>
         <div className="mt-10 grid gap-4">
           {steps.map(([title, body], index) => (
             <Card key={title}>
@@ -36,6 +37,6 @@ export default function HowItWorksPage() {
           ))}
         </div>
       </div>
-    </section>
+    </PageSection>
   );
 }

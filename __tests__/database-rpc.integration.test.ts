@@ -12,7 +12,7 @@ import {
 } from "@/lib/core/booking/rpc-client";
 import { YH_DEFAULT_BUSINESS } from "@/lib/business/config";
 
-const hasDbEnv = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
+const hasDbEnv = Boolean(process.env.RUN_REMOTE_DB_TESTS === "true" && process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
 const describeDb = hasDbEnv ? describe : describe.skip;
 
 jest.setTimeout(30000);

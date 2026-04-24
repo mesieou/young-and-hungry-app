@@ -24,6 +24,17 @@ Young and Hungry uses its own Supabase project, separate from Skedy.
 
 Read [docs/SUPABASE.md](./docs/SUPABASE.md) before changing migrations, env vars, or database deployment.
 
+## Responsive UI
+
+Young & Hungry uses a shared responsive UI system. Before adding or changing public-facing UI, read [docs/RESPONSIVE_SYSTEM.md](./docs/RESPONSIVE_SYSTEM.md).
+
+Rules:
+
+- Build mobile first
+- Use shared layout primitives before custom wrappers
+- Keep mobile nav, dialogs, and action rails reachable on small screens
+- Add/update UI regression tests for critical responsive behavior
+
 ## Git Remote
 
 ```bash

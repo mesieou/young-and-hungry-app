@@ -58,3 +58,13 @@
 - Fast UI timing: `120-180ms`.
 - Standard timing: `200-250ms`.
 - Page transition timing: `300-400ms`.
+
+## Responsive Implementation
+
+- Responsive layout rules live in [docs/RESPONSIVE_SYSTEM.md](./RESPONSIVE_SYSTEM.md).
+- Brand work should use the shared layout primitives instead of route-specific wrappers:
+  - `SiteContainer`
+  - `PageSection`
+  - `StepShell`
+  - `ResponsiveDrawer`
+- Typography, spacing, and card composition should scale from mobile first. Brand polish must not rely on fixed mobile heights or desktop-only spacing assumptions.

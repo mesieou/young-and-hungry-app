@@ -59,6 +59,11 @@ The action uses separate idempotency keys for each RPC, derived from the same cu
 ## Boundaries
 
 - `young-and-hungry-app` owns website, design system, SEO/content, ops UI, business-specific pricing/content config, and brand components.
+- Shared responsive UI primitives live in-app for now:
+  - `SiteContainer`
+  - `PageSection`
+  - `StepShell`
+  - `ResponsiveDrawer`
 - `database-core` will be extracted later for Supabase clients, BaseRepository, retries/backoff, logging, migration conventions, and typed RPC helpers.
 - `booking-core` will be extracted later for command wrappers, state enums, RPC result types, and deterministic booking contracts.
 - `events-core` will be extracted later for event type definitions, timeline formatting, and aggregate version helpers.
