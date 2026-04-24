@@ -11,8 +11,8 @@ import { createSupabaseAdminClient } from "@/lib/database/supabase/admin";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Quote Checkout",
-  description: "Review your Young & Hungry quote and reserve the booking slot."
+  title: "Quote Details",
+  description: "Review your Young & Hungry move details, quote total, and current booking status."
 };
 
 type QuoteCheckoutQuote = {
@@ -133,13 +133,12 @@ export default async function QuoteCheckoutPage({ params }: { params: Promise<{ 
     <PageSection>
       <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
-          <Badge tone="gradient">Quote checkout</Badge>
+          <Badge tone="gradient">Quote details</Badge>
           <h1 className="mt-5 font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">
-            Review the job before reserving the slot.
+            Review your move details and current quote status.
           </h1>
           <p className="mt-5 leading-8 text-text-secondary">
-            This page uses the same booking core as the future voice agent: accept the quote, create a timed hold,
-            then hand the hold to payment checkout.
+            This page shows the move details, estimate, and booking state for the quote. Booking checkout can be added later without changing the core quote data.
           </p>
         </div>
 
@@ -178,7 +177,7 @@ export default async function QuoteCheckoutPage({ params }: { params: Promise<{ 
               <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
                 {isExpired
                   ? "This quote has expired and needs to be refreshed before booking."
-                  : "This quote is not bookable yet. Ops must set a scheduled start time and job block before checkout."}
+                  : "This quote is not bookable yet. A scheduled start time and move duration still need to be set before checkout."}
               </div>
             )}
           </CardContent>

@@ -21,7 +21,7 @@ describe("QuoteForm", () => {
     render(<QuoteForm />);
 
     fireEvent.click(screen.getByRole("button", { name: /next: job & truck/i }));
-    expect(screen.getByRole("alert").textContent).toContain("Enter pickup and dropoff addresses");
+    expect(screen.getByRole("alert").textContent).toContain("Enter pickup and drop-off addresses");
 
     fireEvent.change(screen.getByLabelText(/pickup address/i), {
       target: { value: "South Yarra VIC" }
@@ -31,21 +31,21 @@ describe("QuoteForm", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /next: job & truck/i }));
 
-    expect(screen.getByRole("heading", { name: /choose job type & truck/i })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /next: review estimate/i }));
+    expect(screen.getByRole("heading", { name: /choose move type & truck/i })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
     expect(screen.getByRole("alert").textContent).toContain("Choose a 4 tonne or 6 tonne truck");
   });
 
   it("starts at truck selection when the homepage route step has already supplied addresses", () => {
     render(<QuoteForm initialPickupAddress="South Yarra VIC" initialDropoffAddress="Richmond VIC" />);
 
-    expect(screen.getByRole("heading", { name: /choose job type & truck/i })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: /choose move type & truck/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /01 route/i }).className).toContain("bg-success/80");
     expect(screen.getByDisplayValue("South Yarra VIC").getAttribute("name")).toBe("pickupAddress");
     expect(screen.getByDisplayValue("Richmond VIC").getAttribute("name")).toBe("dropoffAddress");
   });
 
-  it("keeps values through the flow and reaches the reviewed quote CTA", () => {
+  it("keeps values through the flow and reaches the quote request CTA", () => {
     render(<QuoteForm />);
 
     fireEvent.change(screen.getByLabelText(/pickup address/i), {
@@ -60,7 +60,7 @@ describe("QuoteForm", () => {
     fireEvent.click(screen.getByLabelText(/6 tonne truck/i));
     expect(screen.getAllByText("6 tonne truck").length).toBeGreaterThan(0);
     expect(screen.getAllByText("$532 - $701").length).toBeGreaterThan(0);
-    fireEvent.click(screen.getByRole("button", { name: /next: review estimate/i }));
+    fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
 
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
     expect(screen.getByText(/labour/i)).toBeTruthy();
@@ -79,7 +79,7 @@ describe("QuoteForm", () => {
       target: { value: "Three bedroom house with lift access." }
     });
 
-    expect(screen.getByRole("button", { name: /request reviewed quote/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /send quote request/i })).toBeTruthy();
     expect(screen.getAllByText(/South Yarra VIC/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Richmond VIC/).length).toBeGreaterThan(0);
   });
@@ -97,7 +97,7 @@ describe("QuoteForm", () => {
 
     fireEvent.click(screen.getByLabelText(/6 tonne truck/i));
     fireEvent.click(screen.getByRole("button", { name: /02 job/i }));
-    expect(screen.getByRole("heading", { name: /choose job type & truck/i })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: /choose move type & truck/i })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /01 route/i }));
     expect(screen.getByRole("heading", { name: /where are you moving/i })).toBeTruthy();
@@ -107,7 +107,7 @@ describe("QuoteForm", () => {
     render(<QuoteForm initialPickupAddress="South Yarra VIC" initialDropoffAddress="Richmond VIC" />);
 
     fireEvent.click(screen.getByLabelText(/6 tonne truck/i));
-    fireEvent.click(screen.getByRole("button", { name: /next: review estimate/i }));
+    fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
     fireEvent.click(screen.getByRole("button", { name: /next: schedule/i }));
     fireEvent.click(screen.getByRole("button", { name: /next: details/i }));
 
@@ -117,7 +117,7 @@ describe("QuoteForm", () => {
     fireEvent.change(screen.getByLabelText(/^phone$/i), {
       target: { value: "1234" }
     });
-    fireEvent.click(screen.getByRole("button", { name: /request reviewed quote/i }));
+    fireEvent.click(screen.getByRole("button", { name: /send quote request/i }));
     expect(screen.getByRole("alert").textContent).toContain("Enter a valid Australian phone number");
 
     fireEvent.change(screen.getByLabelText(/^phone$/i), {
@@ -131,7 +131,7 @@ describe("QuoteSuccessModal", () => {
   it("shows a customer-safe success message without exposing the quote id", () => {
     render(<QuoteSuccessModal onReturnHome={jest.fn()} />);
 
-    expect(screen.getByRole("dialog", { name: "We received your move details." })).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: /we’ve received your move details\./i })).toBeTruthy();
     expect(screen.getByText("Quote request sent")).toBeTruthy();
     expect(screen.getByText(/stays here until you choose where to go next/i)).toBeTruthy();
     expect(screen.queryByText(/quote id/i)).toBeNull();

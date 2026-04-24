@@ -50,12 +50,12 @@ export function getQuoteCheckoutFailureMessage(code: CriticalFailureCode | strin
     case "QUOTE_NOT_BOOKABLE":
       return "This quote still needs a scheduled job window before checkout can start.";
     case "BUCKET_CONFLICT":
-      return "That slot is no longer available. Young & Hungry needs to issue a new time.";
+      return "That slot is no longer available. Please request an updated time.";
     case "BOOKING_ALREADY_EXISTS_FOR_QUOTE":
       return "A booking already exists for this quote.";
     case "IDEMPOTENCY_CONFLICT":
       return "This checkout request was already used with different details. Refresh and try again.";
     default:
-      return "We could not reserve this booking hold. The failure code has been logged for ops.";
+      return "We could not reserve the booking hold. Please try again.";
   }
 }

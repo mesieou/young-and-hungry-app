@@ -1,17 +1,16 @@
 import type { MetadataRoute } from "next";
+import { getIndexablePublicPages } from "@/lib/seo/public-pages";
 
 export type PublicRoute = {
   path: string;
   priority: number;
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+  lastModified: string;
 };
 
-export const publicRoutes: PublicRoute[] = [
-  { path: "/", priority: 1, changeFrequency: "weekly" },
-  { path: "/how-it-works", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/pricing", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/services", priority: 0.9, changeFrequency: "monthly" },
-  { path: "/quote", priority: 0.9, changeFrequency: "weekly" },
-  { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
-  { path: "/contact", priority: 0.6, changeFrequency: "monthly" }
-];
+export const publicRoutes: PublicRoute[] = getIndexablePublicPages().map((page) => ({
+  path: page.canonicalPath,
+  priority: page.priority,
+  changeFrequency: page.changeFrequency,
+  lastModified: page.updatedAt
+}));

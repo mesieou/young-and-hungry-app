@@ -45,6 +45,17 @@ Pricing conventions:
 - The stored quote receives `price_cents`, `job_block_minutes`, `pricing_version`, and the full `routeDistance` and `quoteEstimate` breakdown.
 - If route distance is unavailable, the quote remains deterministic but marks route pricing as pending so ops can review it instead of silently guessing.
 
+## Public Content And SEO
+
+Public content now follows a Skedy-style DRY structure:
+
+- `lib/seo/public-pages.ts` is the source of truth for indexable page metadata, canonical paths, schema type, keyword ownership, related links, and sitemap membership.
+- `lib/content/site-copy.ts` holds shared microcopy for the homepage, estimate flow, trust messaging, and reusable UI text.
+- `components/seo/PublicStructuredData.tsx` renders structured data from the page registry.
+- `components/seo/PublicRoutePage.tsx` provides a reusable page shell for registry-backed public routes.
+
+The public site should not hand-write metadata or customer messaging route by route unless there is a strong reason. Add or update page content in the registry first, then wire the route to that entry.
+
 ## Quote Checkout Bridge
 
 Customer quote checkout lives at `/quote/[quoteId]`, but it is not the active MVP path.

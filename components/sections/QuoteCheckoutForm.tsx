@@ -48,12 +48,12 @@ export function QuoteCheckoutForm({ quoteId, depositCents, currency }: QuoteChec
         <p className="font-mono text-xs uppercase tracking-[0.25em] text-text-muted">Deposit due</p>
         <p className="mt-2 font-display text-3xl font-semibold">{formatMoney(depositCents, currency)}</p>
         <p className="mt-2 text-sm leading-6 text-text-secondary">
-          The database creates a 15-minute hold before Stripe is asked to charge the deposit.
+          A 15-minute booking hold is created before deposit payment is collected.
         </p>
       </div>
 
       <Button type="submit" size="lg" disabled={isPending}>
-        {isPending ? "Reserving slot..." : "Reserve slot for deposit checkout"}
+        {isPending ? "Reserving slot..." : "Reserve booking hold"}
       </Button>
 
       {state.message ? (
@@ -70,13 +70,13 @@ export function QuoteCheckoutForm({ quoteId, depositCents, currency }: QuoteChec
           {state.heldUntil ? <p className="mt-1 font-mono text-xs">Held until: {formatHeldUntil(state.heldUntil)}</p> : null}
           {state.paymentIntentInput ? (
             <p className="mt-2 text-xs text-text-secondary">
-              Stripe checkout next receives {formatMoney(state.paymentIntentInput.amountCents, state.paymentIntentInput.currency)}.
+              The next payment step receives {formatMoney(state.paymentIntentInput.amountCents, state.paymentIntentInput.currency)}.
             </p>
           ) : null}
         </div>
       ) : (
         <p className="text-sm leading-6 text-text-muted">
-          This currently stops at the safe booking-hold boundary. Stripe checkout plugs in next.
+          This currently stops at the booking-hold step. Payment can be added next.
         </p>
       )}
     </form>

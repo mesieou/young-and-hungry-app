@@ -25,6 +25,7 @@ import { AddressAutocompleteInput } from "@/components/ui/AddressAutocompleteInp
 import { Button } from "@/components/ui/Button";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { ResponsiveDrawer } from "@/components/ui/ResponsiveDrawer";
+import { quoteFlowCopy, quoteStepCopy } from "@/lib/content/site-copy";
 import {
   getPreferredTimeWindowLabel,
   getTruckClassLabel,
@@ -79,38 +80,12 @@ type QuoteStep = {
   icon: LucideIcon;
 };
 
-const quoteSteps: QuoteStep[] = [
-  {
-    title: "Where are you moving?",
-    shortTitle: "Route",
-    description: "Confirm pickup and dropoff before choosing the truck.",
-    icon: Route
-  },
-  {
-    title: "Choose job type & truck",
-    shortTitle: "Job",
-    description: "The estimate depends on the move type and the truck/crew size.",
-    icon: Truck
-  },
-  {
-    title: "Your estimate",
-    shortTitle: "Estimate",
-    description: "A simple price range before you send the job for review.",
-    icon: DollarSign
-  },
-  {
-    title: "When should we arrive?",
-    shortTitle: "Schedule",
-    description: "Choose the preferred arrival day and window.",
-    icon: CalendarDays
-  },
-  {
-    title: "Details & contact",
-    shortTitle: "Submit",
-    description: "Add inventory, access notes, and contact details so the team can review the estimate.",
-    icon: UserRound
-  }
-];
+const stepIcons: LucideIcon[] = [Route, Truck, DollarSign, CalendarDays, UserRound];
+
+const quoteSteps: QuoteStep[] = quoteStepCopy.map((step, index) => ({
+  ...step,
+  icon: stepIcons[index] ?? UserRound
+}));
 
 const serviceOptions = [
   { value: "removal", label: "Removal / moving job" },
@@ -290,7 +265,7 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
       const dropoff = getFormValue(form, "dropoffAddress");
 
       if (pickup.length < 3 || dropoff.length < 3) {
-        setStepError("Enter pickup and dropoff addresses before choosing a truck.");
+        setStepError(quoteFlowCopy.validation.routeRequired);
         return false;
       }
     }
@@ -299,7 +274,7 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
       const truckClass = getFormValue(form, "truckClass");
 
       if (!truckClass) {
-        setStepError("Choose a 4 tonne or 6 tonne truck before reviewing the estimate.");
+        setStepError(quoteFlowCopy.validation.truckRequired);
         return false;
       }
     }
@@ -310,17 +285,17 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
       const phone = getFormValue(form, "phone");
 
       if (name.length < 2) {
-        setStepError("Enter your name before requesting the reviewed quote.");
+        setStepError(quoteFlowCopy.validation.nameRequired);
         return false;
       }
 
       if (!email && !phone) {
-        setStepError("Enter an email or phone number so we can send the reviewed quote.");
+        setStepError(quoteFlowCopy.validation.contactRequired);
         return false;
       }
 
       if (phone && !isValidAustralianPhone(phone)) {
-        setStepError("Enter a valid Australian phone number.");
+        setStepError(quoteFlowCopy.validation.phoneInvalid);
         return false;
       }
     }
@@ -424,17 +399,17 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
                 </Button>
                 {isFinalStep ? (
                   <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isPending || isSuccess}>
-                    {isPending ? "Submitting..." : "Request reviewed quote"}
+                    {isPending ? "Submitting..." : quoteFlowCopy.buttons.finalSubmit}
                   </Button>
                 ) : (
                   <Button type="button" size="lg" className="w-full sm:w-auto" disabled={isPending || isSuccess} onClick={goNext}>
                     {currentStep === 0
-                      ? "Next: job & truck"
+                      ? quoteFlowCopy.buttons.nextJobTruck
                       : currentStep === 1
-                        ? "Next: review estimate"
+                        ? quoteFlowCopy.buttons.nextEstimate
                         : currentStep === 2
-                          ? "Next: schedule"
-                          : "Next: details"}
+                          ? quoteFlowCopy.buttons.nextSchedule
+                          : quoteFlowCopy.buttons.nextDetails}
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 )}
@@ -504,7 +479,7 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
 
             <div className="grid gap-2">
               <p className="text-sm font-medium text-text-secondary">Truck and crew</p>
-              <p className="text-sm leading-6 text-text-muted">Choose the closest size. The reviewed quote can adjust truck size if the notes show a better fit.</p>
+              <p className="text-sm leading-6 text-text-muted">Choose the closest size. We can adjust the truck if your move details show a better fit.</p>
             </div>
             <div className="grid min-w-0 gap-4 xl:grid-cols-2">
               {truckClassOptions.map((option) => (
@@ -597,8 +572,8 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
       <ResponsiveDrawer
         open={isSummaryOpen}
         onOpenChange={setIsSummaryOpen}
-        title="Your move summary"
-        description="Route, truck, timing, and estimate details update as you progress."
+        title={quoteFlowCopy.summary.title}
+        description={quoteFlowCopy.summary.description}
         side="bottom"
       >
         <QuoteSummary snapshot={formSnapshot} routeEstimate={routeEstimate} currentStep={currentStep} mode="mobile" />
@@ -727,11 +702,11 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
   const quoteEstimate = getQuoteEstimate(snapshot, routeEstimate);
 
   if (!quoteEstimate) {
-    return (
+      return (
       <div className="rounded-[2rem] border border-line bg-ink/65 p-6 sm:p-8">
-        <p className="font-display text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">Choose a job type and truck first.</p>
+        <p className="font-display text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">{quoteFlowCopy.estimate.pendingTitle}</p>
         <p className="mt-3 max-w-2xl leading-7 text-text-secondary">
-          The estimate appears here after the route, job type, and truck are selected.
+          {quoteFlowCopy.estimate.pendingBody}
         </p>
       </div>
     );
@@ -740,9 +715,9 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
   const travelCoverage =
     routeEstimate.status === "ready"
       ? quoteEstimate.chargeableBaseToPickupMinutes > 0
-        ? "Includes pickup to drop-off, return to base, and extra base-to-pickup travel beyond the first hour."
-        : "Includes pickup to drop-off and return to base. First hour from base to pickup is included."
-      : "Travel coverage is checked before confirmation.";
+        ? quoteFlowCopy.estimate.travelCoverageWithExcess
+        : quoteFlowCopy.estimate.travelCoverageStandard
+      : quoteFlowCopy.estimate.travelPending;
 
   return (
     <div className="yh-gradient-border rounded-[2rem] bg-panel p-[1px] shadow-glow">
@@ -750,25 +725,25 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.18),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(168,85,247,0.16),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_50%)]" />
         <div className="relative">
           <div className="max-w-3xl">
-            <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-blue-soft">Estimated total</p>
+            <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-blue-soft">{quoteFlowCopy.estimate.totalLabel}</p>
             <p className="mt-3 font-display text-4xl font-semibold tracking-[-0.06em] text-white sm:text-7xl">
               {quoteEstimate.rangeLabel}
             </p>
             <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg sm:leading-8">
-              Estimated total for this move.
+              {quoteFlowCopy.estimate.intro}
             </p>
           </div>
 
           <div className="mt-8 border-t border-white/10 pt-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">Estimate breakdown</p>
-              <p className="text-sm text-text-muted">Rounded dollars</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">{quoteFlowCopy.estimate.breakdownLabel}</p>
+              <p className="text-sm text-text-muted">{quoteFlowCopy.estimate.roundedLabel}</p>
             </div>
 
             <div className="mt-5 grid gap-4">
               <BreakdownRow
                 label="Labour"
-                detail={`Truck + crew, ${formatCustomerHours(quoteEstimate.billableMinutes)} estimated time`}
+                detail={`${quoteFlowCopy.estimate.labourDetailPrefix}${formatCustomerHours(quoteEstimate.billableMinutes)} estimated time`}
                 value={formatLineItemAmount(quoteEstimate.laborCents)}
               />
               <BreakdownRow
@@ -778,7 +753,7 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
               />
               <BreakdownRow
                 label="Booking fee"
-                detail="Scheduling and job review"
+                detail={quoteFlowCopy.summary.bookingFeeDetail}
                 value={formatLineItemAmount(quoteEstimate.bookingFeeCents)}
               />
               <div className="flex items-center justify-between gap-4 border-t border-dashed border-line pt-4">
@@ -794,7 +769,7 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
                 <ShieldCheck className="h-4 w-4" />
               </div>
               <p className="text-sm leading-7 text-text-secondary">
-                Final price is calculated on the day of the job and depends on access, stairs, parking, heavy items, extra handling, and actual loading time.
+                {quoteFlowCopy.estimate.dayOfJobDisclaimer}
               </p>
             </div>
           </div>
@@ -845,10 +820,10 @@ function QuoteSummary({
       : routeEstimate.status === "loading"
         ? "Calculating route..."
         : routeEstimate.status === "unavailable"
-          ? "Route distance pending final review"
+          ? quoteFlowCopy.summary.routePending
           : quoteEstimate
-            ? "Estimate updates after route and truck selection"
-            : "Estimate appears after job type and truck";
+            ? quoteFlowCopy.summary.quotePending
+            : quoteFlowCopy.summary.mobileFallback;
 
   const content = (
     <div className={mode === "desktop" ? "mx-auto max-w-sm lg:mx-0" : "grid gap-6"}>
@@ -857,7 +832,7 @@ function QuoteSummary({
       <div className="mt-2 grid gap-6">
         <SummaryTimelineItem icon={ArrowUp} label="Pickup" value={displayValue(snapshot.pickupAddress)} accent="blue" />
         <SummaryTimelineItem icon={ArrowDown} label="Drop-off" value={displayValue(snapshot.dropoffAddress)} accent="violet" />
-        <SummaryTimelineItem icon={Truck} label="Vehicle" value={truckLabel ?? "Choose a truck"} detail="Crew reviewed before confirmation" />
+        <SummaryTimelineItem icon={Truck} label="Vehicle" value={truckLabel ?? "Choose a truck"} detail={quoteFlowCopy.summary.vehicleDetail} />
         <SummaryTimelineItem
           icon={DollarSign}
           label="Quote"
@@ -908,8 +883,8 @@ function MobileSummaryBar({
   return (
     <div className="flex items-center gap-4">
       <div className="min-w-0 flex-1">
-        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-blue-soft">Move summary</p>
-        <p className="mt-1 text-sm font-semibold text-white">{quoteEstimate?.rangeLabel ?? "Estimate after job & truck"}</p>
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-blue-soft">{quoteFlowCopy.summary.mobileLabel}</p>
+        <p className="mt-1 text-sm font-semibold text-white">{quoteEstimate?.rangeLabel ?? quoteFlowCopy.summary.mobileFallback}</p>
         <p className="mt-1 truncate text-xs text-text-muted">{routeLabel}</p>
       </div>
       <Button type="button" variant="secondary" size="sm" className="shrink-0" onClick={onOpen}>
@@ -1005,19 +980,19 @@ export function QuoteSuccessModal({ onReturnHome }: { onReturnHome: () => void }
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-success/10 text-success shadow-glow">
             <CheckCircle2 className="h-9 w-9" />
           </div>
-          <p className="mt-6 font-mono text-xs uppercase tracking-[0.28em] text-blue-soft">Quote request sent</p>
+          <p className="mt-6 font-mono text-xs uppercase tracking-[0.28em] text-blue-soft">{quoteFlowCopy.success.eyebrow}</p>
           <h2 id="quote-success-title" className="mt-3 font-display text-4xl font-semibold tracking-[-0.04em] text-white">
-            We received your move details.
+            {quoteFlowCopy.success.title}
           </h2>
           <p className="mt-4 leading-7 text-text-secondary">
-            Young & Hungry will review the job and contact you with the next step. This confirmation stays here until you choose where to go next.
+            {quoteFlowCopy.success.body}
           </p>
           <div className="mt-7 rounded-2xl border border-line bg-ink/70 p-4 text-sm text-text-secondary">
-            Your request has been sent to our team. You can safely return to the main page.
+            {quoteFlowCopy.success.note}
           </div>
           <Button type="button" size="lg" className="mt-6 w-full" onClick={onReturnHome}>
             <Home className="h-4 w-4" />
-            Back to home now
+            {quoteFlowCopy.success.action}
           </Button>
           </div>
         </div>

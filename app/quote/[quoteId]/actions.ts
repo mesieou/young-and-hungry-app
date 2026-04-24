@@ -67,7 +67,7 @@ export async function beginQuoteCheckout(
     return {
       status: "success",
       code: checkout.code,
-      message: "Booking hold created. The deposit checkout can now use this hold safely.",
+      message: "Your booking hold is ready. Payment can be attached to this hold in the next step.",
       bookingId: checkout.data.bookingId,
       heldUntil: checkout.data.heldUntil,
       paymentIntentInput: checkout.data.paymentIntentInput

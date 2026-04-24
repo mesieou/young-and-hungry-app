@@ -1,30 +1,36 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { PageSection } from "@/components/layout/PageSection";
+import { PublicRoutePage } from "@/components/seo/PublicRoutePage";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { buildPublicPageMetadataById, requirePublicPageById } from "@/lib/seo/public-route-utils";
+import { siteConfig } from "@/lib/seo/public-pages";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Contact Young & Hungry."
-};
+export const metadata = buildPublicPageMetadataById("contact");
+
+const page = requirePublicPageById("contact");
 
 export default function ContactPage() {
   return (
-    <PageSection width="compact">
-      <div>
+    <PublicRoutePage page={page} width="compact">
         <Card className="yh-gradient-border">
           <CardContent className="p-8 sm:p-10">
-            <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Contact Young & Hungry</h1>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-blue-soft">Email</p>
+            <a href={`mailto:${siteConfig.email}`} className="mt-3 inline-block font-display text-3xl font-semibold tracking-[-0.04em] text-white">
+              {siteConfig.email}
+            </a>
             <p className="mt-5 max-w-2xl leading-8 text-text-secondary">
-              For MVP, contact flows should convert into structured quote requests so ops can track every job from lead to completion.
+              Use the estimate flow if you already know the route. Contact us directly if you want to ask about a suburb, move type, or anything else before you start.
             </p>
-            <Button asChild className="mt-8">
-              <Link href="/quote">Start a quote</Link>
-            </Button>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button asChild>
+                <Link href="/quote">Start your estimate</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/services">Browse services</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
-      </div>
-    </PageSection>
+    </PublicRoutePage>
   );
 }

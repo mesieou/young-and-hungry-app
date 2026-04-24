@@ -35,6 +35,22 @@ Rules:
 - Keep mobile nav, dialogs, and action rails reachable on small screens
 - Add/update UI regression tests for critical responsive behavior
 
+## Content And SEO
+
+Young & Hungry now uses a registry-driven public content system inspired by the DRY SEO structure in Skedy.
+
+- Public page registry: [lib/seo/public-pages.ts](./lib/seo/public-pages.ts)
+- Shared site copy: [lib/content/site-copy.ts](./lib/content/site-copy.ts)
+- Content/SEO rules: [docs/CONTENT_SEO_SYSTEM.md](./docs/CONTENT_SEO_SYSTEM.md)
+
+Before adding or rewriting an indexable public page:
+
+- assign a clear primary keyword
+- define metadata in the public page registry
+- emit structured data through the shared SEO components
+- make sure the route lands in the sitemap
+- avoid internal product or infrastructure jargon in customer-facing copy
+
 ## Git Remote
 
 ```bash

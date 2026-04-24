@@ -1,13 +1,12 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { PageSection } from "@/components/layout/PageSection";
+import { PublicRoutePage } from "@/components/seo/PublicRoutePage";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { buildPublicPageMetadataById, requirePublicPageById } from "@/lib/seo/public-route-utils";
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description: "Transparent removalist pricing through ops-reviewed quote requests."
-};
+export const metadata = buildPublicPageMetadataById("pricing");
+
+const page = requirePublicPageById("pricing");
 
 export default function PricingPage() {
   const pricingRules = [
@@ -18,13 +17,8 @@ export default function PricingPage() {
   ];
 
   return (
-    <PageSection width="narrow">
-      <div>
-        <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Pricing built for clarity.</h1>
-        <p className="mt-5 max-w-2xl leading-8 text-text-secondary">
-          The quote flow shows a reviewed estimate range before contact details. It uses route data, truck size, move type, return-base travel, and simple billing rules that are easy to understand.
-        </p>
-        <div className="mt-10 grid gap-4 md:grid-cols-2">
+    <PublicRoutePage page={page}>
+      <div className="grid gap-4 md:grid-cols-2">
           {pricingRules.map(([name, description]) => (
             <Card key={name} className="transition duration-200 hover:-translate-y-1 hover:shadow-lift">
               <CardContent className="p-6">
@@ -33,24 +27,23 @@ export default function PricingPage() {
               </CardContent>
             </Card>
           ))}
-        </div>
-        <Card className="mt-10 border-blue/30 bg-blue/10">
+      </div>
+      <Card className="border-blue/30 bg-blue/10">
           <CardContent className="p-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
             <div>
-              <p className="font-mono text-xs uppercase tracking-[0.22em] text-blue-soft">Estimate formula</p>
+              <p className="font-mono text-xs uppercase tracking-[0.22em] text-blue-soft">Estimate structure</p>
               <p className="mt-3 text-lg font-semibold text-white">
                 Truck/crew time + charged route km + booking/admin fee
               </p>
               <p className="mt-2 text-text-secondary">
-                Labour time includes loading/unloading baseline, move type, chargeable travel, and half-hour rounding.
+                Labour time includes loading and unloading baseline, move type, chargeable travel, and half-hour rounding.
               </p>
             </div>
             <Button asChild className="mt-6 w-full sm:mt-0 sm:w-auto">
-              <Link href="/quote">Start quote</Link>
+              <Link href="/quote">Start your estimate</Link>
             </Button>
           </CardContent>
-        </Card>
-      </div>
-    </PageSection>
+      </Card>
+    </PublicRoutePage>
   );
 }

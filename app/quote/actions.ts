@@ -1,6 +1,7 @@
 "use server";
 
 import { createQuote } from "@/lib/core/booking/rpc-client";
+import { quoteFlowCopy } from "@/lib/content/site-copy";
 import {
   getQuoteRequestFieldErrors,
   parseQuoteRequestFormData,
@@ -92,7 +93,7 @@ export async function submitQuoteRequest(
 
     return {
       status: "success",
-      message: "Quote request received. Young & Hungry will review the job details and come back with the next step.",
+      message: quoteFlowCopy.actions.successMessage,
       quoteId: result.data.quoteId
     };
   } catch (error) {
@@ -101,7 +102,7 @@ export async function submitQuoteRequest(
       message:
         error instanceof Error && error.message.includes("Supabase")
           ? "Supabase is not configured yet. Add the Y&H Supabase env vars before accepting live quote requests."
-          : "Something went wrong submitting this quote request."
+          : quoteFlowCopy.actions.genericError
     };
   }
 }

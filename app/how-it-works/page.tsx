@@ -1,42 +1,36 @@
-import type { Metadata } from "next";
-import { PageSection } from "@/components/layout/PageSection";
-import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
+import { PublicRoutePage } from "@/components/seo/PublicRoutePage";
+import { buildPublicPageMetadataById, requirePublicPageById } from "@/lib/seo/public-route-utils";
 
-export const metadata: Metadata = {
-  title: "How It Works",
-  description: "How Young & Hungry turns moving enquiries into scheduled removalist jobs."
-};
+export const metadata = buildPublicPageMetadataById("how-it-works");
+
+const page = requirePublicPageById("how-it-works");
 
 const steps = [
-  ["Quote request", "Capture addresses, inventory, access notes, and preferred job time."],
-  ["Ops review email", "Send the full quote payload to Young & Hungry for review and follow-up."],
-  ["Clear quote", "Confirm pricing, timing, and any access constraints directly with the customer."],
-  ["Manual confirmation", "Lock in the accepted job manually while the automated booking core remains ready for later."]
-];
+  ["Add the route", "Start with pickup and drop-off so the estimate is based on a real move route."],
+  ["Choose the move type and truck", "Pick the move type and truck size that best fit the job."],
+  ["See your estimate", "The estimate appears before you send the move details, so the process feels clearer earlier."],
+  ["Send the move details", "Add timing, access notes, and contact details so the team can confirm the next step."]
+] as const;
 
 export default function HowItWorksPage() {
   return (
-    <PageSection width="narrow">
-      <div>
-        <Badge tone="gradient">Operational flow</Badge>
-        <h1 className="mt-5 font-display text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">A safer path from lead to confirmed job.</h1>
-        <div className="mt-10 grid gap-4">
-          {steps.map(([title, body], index) => (
-            <Card key={title}>
-              <CardContent className="flex gap-5 p-6">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet to-blue font-mono text-sm">
-                  {index + 1}
-                </div>
-                <div>
-                  <h2 className="font-display text-2xl font-semibold">{title}</h2>
-                  <p className="mt-2 leading-7 text-text-secondary">{body}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+    <PublicRoutePage page={page}>
+      <div className="grid gap-4">
+        {steps.map(([title, body], index) => (
+          <Card key={title}>
+            <CardContent className="flex gap-5 p-6">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet to-blue font-mono text-sm">
+                {index + 1}
+              </div>
+              <div>
+                <h2 className="font-display text-2xl font-semibold">{title}</h2>
+                <p className="mt-2 leading-7 text-text-secondary">{body}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-    </PageSection>
+    </PublicRoutePage>
   );
 }

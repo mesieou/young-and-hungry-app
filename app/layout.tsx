@@ -2,15 +2,21 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { getPublicPageById, siteConfig } from "@/lib/seo/public-pages";
+
+const homePage = getPublicPageById("home");
+
+if (!homePage) {
+  throw new Error("Missing public page config for home");
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://youngandh.co"),
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Young & Hungry | Removalist Booking Platform",
-    template: "%s | Young & Hungry"
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`
   },
-  description:
-    "Young & Hungry is a logistics-first removalist platform for fast quotes, scheduled moves, and reliable job execution.",
+  description: homePage.description,
   alternates: {
     canonical: "/"
   },
@@ -20,10 +26,10 @@ export const metadata: Metadata = {
     apple: "/young-and-hungry-logo-icon.svg"
   },
   openGraph: {
-    title: "Young & Hungry",
-    description: "Removalist booking without the back-and-forth.",
-    url: "https://youngandh.co",
-    siteName: "Young & Hungry",
+    title: `${homePage.title} | ${siteConfig.name}`,
+    description: homePage.description,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
     type: "website",
     images: [
       {
@@ -36,8 +42,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Young & Hungry",
-    description: "Removalist booking without the back-and-forth.",
+    title: `${homePage.title} | ${siteConfig.name}`,
+    description: homePage.description,
     images: ["/young-and-hungry-horizontal-logo.svg"]
   }
 };

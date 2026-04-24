@@ -1,11 +1,8 @@
-import type { Metadata } from "next";
 import { PageSection } from "@/components/layout/PageSection";
 import { QuoteForm } from "@/components/sections/QuoteForm";
+import { buildPublicPageMetadataById } from "@/lib/seo/public-route-utils";
 
-export const metadata: Metadata = {
-  title: "Start A Quote",
-  description: "Request a Young & Hungry removalist quote through a guided moving flow."
-};
+export const metadata = buildPublicPageMetadataById("quote");
 
 type QuotePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;

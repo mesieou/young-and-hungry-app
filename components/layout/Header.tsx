@@ -33,8 +33,8 @@ export function Header() {
           <div className="flex shrink-0 items-center gap-2">
             <Button asChild size="sm" className="px-3 sm:px-4">
               <Link href="/quote">
-                <span className="sm:hidden">Quote</span>
-                <span className="hidden sm:inline">Get quote</span>
+                <span className="sm:hidden">Estimate</span>
+                <span className="hidden sm:inline">Get estimate</span>
               </Link>
             </Button>
             <button
@@ -53,7 +53,7 @@ export function Header() {
         open={isNavOpen}
         onOpenChange={setIsNavOpen}
         title="Navigation"
-        description="Browse the core Young & Hungry pages."
+        description="Browse the main Young & Hungry pages."
       >
         <nav className="grid gap-3">
           {navItems.map(([label, href]) => (
@@ -68,7 +68,7 @@ export function Header() {
           ))}
           <Button asChild size="lg" className="mt-2 w-full">
             <Link href="/quote" onClick={() => setIsNavOpen(false)}>
-              Get quote
+              Get estimate
             </Link>
           </Button>
         </nav>
