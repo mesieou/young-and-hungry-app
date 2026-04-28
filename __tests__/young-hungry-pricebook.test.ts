@@ -31,12 +31,13 @@ describe("Young & Hungry pricebook", () => {
       rawEstimatedMinutes: 183,
       billableMinutes: 210,
       billingIncrementMinutes: 30,
-      laborCents: 55650,
+      laborCents: 48495,
+      laborCentsBillable: 55650,
       routeCents: 6248,
       bookingFeeCents: 2500,
-      priceCents: 64398,
-      rangeLowCents: 64398,
-      rangeHighCents: 72348,
+      priceCents: 57243,
+      rangeLowCents: 57243,
+      rangeHighCents: 64398,
       routeDistanceKm: 28.4,
       routeDurationMinutes: 63,
       chargeableBaseToPickupMinutes: 0,
@@ -45,8 +46,8 @@ describe("Young & Hungry pricebook", () => {
       routePricingIncluded: true,
       isWeekendRate: false
     });
-    expect(estimate?.label).toBe("$644");
-    expect(estimate?.rangeLabel).toBe("$644 - $724");
+    expect(estimate?.label).toBe("$572");
+    expect(estimate?.rangeLabel).toBe("$572 - $644");
   });
 
   it("uses weekend rates when the preferred date is Saturday or Sunday", () => {

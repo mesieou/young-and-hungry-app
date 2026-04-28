@@ -138,17 +138,17 @@ describe("QuoteForm route pricing integration", () => {
     fireEvent.click(screen.getByRole("radio", { name: /2 bedrooms/i }));
 
     await waitFor(() => {
-      expect(screen.getAllByText("$807 - $892").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("$765 - $808").length).toBeGreaterThan(0);
     });
 
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
 
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
-    expect(screen.getAllByText("$807 - $892").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$765 - $808").length).toBeGreaterThan(0);
     expect(screen.getByText(/6 tonne truck · \$169\/hr recommended for this size\./i)).toBeTruthy();
     expect(screen.getAllByText("House, 2 bedrooms").length).toBeGreaterThan(0);
     expect(screen.queryByText(/recommended setup/i)).toBeNull();
-    expect(screen.getByText(/truck \+ crew, 4 hours at \$169\/hr — covers 2 hours 30 min load\/unload \+ 1 hour 15 min travel\./i)).toBeTruthy();
+    expect(screen.getByText(/truck \+ crew, 3 hours 45 min at \$169\/hr — covers 2 hours 30 min load\/unload \+ 1 hour 15 min travel\./i)).toBeTruthy();
     expect(screen.getByText("Base -> pickup: 1 hour 30 min (1 hour included, 30 min charged)")).toBeTruthy();
     expect(screen.getByText("Pickup -> drop-off: 20 min")).toBeTruthy();
     expect(screen.getByText("Drop-off -> base: 25 min")).toBeTruthy();
@@ -166,16 +166,16 @@ describe("QuoteForm route pricing integration", () => {
     fireEvent.click(screen.getByRole("radio", { name: /2 bedrooms/i }));
 
     await waitFor(() => {
-      expect(screen.getAllByText("$679 - $764").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("$645 - $679").length).toBeGreaterThan(0);
     });
 
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
 
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
-    expect(screen.getAllByText("$679 - $764").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$645 - $679").length).toBeGreaterThan(0);
     expect(screen.getByText(/6 tonne truck · \$169\/hr recommended for this size\./i)).toBeTruthy();
     expect(screen.getAllByText("Apartment / unit, 2 bedrooms").length).toBeGreaterThan(0);
-    expect(screen.getByText(/truck \+ crew, 3.5 hours at \$169\/hr — covers 2 hours 15 min load\/unload \+ 1 hour 3 min travel\./i)).toBeTruthy();
+    expect(screen.getByText(/truck \+ crew, 3 hours 18 min at \$169\/hr — covers 2 hours 15 min load\/unload \+ 1 hour 3 min travel\./i)).toBeTruthy();
     expect(screen.getByText("Base -> pickup: 52 min, included")).toBeTruthy();
     expect(screen.getByText("Pickup -> drop-off: 28 min")).toBeTruthy();
     expect(screen.getByText("Drop-off -> base: 35 min")).toBeTruthy();
@@ -192,7 +192,7 @@ describe("QuoteForm route pricing integration", () => {
     fireEvent.click(screen.getByRole("radio", { name: /small move/i }));
 
     await waitFor(() => {
-      expect(screen.getAllByText("$343 - $502").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("$343").length).toBeGreaterThan(0);
     });
 
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));

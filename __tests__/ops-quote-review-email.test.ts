@@ -41,7 +41,7 @@ describe("ops quote review email", () => {
     expect(email.text).toContain("Email: juan@example.com");
     expect(email.text).toContain("Phone: +61400000000");
     expect(email.text).toContain("Truck class: 6 tonne truck");
-    expect(email.text).toContain("Estimated quote: $448 - $617");
+    expect(email.text).toContain("Estimated quote: $448");
     expect(email.text).toContain("Pricing version: yh-pricebook-2026-04-28-v3");
     expect(email.text).toContain("Preferred date: 2026-05-01");
     expect(email.text).toContain("Preferred time: Afternoon");

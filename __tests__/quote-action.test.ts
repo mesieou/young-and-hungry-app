@@ -141,7 +141,7 @@ describe("submitQuoteRequest", () => {
         dropoffAddress: "Richmond VIC",
         serviceType: "apartment_two_bed",
         jobBlockMinutes: 210,
-        priceCents: 67898,
+        priceCents: 64518,
         depositCents: YH_DEFAULT_BUSINESS.defaultDepositCents,
         pricingVersion: YH_PRICEBOOK_VERSION,
         actor: {
@@ -156,9 +156,9 @@ describe("submitQuoteRequest", () => {
             durationMinutes: 63
           }),
           quoteEstimate: expect.objectContaining({
-            priceCents: 67898,
-            rangeLowCents: 67898,
-            rangeHighCents: 76348,
+            priceCents: 64518,
+            rangeLowCents: 64518,
+            rangeHighCents: 67898,
             billableMinutes: 210,
             routeDistanceKm: 28.4,
             routeDurationMinutes: 63,
@@ -192,8 +192,8 @@ describe("submitQuoteRequest", () => {
           notes: "Two flights of stairs."
         }),
         quoteEstimate: expect.objectContaining({
-          priceCents: 67898,
-          rangeLabel: "$679 - $764"
+          priceCents: 64518,
+          rangeLabel: "$645 - $679"
         })
       }
     );

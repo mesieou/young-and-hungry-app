@@ -86,12 +86,14 @@ export function EstimateReveal({
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-sm font-semibold text-white">Estimated total</span>
                   <span className="font-display text-2xl font-semibold tracking-tight-1 text-white">
-                    {quoteEstimate.rangeLabel}
+                    {quoteEstimate.rangeHighCents > quoteEstimate.rangeLowCents ? quoteEstimate.rangeLabel : quoteEstimate.label}
                   </span>
                 </div>
-                <p className="text-xs leading-5 text-text-muted">
-                  Range covers up to {formatTimeForCustomer(quoteEstimate.routePricingIncluded ? quoteEstimate.billingIncrementMinutes : quoteEstimate.billingIncrementMinutes * 2)} over at {formatHourlyRate(quoteEstimate.hourlyRateCents)} if the move tips into the next billing block.
-                </p>
+                {quoteEstimate.rangeHighCents > quoteEstimate.rangeLowCents ? (
+                  <p className="text-xs leading-5 text-text-muted">
+                    Upper end rounds labour time up to the next {formatTimeForCustomer(quoteEstimate.billingIncrementMinutes)} billing block ({formatTimeForCustomer(quoteEstimate.billableMinutes)} at {formatHourlyRate(quoteEstimate.hourlyRateCents)}).
+                  </p>
+                ) : null}
               </div>
             </div>
           </div>
