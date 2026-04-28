@@ -1,15 +1,14 @@
-import { ArrowRight, Building2, Clock3, ReceiptText, type LucideIcon } from "lucide-react";
-import Link from "next/link";
-import { LocationGrid } from "@/components/sections/LocationGrid";
+import { Building2, Clock3, ReceiptText, type LucideIcon } from "lucide-react";
+import { CtaBanner } from "@/components/sections/CtaBanner";
+import { HeroSection } from "@/components/sections/HeroSection";
 import { HomeRouteQuoteForm } from "@/components/sections/HomeRouteQuoteForm";
+import { IntroFeatureCards, type IntroFeatureCardItem } from "@/components/sections/IntroFeatureCards";
+import { LocationGrid } from "@/components/sections/LocationGrid";
 import { ServiceGrid } from "@/components/sections/ServiceGrid";
 import { TrustStrip } from "@/components/sections/TrustStrip";
 import { PublicStructuredData } from "@/components/seo/PublicStructuredData";
 import { PageSection } from "@/components/layout/PageSection";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
-import { IconBadge } from "@/components/ui/IconBadge";
 import { homeFeatureCards, homeProcessSteps } from "@/lib/content/site-copy";
 import { buildPublicPageMetadataById, requirePublicPageById } from "@/lib/seo/public-route-utils";
 
@@ -18,77 +17,35 @@ export const metadata = buildPublicPageMetadataById("home");
 const homePage = requirePublicPageById("home");
 const featureIcons: LucideIcon[] = [Clock3, Building2, ReceiptText];
 
+const features: IntroFeatureCardItem[] = homeFeatureCards.map((feature, index) => ({
+  icon: featureIcons[index] ?? ReceiptText,
+  title: feature.title,
+  body: feature.body
+}));
+
 export default function HomePage() {
   return (
     <div className="overflow-hidden">
       <PublicStructuredData page={homePage} />
 
-      <PageSection padding="hero" className="relative">
-        <div className="grid gap-8 lg:grid-cols-split-hero lg:items-center lg:gap-12">
-          <div className="animate-fade-up">
-            <Badge tone="gradient">{homePage.heroEyebrow}</Badge>
-            <h1 className="mt-7 max-w-4xl font-display text-4xl font-semibold tracking-tight-3 text-white sm:text-6xl lg:text-7xl">
-              {homePage.heroTitle}
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-text-secondary">
-              {homePage.heroDescription}
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              {homePage.highlights?.map((highlight) => (
-                <Badge key={highlight}>{highlight}</Badge>
-              ))}
-            </div>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="/quote">Start your estimate</Link>
-              </Button>
-              <Button asChild variant="secondary" size="lg">
-                <Link href="/pricing">
-                  See pricing
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          <Card className="animate-fade-up yh-gradient-border shadow-glow [animation-delay:120ms]">
-            <CardContent className="p-6 sm:p-8">
-              <HomeRouteQuoteForm />
-            </CardContent>
-          </Card>
-        </div>
-      </PageSection>
+      <HeroSection
+        eyebrow={homePage.heroEyebrow}
+        title={homePage.heroTitle}
+        description={homePage.heroDescription}
+        highlights={homePage.highlights}
+        primaryCta={{ label: "Start your estimate", href: "/quote" }}
+        secondaryCta={{ label: "See pricing", href: "/pricing", variant: "secondary", icon: true }}
+        sideCard={<HomeRouteQuoteForm />}
+      />
 
       <TrustStrip />
 
-      <PageSection>
-        <div>
-          <div className="max-w-3xl">
-            <Badge>Why Young & Hungry</Badge>
-            <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight-2 sm:text-4xl">
-              Better fit for the Melbourne moves that are easy to describe badly.
-            </h2>
-            <p className="mt-5 leading-8 text-text-secondary">
-              Smaller local moves, apartment jobs, furniture runs, and suburb-to-suburb routes often need more than a generic enquiry form. Young & Hungry keeps the estimate flow short, but still asks for the details that matter.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {homeFeatureCards.map((feature, index) => {
-              const Icon = featureIcons[index] ?? ReceiptText;
-
-              return (
-                <Card key={feature.title} variant="interactive">
-                  <CardContent className="p-6">
-                    <IconBadge icon={Icon} shape="squircle" className="mb-5" />
-                    <h3 className="font-display text-2xl font-semibold">{feature.title}</h3>
-                    <p className="mt-3 leading-7 text-text-secondary">{feature.body}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </PageSection>
+      <IntroFeatureCards
+        eyebrow="Why Young & Hungry"
+        title="Better fit for the Melbourne moves that are easy to describe badly."
+        description="Smaller local moves, apartment jobs, furniture runs, and suburb-to-suburb routes often need more than a generic enquiry form. Young & Hungry keeps the estimate flow short, but still asks for the details that matter."
+        features={features}
+      />
 
       <ServiceGrid />
 
@@ -118,24 +75,13 @@ export default function HomePage() {
         </div>
       </PageSection>
 
-      <PageSection>
-        <div className="rounded-3xl border border-line bg-panel p-6 shadow-card sm:p-10">
-          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div className="max-w-3xl">
-              <Badge tone="gradient">Ready to move?</Badge>
-              <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight-2 sm:text-4xl">
-                Start with the route and get your Melbourne moving estimate moving.
-              </h2>
-              <p className="mt-4 leading-7 text-text-secondary">
-                Best fit for small moves, apartment moves, furniture jobs, and other Melbourne suburb-to-suburb routes where clear pricing matters.
-              </p>
-            </div>
-            <Button asChild size="lg" className="w-full lg:w-auto">
-              <Link href="/quote">Start your estimate</Link>
-            </Button>
-          </div>
-        </div>
-      </PageSection>
+      <CtaBanner
+        eyebrow="Ready to move?"
+        title="Start with the route and get your Melbourne moving estimate moving."
+        description="Best fit for small moves, apartment moves, furniture jobs, and other Melbourne suburb-to-suburb routes where clear pricing matters."
+        ctaLabel="Start your estimate"
+        ctaHref="/quote"
+      />
     </div>
   );
 }
