@@ -9,7 +9,7 @@ import {
   formatDistanceForDetail,
   formatHourlyRate,
   formatLineItemAmount,
-  formatMinutesForDetail,
+  formatTimeForCustomer,
   getLabourDetail,
   getQuoteEstimate,
   getServiceTypeLabel
@@ -90,7 +90,7 @@ export function EstimateReveal({
                   </span>
                 </div>
                 <p className="text-xs leading-5 text-text-muted">
-                  Range covers up to {formatMinutesForDetail(quoteEstimate.routePricingIncluded ? quoteEstimate.billingIncrementMinutes : quoteEstimate.billingIncrementMinutes * 2)} over at {formatHourlyRate(quoteEstimate.hourlyRateCents)} if the move tips into the next billing block.
+                  Range covers up to {formatTimeForCustomer(quoteEstimate.routePricingIncluded ? quoteEstimate.billingIncrementMinutes : quoteEstimate.billingIncrementMinutes * 2)} over at {formatHourlyRate(quoteEstimate.hourlyRateCents)} if the move tips into the next billing block.
                 </p>
               </div>
             </div>
@@ -143,16 +143,16 @@ function TravelBreakdownDetail({
 
   const baseToPickupDetail =
     quoteEstimate.chargeableBaseToPickupMinutes > 0
-      ? `Base -> pickup: ${formatMinutesForDetail(routeEstimate.baseToPickup.durationMinutes)} (${formatMinutesForDetail(quoteEstimate.freeBaseToPickupAppliedMinutes)} included, ${formatMinutesForDetail(quoteEstimate.chargeableBaseToPickupMinutes)} charged)`
-      : `Base -> pickup: ${formatMinutesForDetail(routeEstimate.baseToPickup.durationMinutes)}, included`;
+      ? `Base -> pickup: ${formatTimeForCustomer(routeEstimate.baseToPickup.durationMinutes)} (${formatTimeForCustomer(quoteEstimate.freeBaseToPickupAppliedMinutes)} included, ${formatTimeForCustomer(quoteEstimate.chargeableBaseToPickupMinutes)} charged)`
+      : `Base -> pickup: ${formatTimeForCustomer(routeEstimate.baseToPickup.durationMinutes)}, included`;
 
   return (
     <div className="grid gap-1">
       <span>{baseToPickupDetail}</span>
-      <span>{`Pickup -> drop-off: ${formatMinutesForDetail(routeEstimate.pickupToDropoff.durationMinutes)}`}</span>
-      <span>{`Drop-off -> base: ${formatMinutesForDetail(routeEstimate.dropoffToBase.durationMinutes)}`}</span>
+      <span>{`Pickup -> drop-off: ${formatTimeForCustomer(routeEstimate.pickupToDropoff.durationMinutes)}`}</span>
+      <span>{`Drop-off -> base: ${formatTimeForCustomer(routeEstimate.dropoffToBase.durationMinutes)}`}</span>
       <span>
-        Charged travel: {formatMinutesForDetail(quoteEstimate.routeDurationMinutes)} / {formatDistanceForDetail(quoteEstimate.routeDistanceKm)}
+        Charged travel: {formatTimeForCustomer(quoteEstimate.routeDurationMinutes)} / {formatDistanceForDetail(quoteEstimate.routeDistanceKm)}
       </span>
     </div>
   );

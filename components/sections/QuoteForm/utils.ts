@@ -143,11 +143,17 @@ export function formatCustomerHours(minutes: number | null | undefined) {
   return `${label} ${roundedHalfHours === 1 ? "hour" : "hours"}`;
 }
 
-export function formatMinutesForDetail(minutes: number | null | undefined) {
+export function formatTimeForCustomer(minutes: number | null | undefined) {
   if (typeof minutes !== "number" || !Number.isFinite(minutes)) return "Pending";
 
-  const safeMinutes = Math.max(0, Math.round(minutes));
-  return `${safeMinutes} min`;
+  const total = Math.max(0, Math.round(minutes));
+  if (total < 60) return `${total} min`;
+
+  const hours = Math.floor(total / 60);
+  const remainder = total % 60;
+
+  if (remainder === 0) return hours === 1 ? "1 hour" : `${hours} hours`;
+  return hours === 1 ? `1 hour ${remainder} min` : `${hours} hours ${remainder} min`;
 }
 
 export function formatDistanceForDetail(distanceKm: number | null | undefined) {
@@ -172,19 +178,13 @@ export function getQuoteEstimate(snapshot: FormSnapshot, routeEstimate: RouteEst
 export function getLabourDetail(quoteEstimate: YoungHungryQuoteEstimate) {
   const prefix = quoteFlowCopy.estimate.labourDetailPrefix;
   const billableTime = formatCustomerHours(quoteEstimate.billableMinutes);
-  const loadStr = formatMinutesForDetail(quoteEstimate.loadUnloadMinutes);
+  const hourlyStr = formatHourlyRate(quoteEstimate.hourlyRateCents);
+  const loadStr = formatTimeForCustomer(quoteEstimate.loadUnloadMinutes);
 
   if (quoteEstimate.routeDurationMinutes === null) {
-    return `${prefix}${loadStr} load/unload + travel time, rounded up to ${billableTime}`;
+    return `${prefix}${billableTime} at ${hourlyStr} — ${loadStr} load/unload + travel time pending.`;
   }
 
-  const travelStr = formatMinutesForDetail(quoteEstimate.routeDurationMinutes);
-  const totalEstimated = quoteEstimate.loadUnloadMinutes + quoteEstimate.routeDurationMinutes;
-
-  if (totalEstimated === quoteEstimate.billableMinutes) {
-    return `${prefix}${loadStr} load/unload + ${travelStr} travel = ${billableTime} total`;
-  }
-
-  const totalStr = formatMinutesForDetail(totalEstimated);
-  return `${prefix}${loadStr} load/unload + ${travelStr} travel = ${totalStr}, rounded up to ${billableTime}`;
+  const travelStr = formatTimeForCustomer(quoteEstimate.routeDurationMinutes);
+  return `${prefix}${billableTime} at ${hourlyStr} — covers ${loadStr} load/unload + ${travelStr} travel.`;
 }
