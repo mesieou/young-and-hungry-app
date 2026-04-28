@@ -15,13 +15,13 @@ export const truckClassOptions = [
   {
     value: "four_tonne",
     label: "4 tonne truck",
-    description: "Best for delivery runs, small moves, apartments, and most standard removal jobs.",
+    description: "Recommended for item deliveries, small moves, studios, and 1 bedroom moves.",
     rateSummary: "$159/hr weekday, $169/hr weekend"
   },
   {
     value: "six_tonne",
     label: "6 tonne truck",
-    description: "Best for larger homes, bulkier loads, and jobs where extra capacity reduces risk.",
+    description: "Recommended for 2 and 3 bedroom apartment or house moves.",
     rateSummary: "$169/hr weekday, $179/hr weekend"
   }
 ] as const;
@@ -49,6 +49,10 @@ export const preferredTimeWindowOptions = [
   }
 ] as const;
 
+const truckClassLabels: Record<string, string> = {
+  four_tonne: "4 tonne truck",
+  six_tonne: "6 tonne truck"
+};
 const truckClassValues = ["four_tonne", "six_tonne"] as const;
 const preferredTimeWindowValues = [
   "morning_0700_1000",
@@ -59,9 +63,11 @@ const preferredTimeWindowValues = [
 
 const truckClassSchema = z.preprocess(
   (value) => (value === "" ? undefined : value),
-  z.enum(truckClassValues, {
-    required_error: "Choose a truck class.",
-    invalid_type_error: "Choose a truck class."
+  z.string({
+    required_error: "Choose what you are moving.",
+    invalid_type_error: "Choose what you are moving."
+  }).refine((value): value is TruckClass => truckClassValues.includes(value as TruckClass), {
+    message: "Choose what you are moving."
   })
 );
 
@@ -90,8 +96,40 @@ const phoneSchema = z
 export type TruckClass = (typeof truckClassValues)[number];
 export type PreferredTimeWindow = (typeof preferredTimeWindowValues)[number];
 
+export function isUnavailableServiceType(value: string | undefined) {
+  return value === "apartment_four_plus" || value === "house_four_plus";
+}
+
+export function getRecommendedTruckClassForServiceType(value: string | undefined): TruckClass | undefined {
+  if (!value || isUnavailableServiceType(value)) return undefined;
+
+  if (
+    value === "delivery_run" ||
+    value === "small_move" ||
+    value === "apartment_studio" ||
+    value === "apartment_one_bed" ||
+    value === "house_one_bed" ||
+    value === "apartment_move"
+  ) {
+    return "four_tonne";
+  }
+
+  if (
+    value === "apartment_two_bed" ||
+    value === "apartment_three_bed" ||
+    value === "house_two_bed" ||
+    value === "house_three_bed" ||
+    value === "house_move" ||
+    value === "removal"
+  ) {
+    return "six_tonne";
+  }
+
+  return undefined;
+}
+
 export function getTruckClassLabel(value: string | undefined) {
-  return truckClassOptions.find((option) => option.value === value)?.label;
+  return value ? truckClassLabels[value] : undefined;
 }
 
 export function getPreferredTimeWindowLabel(value: string | undefined) {

@@ -23,8 +23,8 @@ jest.mock("@/lib/core/notifications/ops-quote-review", () => ({
 jest.mock("@/lib/core/pricing/google-distance", () => ({
   getMoveRouteDistanceEstimate: jest.fn(async () => ({
     ok: true,
-    provider: "google_distance_matrix",
-    baseAddress: "Melbourne VIC, Australia",
+    provider: "google_directions",
+    baseAddress: "Sims St, West Melbourne VIC 3003",
     distanceKm: 28.4,
     durationMinutes: 63,
     chargeableDistanceKm: 28.4,
@@ -67,7 +67,7 @@ function validFormData(overrides: Record<string, string> = {}) {
     pickupAddress: "South Yarra VIC",
     dropoffAddress: "Richmond VIC",
     truckClass: "four_tonne",
-    serviceType: "apartment_move",
+    serviceType: "apartment_two_bed",
     preferredDate: "2026-05-01",
     preferredTimeWindow: "morning_0700_1000",
     notes: "Two flights of stairs.",
@@ -139,9 +139,9 @@ describe("submitQuoteRequest", () => {
         customerPhone: "+61412345678",
         pickupAddress: "South Yarra VIC",
         dropoffAddress: "Richmond VIC",
-        serviceType: "apartment_move",
+        serviceType: "apartment_two_bed",
         jobBlockMinutes: 210,
-        priceCents: 64398,
+        priceCents: 67898,
         depositCents: YH_DEFAULT_BUSINESS.defaultDepositCents,
         pricingVersion: YH_PRICEBOOK_VERSION,
         actor: {
@@ -156,9 +156,9 @@ describe("submitQuoteRequest", () => {
             durationMinutes: 63
           }),
           quoteEstimate: expect.objectContaining({
-            priceCents: 64398,
-            rangeLowCents: 64398,
-            rangeHighCents: 72348,
+            priceCents: 67898,
+            rangeLowCents: 67898,
+            rangeHighCents: 76348,
             billableMinutes: 210,
             routeDistanceKm: 28.4,
             routeDurationMinutes: 63,
@@ -168,9 +168,9 @@ describe("submitQuoteRequest", () => {
           preferredDate: "2026-05-01",
           preferredTimeWindow: "morning_0700_1000",
           pricingInputs: {
-            truckClass: "four_tonne",
+            truckClass: "six_tonne",
             preferredTimeWindow: "morning_0700_1000",
-            serviceType: "apartment_move"
+            serviceType: "apartment_two_bed"
           },
           notes: "Two flights of stairs.",
           mode: "lead_capture"
@@ -187,13 +187,13 @@ describe("submitQuoteRequest", () => {
           phone: "+61412345678",
           pickupAddress: "South Yarra VIC",
           dropoffAddress: "Richmond VIC",
-          truckClass: "four_tonne",
+          truckClass: "six_tonne",
           preferredTimeWindow: "morning_0700_1000",
           notes: "Two flights of stairs."
         }),
         quoteEstimate: expect.objectContaining({
-          priceCents: 64398,
-          rangeLabel: "$644 - $724"
+          priceCents: 67898,
+          rangeLabel: "$679 - $764"
         })
       }
     );

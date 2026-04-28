@@ -7,34 +7,57 @@ describe("Google route distance estimate", () => {
   const envBackup = process.env;
   const fetchBackup = global.fetch;
 
+  function distanceMatrixResponse(distanceMeters = 12340, durationSeconds = 1680) {
+    return {
+      ok: true,
+      json: async () => ({
+        status: "OK",
+        rows: [
+          {
+            elements: [
+              {
+                status: "OK",
+                distance: {
+                  value: distanceMeters
+                },
+                duration: {
+                  value: durationSeconds
+                }
+              }
+            ]
+          }
+        ]
+      })
+    } as Response;
+  }
+
+  function directionsResponse(legs: Array<{ distanceMeters: number; durationSeconds: number }>) {
+    return {
+      ok: true,
+      json: async () => ({
+        status: "OK",
+        routes: [
+          {
+            legs: legs.map((leg) => ({
+              distance: {
+                value: leg.distanceMeters
+              },
+              duration: {
+                value: leg.durationSeconds
+              }
+            }))
+          }
+        ]
+      })
+    } as Response;
+  }
+
   beforeEach(() => {
     process.env = {
       ...envBackup,
       GOOGLE_MAPS_API_KEY: "test-key"
     };
-    global.fetch = jest.fn(async () =>
-      ({
-        ok: true,
-        json: async () => ({
-          status: "OK",
-          rows: [
-            {
-              elements: [
-                {
-                  status: "OK",
-                  distance: {
-                    value: 12340
-                  },
-                  duration: {
-                    value: 1680
-                  }
-                }
-              ]
-            }
-          ]
-        })
-      } as Response)
-    ) as jest.Mock;
+    global.fetch = jest.fn(async () => distanceMatrixResponse()) as jest.Mock;
   });
 
   afterEach(() => {
@@ -72,7 +95,15 @@ describe("Google route distance estimate", () => {
     });
   });
 
-  it("builds a full move route from base, pickup, dropoff, and return base", async () => {
+  it("builds a full move route from one directions call with base, pickup, dropoff, and return base legs", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      directionsResponse([
+        { distanceMeters: 12340, durationSeconds: 1680 },
+        { distanceMeters: 12340, durationSeconds: 1680 },
+        { distanceMeters: 12340, durationSeconds: 1680 }
+      ])
+    );
+
     const result = await getMoveRouteDistanceEstimate({
       baseAddress: "Melbourne VIC",
       pickupAddress: "South Yarra VIC",
@@ -81,6 +112,7 @@ describe("Google route distance estimate", () => {
 
     expect(result).toMatchObject({
       ok: true,
+      provider: "google_directions",
       baseAddress: "Melbourne VIC",
       baseToPickup: {
         distanceKm: 12.3,
@@ -97,6 +129,10 @@ describe("Google route distance estimate", () => {
       chargeableDistanceKm: 24.6,
       chargeableTravelMinutes: 56
     });
-    expect(global.fetch).toHaveBeenCalledTimes(3);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/directions/json?"));
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("origin=Melbourne+VIC"));
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("destination=Melbourne+VIC"));
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("waypoints=South+Yarra+VIC%7CRichmond+VIC"));
   });
 });

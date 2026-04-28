@@ -32,15 +32,17 @@ Field conventions follow the Skedy dashboard patterns where possible:
 
 Pricing conventions:
 
-- Pricebook: `yh-pricebook-2026-04-23-v1`.
+- Pricebook: `yh-pricebook-2026-04-28-v3`.
+- Customer quotes recommend 4 tonne for item deliveries, small moves, studios, and 1 bedroom moves; 6 tonne for 2 and 3 bedroom apartment or house moves.
+- 4+ bedroom apartment and house instant quotes are not available yet and are shown as coming soon in the UI.
 - The visible estimate follows the Lugg-style shape: truck/labor time, route distance, route duration, service adjustment, booking/admin fee, and weekday/weekend rate.
 - Current formula: `labor/truck cost + charged route km + booking/admin fee`.
 - Labor/truck cost uses frozen pricebook hourly rates, minimum billable minutes, load/unload baseline, service-type adjustment, and chargeable travel time.
 - Billable time rounds up to half-hour blocks.
 - The first 60 minutes of travel from base to pickup is free. Only base-to-pickup time over 60 minutes is chargeable.
 - Charged travel includes pickup to dropoff and dropoff back to base. Any chargeable base-to-pickup excess is included when the pickup is more than 60 minutes from base.
-- Route charge uses Google Distance Matrix kilometers when available.
-- `/api/quote/route-estimate` calls Google Distance Matrix server-side for base-to-pickup, pickup-to-dropoff, and dropoff-to-base legs and returns distance/duration for the live quote UI.
+- Route charge uses Google Directions kilometers when available.
+- `/api/quote/route-estimate` calls Google Directions server-side once for base-to-pickup, pickup-to-dropoff, and dropoff-to-base legs and returns distance/duration for the live quote UI.
 - `submitQuoteRequest` recalculates Google distance and quote price server-side before calling `create_quote`; client-side route/pricing data is never trusted.
 - The stored quote receives `price_cents`, `job_block_minutes`, `pricing_version`, and the full `routeDistance` and `quoteEstimate` breakdown.
 - If route distance is unavailable, the quote remains deterministic but marks route pricing as pending so ops can review it instead of silently guessing.

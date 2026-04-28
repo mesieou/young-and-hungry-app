@@ -5,7 +5,7 @@ import {
 } from "@/lib/core/pricing/young-hungry-pricebook";
 
 describe("Young & Hungry pricebook", () => {
-  it("calculates a deterministic estimate after truck selection", () => {
+  it("calculates a deterministic estimate with a truck class", () => {
     const estimate = calculateYoungHungryQuoteEstimate({
       truckClass: "four_tonne",
       serviceType: "apartment_move",
@@ -67,7 +67,7 @@ describe("Young & Hungry pricebook", () => {
 
   it("charges pickup travel over the free first hour from base", () => {
     const estimate = calculateYoungHungryQuoteEstimate({
-      truckClass: "four_tonne",
+      truckClass: "six_tonne",
       serviceType: "removal",
       baseToPickup: {
         distanceKm: 70,
@@ -94,7 +94,7 @@ describe("Young & Hungry pricebook", () => {
 
   it("rounds total billable time up to the next 30-minute block", () => {
     const estimate = calculateYoungHungryQuoteEstimate({
-      truckClass: "four_tonne",
+      truckClass: "six_tonne",
       serviceType: "removal",
       routeDistanceKm: 20,
       routeDurationMinutes: 106
@@ -106,13 +106,13 @@ describe("Young & Hungry pricebook", () => {
     });
   });
 
-  it("does not calculate until a truck class is selected", () => {
+  it("does not calculate until a valid truck class is selected", () => {
     expect(calculateYoungHungryQuoteEstimate({ serviceType: "removal" })).toBeNull();
   });
 
   it("marks route pricing as pending when distance is not available", () => {
     const estimate = calculateYoungHungryQuoteEstimate({
-      truckClass: "four_tonne",
+      truckClass: "six_tonne",
       serviceType: "removal"
     });
 
@@ -122,7 +122,7 @@ describe("Young & Hungry pricebook", () => {
       routePricingIncluded: false,
       routeCents: 0,
       bookingFeeCents: 2500,
-      priceCents: 34300
+      priceCents: 36300
     });
     expect(estimate?.detail).toContain("route pending");
   });

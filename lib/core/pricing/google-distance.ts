@@ -13,10 +13,15 @@ export type RouteDistanceResult =
 
 type RouteDistanceFailureCode = Extract<RouteDistanceResult, { ok: false }>["code"];
 
+type RouteLegEstimate = {
+  distanceKm: number;
+  durationMinutes: number;
+};
+
 export type MoveRouteDistanceResult =
   | {
       ok: true;
-      provider: "google_distance_matrix";
+      provider: "google_directions";
       baseAddress: string;
       distanceKm: number;
       durationMinutes: number;
@@ -56,6 +61,30 @@ type GoogleDistanceMatrixResponse = {
     }>;
   }>;
 };
+
+type GoogleDirectionsResponse = {
+  status?: string;
+  error_message?: string;
+  routes?: Array<{
+    legs?: Array<{
+      distance?: {
+        value?: number;
+      };
+      duration?: {
+        value?: number;
+      };
+    }>;
+  }>;
+};
+
+function normalizeGoogleDistanceDuration(distanceMeters: number | undefined, durationSeconds: number | undefined) {
+  if (!distanceMeters || !durationSeconds) return null;
+
+  return {
+    distanceKm: Math.round((distanceMeters / 1000) * 10) / 10,
+    durationMinutes: Math.max(1, Math.round(durationSeconds / 60))
+  };
+}
 
 export async function getRouteDistanceEstimate(input: {
   origin: string;
@@ -102,10 +131,9 @@ export async function getRouteDistanceEstimate(input: {
     }
 
     const element = data.rows?.[0]?.elements?.[0];
-    const distanceMeters = element?.distance?.value;
-    const durationSeconds = element?.duration?.value;
+    const leg = normalizeGoogleDistanceDuration(element?.distance?.value, element?.duration?.value);
 
-    if (element?.status !== "OK" || !distanceMeters || !durationSeconds) {
+    if (element?.status !== "OK" || !leg) {
       return {
         ok: false,
         code: "DISTANCE_ROUTE_NOT_FOUND",
@@ -115,8 +143,8 @@ export async function getRouteDistanceEstimate(input: {
 
     return {
       ok: true,
-      distanceKm: Math.round((distanceMeters / 1000) * 10) / 10,
-      durationMinutes: Math.max(1, Math.round(durationSeconds / 60)),
+      distanceKm: leg.distanceKm,
+      durationMinutes: leg.durationMinutes,
       provider: "google_distance_matrix"
     };
   } catch (error) {
@@ -128,8 +156,8 @@ export async function getRouteDistanceEstimate(input: {
   }
 }
 
-function isRouteOk(result: RouteDistanceResult): result is Extract<RouteDistanceResult, { ok: true }> {
-  return result.ok;
+function isDirectionsRouteNotFoundStatus(status: string | undefined) {
+  return status === "NOT_FOUND" || status === "ZERO_RESULTS";
 }
 
 export async function getMoveRouteDistanceEstimate(input: {
@@ -139,38 +167,83 @@ export async function getMoveRouteDistanceEstimate(input: {
   freeBaseToPickupMinutes?: number;
   apiKey?: string;
 }): Promise<MoveRouteDistanceResult> {
-  const [baseToPickup, pickupToDropoff, dropoffToBase] = await Promise.all([
-    getRouteDistanceEstimate({
-      origin: input.baseAddress,
-      destination: input.pickupAddress,
-      apiKey: input.apiKey
-    }),
-    getRouteDistanceEstimate({
-      origin: input.pickupAddress,
-      destination: input.dropoffAddress,
-      apiKey: input.apiKey
-    }),
-    getRouteDistanceEstimate({
-      origin: input.dropoffAddress,
-      destination: input.baseAddress,
-      apiKey: input.apiKey
-    })
-  ]);
+  const apiKey = input.apiKey?.trim() || process.env.GOOGLE_MAPS_API_KEY?.trim() || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim();
 
-  const failedLeg = [baseToPickup, pickupToDropoff, dropoffToBase].find((result) => !result.ok);
-
-  if (failedLeg && !failedLeg.ok) {
-    return failedLeg;
-  }
-
-  if (!isRouteOk(baseToPickup) || !isRouteOk(pickupToDropoff) || !isRouteOk(dropoffToBase)) {
+  if (!apiKey) {
     return {
       ok: false,
-      code: "DISTANCE_ROUTE_NOT_FOUND",
-      message: "Google Distance Matrix did not return every route leg."
+      code: "DISTANCE_API_NOT_CONFIGURED",
+      message: "Google Maps API key is not configured."
     };
   }
 
+  const params = new URLSearchParams({
+    origin: input.baseAddress,
+    destination: input.baseAddress,
+    waypoints: `${input.pickupAddress}|${input.dropoffAddress}`,
+    mode: "driving",
+    units: "metric",
+    key: apiKey
+  });
+
+  let routeLegs: [RouteLegEstimate, RouteLegEstimate, RouteLegEstimate] | null = null;
+
+  try {
+    const response = await fetch(`https://maps.googleapis.com/maps/api/directions/json?${params.toString()}`);
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        code: "DISTANCE_API_FAILED",
+        message: `Google Directions HTTP ${response.status}.`
+      };
+    }
+
+    const data = (await response.json()) as GoogleDirectionsResponse;
+
+    if (data.status !== "OK") {
+      return {
+        ok: false,
+        code: isDirectionsRouteNotFoundStatus(data.status) ? "DISTANCE_ROUTE_NOT_FOUND" : "DISTANCE_API_FAILED",
+        message: data.error_message ?? `Google Directions returned ${data.status ?? "UNKNOWN"}.`
+      };
+    }
+
+    const legs = data.routes?.[0]?.legs ?? [];
+    const normalizedLegs = legs.map((leg) =>
+      normalizeGoogleDistanceDuration(leg.distance?.value, leg.duration?.value)
+    );
+
+    const baseToPickupLeg = normalizedLegs[0];
+    const pickupToDropoffLeg = normalizedLegs[1];
+    const dropoffToBaseLeg = normalizedLegs[2];
+
+    if (!baseToPickupLeg || !pickupToDropoffLeg || !dropoffToBaseLeg) {
+      return {
+        ok: false,
+        code: "DISTANCE_ROUTE_NOT_FOUND",
+        message: "Google Directions did not return every route leg."
+      };
+    }
+
+    routeLegs = [baseToPickupLeg, pickupToDropoffLeg, dropoffToBaseLeg];
+  } catch (error) {
+    return {
+      ok: false,
+      code: "DISTANCE_API_FAILED",
+      message: error instanceof Error ? error.message : "Google Directions request failed."
+    };
+  }
+
+  if (!routeLegs) {
+    return {
+      ok: false,
+      code: "DISTANCE_ROUTE_NOT_FOUND",
+      message: "Google Directions did not return every route leg."
+    };
+  }
+
+  const [baseToPickup, pickupToDropoff, dropoffToBase] = routeLegs;
   const freeBaseToPickupMinutes = input.freeBaseToPickupMinutes ?? 60;
   const chargeableBaseToPickupMinutes = Math.max(0, baseToPickup.durationMinutes - freeBaseToPickupMinutes);
   const chargeableBaseToPickupDistanceKm =
@@ -185,7 +258,7 @@ export async function getMoveRouteDistanceEstimate(input: {
 
   return {
     ok: true,
-    provider: "google_distance_matrix",
+    provider: "google_directions",
     baseAddress: input.baseAddress,
     distanceKm: chargeableDistanceKm,
     durationMinutes: chargeableTravelMinutes,

@@ -13,7 +13,7 @@ type StepShellProps = {
 
 export function StepShell({ sidebar, mobileAccessory, footer, children, className, contentClassName }: StepShellProps) {
   return (
-    <Card className={cn("overflow-hidden rounded-[2rem] border-line bg-panel shadow-card", className)}>
+    <Card className={cn("overflow-clip rounded-[2rem] border-line bg-panel shadow-card", className)}>
       <CardContent className="p-0">
         <div className="grid min-h-0 lg:grid-cols-[25rem_minmax(0,1fr)]">
           <div className="hidden lg:block">{sidebar}</div>

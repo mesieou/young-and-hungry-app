@@ -1,5 +1,7 @@
 import {
+  getRecommendedTruckClassForServiceType,
   getQuoteRequestFieldErrors,
+  isUnavailableServiceType,
   normalizeAustralianPhone,
   parseQuoteRequestFormData,
   quoteRequestSchema
@@ -26,7 +28,7 @@ describe("quote request validation", () => {
         pickupAddress: "South Yarra VIC",
         dropoffAddress: "Richmond VIC",
         truckClass: "four_tonne",
-        serviceType: "apartment_move",
+        serviceType: "small_move",
         preferredDate: "2026-05-01",
         preferredTimeWindow: "morning_0700_1000",
         notes: "Two flights of stairs."
@@ -38,7 +40,7 @@ describe("quote request validation", () => {
       expect(result.data.email).toBe("juan@example.com");
       expect(result.data.phone).toBeUndefined();
       expect(result.data.truckClass).toBe("four_tonne");
-      expect(result.data.serviceType).toBe("apartment_move");
+      expect(result.data.serviceType).toBe("small_move");
       expect(result.data.preferredTimeWindow).toBe("morning_0700_1000");
     }
   });
@@ -49,7 +51,7 @@ describe("quote request validation", () => {
       name: "Juan Customer",
       pickupAddress: "South Yarra VIC",
       dropoffAddress: "Richmond VIC",
-      truckClass: "four_tonne",
+      truckClass: "six_tonne",
       serviceType: "removal"
     });
 
@@ -83,6 +85,40 @@ describe("quote request validation", () => {
     }
   });
 
+  it("rejects invalid truck classes", () => {
+    const result = parseQuoteRequestFormData(
+      makeFormData({
+        idempotencyKey: "quote-request-key-truck",
+        name: "Juan Customer",
+        email: "juan@example.com",
+        phone: "",
+        pickupAddress: "South Yarra VIC",
+        dropoffAddress: "Richmond VIC",
+        truckClass: "ten_tonne",
+        serviceType: "apartment_two_bed"
+      })
+    );
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(getQuoteRequestFieldErrors(result.error).truckClass).toBe("Choose what you are moving.");
+    }
+  });
+
+  it("recommends truck class from move type and size", () => {
+    expect(getRecommendedTruckClassForServiceType("delivery_run")).toBe("four_tonne");
+    expect(getRecommendedTruckClassForServiceType("small_move")).toBe("four_tonne");
+    expect(getRecommendedTruckClassForServiceType("apartment_studio")).toBe("four_tonne");
+    expect(getRecommendedTruckClassForServiceType("apartment_one_bed")).toBe("four_tonne");
+    expect(getRecommendedTruckClassForServiceType("house_one_bed")).toBe("four_tonne");
+    expect(getRecommendedTruckClassForServiceType("apartment_two_bed")).toBe("six_tonne");
+    expect(getRecommendedTruckClassForServiceType("apartment_three_bed")).toBe("six_tonne");
+    expect(getRecommendedTruckClassForServiceType("house_two_bed")).toBe("six_tonne");
+    expect(getRecommendedTruckClassForServiceType("house_three_bed")).toBe("six_tonne");
+    expect(getRecommendedTruckClassForServiceType("house_four_plus")).toBeUndefined();
+    expect(isUnavailableServiceType("house_four_plus")).toBe(true);
+  });
+
   it("rejects invalid phone numbers instead of silently dropping them", () => {
     const result = parseQuoteRequestFormData(
       makeFormData({
@@ -92,7 +128,7 @@ describe("quote request validation", () => {
         phone: "1234",
         pickupAddress: "South Yarra VIC",
         dropoffAddress: "Richmond VIC",
-        truckClass: "four_tonne",
+        truckClass: "six_tonne",
         serviceType: "apartment_move"
       })
     );
@@ -124,7 +160,7 @@ describe("quote request validation", () => {
       expect(errors.email).toBe("Enter a valid email.");
       expect(errors.pickupAddress).toBe("Enter the pickup address.");
       expect(errors.dropoffAddress).toBe("Enter the dropoff address.");
-      expect(errors.truckClass).toBe("Choose a truck class.");
+      expect(errors.truckClass).toBe("Choose what you are moving.");
     }
   });
 });

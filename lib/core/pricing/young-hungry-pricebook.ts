@@ -1,4 +1,4 @@
-export const YH_PRICEBOOK_VERSION = "yh-pricebook-2026-04-23-v1";
+export const YH_PRICEBOOK_VERSION = "yh-pricebook-2026-04-28-v3";
 
 const pricebook = {
   currency: "AUD",
@@ -24,7 +24,16 @@ const pricebook = {
     small_move: -15,
     apartment_move: 30,
     house_move: 60,
-    delivery_run: -30
+    delivery_run: -30,
+    apartment_studio: 0,
+    apartment_one_bed: 15,
+    apartment_two_bed: 45,
+    apartment_three_bed: 75,
+    apartment_four_plus: 105,
+    house_one_bed: 30,
+    house_two_bed: 60,
+    house_three_bed: 90,
+    house_four_plus: 150
   }
 } as const;
 

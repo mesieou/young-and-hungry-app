@@ -8,7 +8,7 @@ export const trustStripItems = [
 export const homeFeatureCards = [
   {
     title: "Fast estimate",
-    body: "Start with the route, choose the move type and truck, and see a clear estimate before you send the move details."
+    body: "Start with the route, choose the move type and size, and see the recommended truck in the estimate before you send the move details."
   },
   {
     title: "Built for apartment moves",
@@ -22,7 +22,7 @@ export const homeFeatureCards = [
 
 export const homeProcessSteps = [
   "Add the route",
-  "Choose the move type and truck",
+  "Choose the move type and size",
   "See your estimate",
   "Send your move details"
 ] as const;
@@ -30,66 +30,62 @@ export const homeProcessSteps = [
 export const homeQuoteFormCopy = {
   eyebrow: "Get a moving estimate",
   title: "Start with the route",
-  description: "Enter pickup and drop-off here. The next screen covers move type, truck, timing, and move details.",
+  description: "Enter pickup and drop-off here. The next screen covers move type, size, timing, and move details.",
   reassurance: "No payment needed to start. Send your move details first and we will confirm the next step."
 } as const;
 
 export const quoteStepCopy = [
   {
     title: "Where are you moving?",
-    shortTitle: "Route",
-    description: "Add pickup and drop-off so we can map the move."
+    shortTitle: "Route"
   },
   {
-    title: "Choose move type & truck",
-    shortTitle: "Job",
-    description: "Pick the move type and the truck that fits best."
+    title: "Choose move type",
+    shortTitle: "Job"
   },
   {
     title: "Your estimate",
-    shortTitle: "Estimate",
-    description: "See your estimate before you send the move details."
+    shortTitle: "Estimate"
   },
   {
     title: "When should we arrive?",
-    shortTitle: "Schedule",
-    description: "Choose the preferred day and arrival window."
+    shortTitle: "Schedule"
   },
   {
     title: "Move details & contact",
-    shortTitle: "Submit",
-    description: "Add access notes and contact details so we can confirm the next step."
+    shortTitle: "Submit"
   }
 ] as const;
 
 export const quoteFlowCopy = {
   validation: {
-    routeRequired: "Enter pickup and drop-off addresses before choosing a truck.",
-    truckRequired: "Choose a 4 tonne or 6 tonne truck before viewing the estimate.",
+    routeRequired: "Enter pickup and drop-off addresses before choosing the move type.",
+    truckRequired: "Choose what you are moving before viewing the estimate.",
+    moveSizeRequired: "Choose the move size before viewing the estimate.",
     nameRequired: "Enter your name before sending your quote request.",
     contactRequired: "Enter an email or phone number so we can contact you.",
     phoneInvalid: "Enter a valid Australian phone number."
   },
   buttons: {
     finalSubmit: "Send quote request",
-    nextJobTruck: "Next: job & truck",
+    nextJobTruck: "Next: move type",
     nextEstimate: "Next: view estimate",
     nextSchedule: "Next: schedule",
     nextDetails: "Next: details"
   },
   summary: {
     title: "Your move summary",
-    description: "Route, truck, timing, and estimate details update as you progress.",
+    description: "Route, move type, timing, and estimate details update as you progress.",
     mobileLabel: "Move summary",
-    mobileFallback: "Estimate after route and truck",
-    quotePending: "Estimate updates after route and truck selection",
-    vehicleDetail: "Truck size can be adjusted if needed",
+    mobileFallback: "Estimate after route and move type",
+    quotePending: "Estimate updates after route and move type",
+    vehicleDetail: "Truck recommended from move type and size",
     bookingFeeDetail: "Scheduling and quote follow-up",
     routePending: "Travel cost pending final check"
   },
   estimate: {
-    pendingTitle: "Choose the move type and truck first.",
-    pendingBody: "Your estimate appears here after the route, move type, and truck are selected.",
+    pendingTitle: "Choose the move type first.",
+    pendingBody: "Your estimate appears here after the route and move type are selected.",
     totalLabel: "Estimated total",
     intro: "Estimated total for this move.",
     breakdownLabel: "Estimate breakdown",

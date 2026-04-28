@@ -49,9 +49,9 @@ Required deployment secrets:
 
 Never commit Supabase passwords or keys. Store them in `.env.local` locally and in the deployment platform secret store.
 
-`NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` enables address autocomplete. If it is missing, quote forms still work as manual address inputs, but the live UX will not match the Skedy-style dashboard autocomplete.
+`NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` enables address autocomplete. `GOOGLE_MAPS_API_KEY` or `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` also powers server-side route estimates through Google Directions. If the browser key is missing, quote forms still work as manual address inputs, but the live UX will not match the Skedy-style dashboard autocomplete.
 
-`YH_OPERATIONS_BASE_ADDRESS` is used by server-side route estimates to calculate base-to-pickup travel and return-to-base travel. Keep it accurate before relying on live quote estimates.
+`YH_OPERATIONS_BASE_ADDRESS` must be set to `Sims St, West Melbourne VIC 3003`. It is used by server-side route estimates to calculate base-to-pickup travel and return-to-base travel, and the app intentionally has no generic fallback.
 
 `OPS_QUOTE_EMAIL`, `EMAIL_FROM`, and `RESEND_API_KEY` are required before relying on live quote requests, because the MVP review workflow is email-only.
 

@@ -3,6 +3,7 @@
 import { createQuote } from "@/lib/core/booking/rpc-client";
 import { quoteFlowCopy } from "@/lib/content/site-copy";
 import {
+  getRecommendedTruckClassForServiceType,
   getQuoteRequestFieldErrors,
   parseQuoteRequestFormData,
   type QuoteFormState
@@ -29,15 +30,31 @@ export async function submitQuoteRequest(
   }
 
   try {
+    const truckClass = getRecommendedTruckClassForServiceType(parsed.data.serviceType);
+
+    if (!truckClass) {
+      return {
+        status: "error",
+        message: "This move size is not available for instant quotes yet.",
+        fieldErrors: {
+          truckClass: "Choose an available move size."
+        }
+      };
+    }
+
+    const request = {
+      ...parsed.data,
+      truckClass
+    };
     const supabase = createSupabaseAdminClient();
     const rpcClient = createSupabaseRpcClient(supabase);
     const routeDistance = await getMoveRouteDistanceEstimate({
       baseAddress: YH_DEFAULT_BUSINESS.operationsBaseAddress,
-      pickupAddress: parsed.data.pickupAddress,
-      dropoffAddress: parsed.data.dropoffAddress
+      pickupAddress: request.pickupAddress,
+      dropoffAddress: request.dropoffAddress
     });
     const quoteEstimate = calculateYoungHungryQuoteEstimate({
-      ...parsed.data,
+      ...request,
       baseToPickup: routeDistance.ok ? routeDistance.baseToPickup : null,
       pickupToDropoff: routeDistance.ok ? routeDistance.pickupToDropoff : null,
       dropoffToBase: routeDistance.ok ? routeDistance.dropoffToBase : null
@@ -50,12 +67,12 @@ export async function submitQuoteRequest(
         type: "customer"
       },
       businessId: YH_DEFAULT_BUSINESS.id,
-      customerName: parsed.data.name,
-      customerEmail: parsed.data.email,
-      customerPhone: parsed.data.phone,
-      pickupAddress: parsed.data.pickupAddress,
-      dropoffAddress: parsed.data.dropoffAddress,
-      serviceType: parsed.data.serviceType,
+      customerName: request.name,
+      customerEmail: request.email,
+      customerPhone: request.phone,
+      pickupAddress: request.pickupAddress,
+      dropoffAddress: request.dropoffAddress,
+      serviceType: request.serviceType,
       jobBlockMinutes: quoteEstimate?.billableMinutes ?? YH_DEFAULT_BUSINESS.defaultJobBlockMinutes,
       depositCents: YH_DEFAULT_BUSINESS.defaultDepositCents,
       priceCents: quoteEstimate?.priceCents,
@@ -65,14 +82,14 @@ export async function submitQuoteRequest(
         quoteFlowVersion: "lugg_style_5_step_v1",
         routeDistance,
         quoteEstimate,
-        preferredDate: parsed.data.preferredDate,
-        preferredTimeWindow: parsed.data.preferredTimeWindow,
+        preferredDate: request.preferredDate,
+        preferredTimeWindow: request.preferredTimeWindow,
         pricingInputs: {
-          truckClass: parsed.data.truckClass,
-          preferredTimeWindow: parsed.data.preferredTimeWindow,
-          serviceType: parsed.data.serviceType
+          truckClass: request.truckClass,
+          preferredTimeWindow: request.preferredTimeWindow,
+          serviceType: request.serviceType
         },
-        notes: parsed.data.notes,
+        notes: request.notes,
         mode: "lead_capture"
       }
     });
@@ -87,7 +104,7 @@ export async function submitQuoteRequest(
 
     await notifyOpsQuoteReview(supabase, {
       quoteId: result.data.quoteId,
-      request: parsed.data,
+      request,
       quoteEstimate
     });
 

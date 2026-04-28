@@ -5,8 +5,8 @@ import { getMoveRouteDistanceEstimate } from "@/lib/core/pricing/google-distance
 jest.mock("@/lib/core/pricing/google-distance", () => ({
   getMoveRouteDistanceEstimate: jest.fn(async () => ({
     ok: true,
-    provider: "google_distance_matrix",
-    baseAddress: "Melbourne VIC, Australia",
+    provider: "google_directions",
+    baseAddress: "Sims St, West Melbourne VIC 3003",
     distanceKm: 18.5,
     durationMinutes: 50,
     chargeableDistanceKm: 18.5,

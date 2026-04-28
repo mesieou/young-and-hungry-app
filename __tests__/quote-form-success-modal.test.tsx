@@ -14,13 +14,13 @@ describe("QuoteForm", () => {
     expect(screen.getByRole("button", { name: /03 estimate/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /04 schedule/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /05 submit/i })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /next: job & truck/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /next: move type/i })).toBeTruthy();
   });
 
   it("blocks forward progress until required step data is entered", () => {
     render(<QuoteForm />);
 
-    fireEvent.click(screen.getByRole("button", { name: /next: job & truck/i }));
+    fireEvent.click(screen.getByRole("button", { name: /next: move type/i }));
     expect(screen.getByRole("alert").textContent).toContain("Enter pickup and drop-off addresses");
 
     fireEvent.change(screen.getByLabelText(/pickup address/i), {
@@ -29,17 +29,17 @@ describe("QuoteForm", () => {
     fireEvent.change(screen.getByLabelText(/dropoff address/i), {
       target: { value: "Richmond VIC" }
     });
-    fireEvent.click(screen.getByRole("button", { name: /next: job & truck/i }));
+    fireEvent.click(screen.getByRole("button", { name: /next: move type/i }));
 
-    expect(screen.getByRole("heading", { name: /choose move type & truck/i })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: /choose move type/i })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
-    expect(screen.getByRole("alert").textContent).toContain("Choose a 4 tonne or 6 tonne truck");
+    expect(screen.getByRole("alert").textContent).toContain("Choose what you are moving");
   });
 
-  it("starts at truck selection when the homepage route step has already supplied addresses", () => {
+  it("starts at move type selection when the homepage route step has already supplied addresses", () => {
     render(<QuoteForm initialPickupAddress="South Yarra VIC" initialDropoffAddress="Richmond VIC" />);
 
-    expect(screen.getByRole("heading", { name: /choose move type & truck/i })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: /choose move type/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /01 route/i }).className).toContain("bg-success/80");
     expect(screen.getByDisplayValue("South Yarra VIC").getAttribute("name")).toBe("pickupAddress");
     expect(screen.getByDisplayValue("Richmond VIC").getAttribute("name")).toBe("dropoffAddress");
@@ -54,17 +54,18 @@ describe("QuoteForm", () => {
     fireEvent.change(screen.getByLabelText(/dropoff address/i), {
       target: { value: "Richmond VIC" }
     });
-    fireEvent.click(screen.getByRole("button", { name: /next: job & truck/i }));
+    fireEvent.click(screen.getByRole("button", { name: /next: move type/i }));
 
-    fireEvent.click(screen.getByLabelText(/house move/i));
-    fireEvent.click(screen.getByLabelText(/6 tonne truck/i));
-    expect(screen.getAllByText("6 tonne truck").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("$532 - $701").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("radio", { name: /house/i }));
+    fireEvent.click(screen.getByRole("radio", { name: /3 bedrooms/i }));
+    expect(screen.getAllByText("House, 3 bedrooms").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$617 - $786").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
 
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
+    expect(screen.getByText(/6 tonne truck · \$169\/hr recommended for this size\./i)).toBeTruthy();
     expect(screen.getByText(/labour/i)).toBeTruthy();
-    expect(screen.getByText(/truck \+ crew, 3 hours estimated time/i)).toBeTruthy();
+    expect(screen.getByText(/truck \+ crew, 3.5 hours estimated time/i)).toBeTruthy();
     expect(screen.getByText(/calculated on the day of the job/i)).toBeTruthy();
     expect(screen.queryByText(/route calculation/i)).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /next: schedule/i }));
@@ -84,6 +85,20 @@ describe("QuoteForm", () => {
     expect(screen.getAllByText(/Richmond VIC/).length).toBeGreaterThan(0);
   });
 
+  it("shows 4+ bedroom move sizes as coming soon", () => {
+    render(<QuoteForm initialPickupAddress="South Yarra VIC" initialDropoffAddress="Richmond VIC" />);
+
+    fireEvent.click(screen.getByRole("radio", { name: /house/i }));
+
+    const fourBedroomSize = screen
+      .getAllByRole("radio", { name: /4\+ bedrooms/i })
+      .find((element) => element.getAttribute("name") === "moveSize");
+
+    expect(fourBedroomSize).toBeTruthy();
+    expect(fourBedroomSize?.hasAttribute("disabled")).toBe(true);
+    expect(screen.getByText(/coming soon/i)).toBeTruthy();
+  });
+
   it("lets the user click back to earlier steps and edit them", () => {
     render(<QuoteForm />);
 
@@ -93,11 +108,12 @@ describe("QuoteForm", () => {
     fireEvent.change(screen.getByLabelText(/dropoff address/i), {
       target: { value: "Richmond VIC" }
     });
-    fireEvent.click(screen.getByRole("button", { name: /next: job & truck/i }));
+    fireEvent.click(screen.getByRole("button", { name: /next: move type/i }));
 
-    fireEvent.click(screen.getByLabelText(/6 tonne truck/i));
+    fireEvent.click(screen.getByRole("radio", { name: /house/i }));
+    fireEvent.click(screen.getByRole("radio", { name: /2 bedrooms/i }));
     fireEvent.click(screen.getByRole("button", { name: /02 job/i }));
-    expect(screen.getByRole("heading", { name: /choose move type & truck/i })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: /choose move type/i })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /01 route/i }));
     expect(screen.getByRole("heading", { name: /where are you moving/i })).toBeTruthy();
@@ -106,7 +122,7 @@ describe("QuoteForm", () => {
   it("uses a country-code phone input and validates Australian numbers before submit", () => {
     render(<QuoteForm initialPickupAddress="South Yarra VIC" initialDropoffAddress="Richmond VIC" />);
 
-    fireEvent.click(screen.getByLabelText(/6 tonne truck/i));
+    fireEvent.click(screen.getByRole("radio", { name: /small move/i }));
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
     fireEvent.click(screen.getByRole("button", { name: /next: schedule/i }));
     fireEvent.click(screen.getByRole("button", { name: /next: details/i }));
