@@ -34,7 +34,23 @@ const config: Config = {
         md: "12px",
         lg: "16px",
         xl: "20px",
-        "2xl": "24px"
+        "2xl": "24px",
+        "3xl": "32px"
+      },
+      letterSpacing: {
+        "tight-1": "-0.03em",
+        "tight-2": "-0.04em",
+        "tight-3": "-0.05em",
+        "tight-4": "-0.06em",
+        "eyebrow-sm": "0.16em",
+        "eyebrow-md": "0.22em",
+        "eyebrow-lg": "0.28em"
+      },
+      gridTemplateColumns: {
+        "split-balanced": "1fr 1fr",
+        "split-hero": "1.05fr 0.95fr",
+        "split-form": "0.8fr 1.2fr",
+        "sidebar-form": "25rem minmax(0, 1fr)"
       },
       boxShadow: {
         card: "0 10px 30px rgba(0, 0, 0, 0.35)",

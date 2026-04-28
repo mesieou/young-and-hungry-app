@@ -24,6 +24,9 @@ import { submitQuoteRequest } from "@/app/quote/actions";
 import { StepShell } from "@/components/layout/StepShell";
 import { AddressAutocompleteInput } from "@/components/ui/AddressAutocompleteInput";
 import { Button } from "@/components/ui/Button";
+import { Eyebrow } from "@/components/ui/Eyebrow";
+import { IconBadge } from "@/components/ui/IconBadge";
+import { inputShellClasses } from "@/components/ui/Input";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { ResponsiveDrawer } from "@/components/ui/ResponsiveDrawer";
 import { quoteFlowCopy, quoteStepCopy } from "@/lib/content/site-copy";
@@ -133,8 +136,7 @@ const houseSizeOptions = [
   { value: "four_plus", label: "4+ bedrooms", disabled: true, status: "Coming soon" }
 ] as const;
 
-const inputClass =
-  "w-full min-w-0 rounded-2xl border border-line bg-ink/70 px-4 py-4 text-white outline-none transition focus:border-blue focus:ring-4 focus:ring-blue/30";
+const inputClass = inputShellClasses;
 
 type FormSnapshot = Record<string, string | undefined>;
 type MoveTypeValue = (typeof moveTypeOptions)[number]["value"];
@@ -512,9 +514,9 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
                   <p>{state.message}</p>
                 </div>
               ) : (
-                <p className="font-mono text-xs uppercase tracking-[0.22em] text-text-muted">
+                <Eyebrow tone="muted">
                   Step {currentStep + 1} of {quoteSteps.length}
-                </p>
+                </Eyebrow>
               )}
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -624,10 +626,8 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
                     }`}>
                       <span className={`h-2 w-2 rounded-full bg-white ${isSelected ? "opacity-100" : "opacity-0"}`} />
                     </span>
-                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet/20 to-blue/20 text-blue-soft">
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <span className="mt-3 block min-w-0 break-words font-display text-xl font-semibold tracking-[-0.03em] text-white">{option.label}</span>
+                    <IconBadge icon={Icon} />
+                    <span className="mt-3 block min-w-0 break-words font-display text-xl font-semibold tracking-tight-1 text-white">{option.label}</span>
                     <span className="mt-2 block min-w-0 break-words text-sm leading-6 text-text-secondary">
                       {option.description} <span className="text-text-muted">e.g. {option.example.toLowerCase()}</span>
                     </span>
@@ -670,7 +670,7 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
                         />
                         <span className="block max-w-full min-w-0 break-words leading-5">{option.label}</span>
                         {isComingSoon ? (
-                          <span className="block max-w-full truncate rounded-full border border-line bg-panel/70 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.08em] text-text-muted">
+                          <span className="block max-w-full truncate rounded-full border border-line bg-panel/70 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-text-muted">
                             {"status" in option ? option.status : "Coming soon"}
                           </span>
                         ) : null}
@@ -787,10 +787,10 @@ function StepProgress({
 }) {
   return (
     <div className="mb-8">
-      <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-blue-soft">
+      <Eyebrow>
         Step {currentStep + 1}/{quoteSteps.length}
-      </p>
-      <h2 className="mt-2 font-display text-xl font-semibold tracking-[-0.04em] text-white sm:text-2xl">
+      </Eyebrow>
+      <h2 className="mt-2 font-display text-xl font-semibold tracking-tight-2 text-white sm:text-2xl">
         {quoteSteps[currentStep]?.title}
       </h2>
       <div className="mt-4 grid grid-cols-5 gap-1.5 sm:gap-2" aria-label="Quote steps">
@@ -827,7 +827,7 @@ function StepProgress({
             <button
               key={step.title}
               type="button"
-              className={`text-left text-[11px] font-semibold uppercase tracking-[0.16em] transition ${
+              className={`text-left text-[11px] font-semibold uppercase tracking-eyebrow-sm transition ${
                 isActive ? "text-white" : "text-text-muted"
               } ${canOpenStep ? "cursor-pointer hover:text-white" : "cursor-default opacity-60"}`}
               disabled={!canOpenStep}
@@ -926,7 +926,7 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
   if (!quoteEstimate) {
       return (
       <div className="rounded-[2rem] border border-line bg-ink/65 p-6 sm:p-8">
-        <p className="font-display text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">{quoteFlowCopy.estimate.pendingTitle}</p>
+        <p className="font-display text-2xl font-semibold tracking-tight-2 text-white sm:text-3xl">{quoteFlowCopy.estimate.pendingTitle}</p>
         <p className="mt-3 max-w-2xl leading-7 text-text-secondary">
           {quoteFlowCopy.estimate.pendingBody}
         </p>
@@ -935,13 +935,13 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
   }
 
   return (
-    <div className="yh-gradient-border rounded-[2rem] bg-panel p-[1px] shadow-glow">
-      <div className="relative overflow-hidden rounded-[2rem] bg-ink/92 p-6 sm:p-8">
+    <div className="yh-gradient-border rounded-3xl bg-panel p-[1px] shadow-glow">
+      <div className="relative overflow-hidden rounded-3xl bg-ink/92 p-6 sm:p-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.18),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(168,85,247,0.16),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_50%)]" />
         <div className="relative">
           <div className="max-w-3xl">
-            <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-blue-soft">{quoteFlowCopy.estimate.totalLabel}</p>
-            <p className="mt-3 font-display text-4xl font-semibold tracking-[-0.06em] text-white sm:text-7xl">
+            <Eyebrow>{quoteFlowCopy.estimate.totalLabel}</Eyebrow>
+            <p className="mt-3 font-display text-4xl font-semibold tracking-tight-4 text-white sm:text-7xl">
               {quoteEstimate.rangeLabel}
             </p>
             <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg sm:leading-8">
@@ -951,7 +951,7 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
 
           <div className="mt-8 pt-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">{quoteFlowCopy.estimate.breakdownLabel}</p>
+              <p className="text-xs font-semibold uppercase tracking-eyebrow-sm text-text-muted">{quoteFlowCopy.estimate.breakdownLabel}</p>
               <p className="text-sm text-text-muted">{quoteFlowCopy.estimate.roundedLabel}</p>
             </div>
 
@@ -978,16 +978,14 @@ function EstimateReveal({ snapshot, routeEstimate }: { snapshot: FormSnapshot; r
               />
               <div className="flex items-center justify-between gap-4 border-t border-dashed border-line pt-4">
                 <span className="text-sm font-semibold text-white">Estimated total</span>
-                <span className="font-display text-2xl font-semibold tracking-[-0.03em] text-white">{quoteEstimate.label}</span>
+                <span className="font-display text-2xl font-semibold tracking-tight-1 text-white">{quoteEstimate.label}</span>
               </div>
             </div>
           </div>
 
           <div className="mt-6 border-t border-white/10 pt-5">
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-violet/12 text-violet-soft">
-                <ShieldCheck className="h-4 w-4" />
-              </div>
+              <IconBadge icon={ShieldCheck} variant="violet" size="sm" className="mt-0.5" />
               <p className="text-sm leading-7 text-text-secondary">
                 {quoteFlowCopy.estimate.dayOfJobDisclaimer}
               </p>
@@ -1049,7 +1047,7 @@ function QuoteSummary({
 
   const content = (
     <div className={mode === "desktop" ? "mx-auto max-w-sm lg:mx-0" : "grid gap-6"}>
-      <p className="font-display text-3xl font-semibold tracking-[-0.04em] text-white">Your move</p>
+      <p className="font-display text-3xl font-semibold tracking-tight-2 text-white">Your move</p>
       <div className="mt-8 grid gap-6">
         <SummaryTimelineItem icon={ArrowUp} label="Pickup" value={displayValue(snapshot.pickupAddress)} accent="blue" />
         <SummaryTimelineItem icon={ArrowDown} label="Drop-off" value={displayValue(snapshot.dropoffAddress)} accent="violet" />
@@ -1104,7 +1102,7 @@ function MobileSummaryBar({
   return (
     <div className="flex items-center gap-4">
       <div className="min-w-0 flex-1">
-        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-blue-soft">{quoteFlowCopy.summary.mobileLabel}</p>
+        <Eyebrow size="sm">{quoteFlowCopy.summary.mobileLabel}</Eyebrow>
         <p className="mt-1 text-sm font-semibold text-white">{quoteEstimate?.rangeLabel ?? quoteFlowCopy.summary.mobileFallback}</p>
         <p className="mt-1 truncate text-xs text-text-muted">{routeLabel}</p>
       </div>
@@ -1174,11 +1172,9 @@ export function QuoteSuccessModal({ onReturnHome }: { onReturnHome: () => void }
       <div className="flex min-h-full items-center justify-center">
         <div className="yh-gradient-border w-full max-w-lg animate-fade-up rounded-3xl bg-panel p-[1px] shadow-glow">
           <div className="max-h-[calc(100vh-3rem)] overflow-y-auto rounded-3xl bg-panel p-7 text-center sm:max-h-[calc(100vh-5rem)] sm:p-9">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-success/10 text-success shadow-glow">
-            <CheckCircle2 className="h-9 w-9" />
-          </div>
-          <p className="mt-6 font-mono text-xs uppercase tracking-[0.28em] text-blue-soft">{quoteFlowCopy.success.eyebrow}</p>
-          <h2 id="quote-success-title" className="mt-3 font-display text-4xl font-semibold tracking-[-0.04em] text-white">
+          <IconBadge icon={CheckCircle2} variant="success" size="xl" className="mx-auto" />
+          <Eyebrow size="lg" className="mt-6">{quoteFlowCopy.success.eyebrow}</Eyebrow>
+          <h2 id="quote-success-title" className="mt-3 font-display text-4xl font-semibold tracking-tight-2 text-white">
             {quoteFlowCopy.success.title}
           </h2>
           <p className="mt-4 leading-7 text-text-secondary">

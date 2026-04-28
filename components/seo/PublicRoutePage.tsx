@@ -6,6 +6,7 @@ import { PageSection } from "@/components/layout/PageSection";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { PublicStructuredData } from "@/components/seo/PublicStructuredData";
 import {
   getFaqEntriesForPage,
@@ -34,7 +35,7 @@ export function PublicRoutePage({
       <div className="grid gap-10">
         <div className="max-w-4xl">
           <Badge tone="gradient">{page.heroEyebrow}</Badge>
-          <h1 className="mt-5 font-display text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
+          <h1 className="mt-5 font-display text-4xl font-semibold tracking-tight-3 text-white sm:text-5xl">
             {page.heroTitle}
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-8 text-text-secondary sm:text-lg">
@@ -60,9 +61,9 @@ export function PublicRoutePage({
         {children}
 
         {page.sections?.length ? (
-          <section className="grid gap-4 md:grid-cols-2">
+          <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
             {page.sections.map((section) => (
-              <Card key={section.title} className="transition duration-200 hover:-translate-y-1 hover:border-line-hover hover:shadow-lift">
+              <Card key={section.title} variant="interactive">
                 <CardContent className="p-6">
                   <h2 className="font-display text-2xl font-semibold text-white">{section.title}</h2>
                   <div className="mt-3 grid gap-4 text-sm leading-7 text-text-secondary sm:text-base">
@@ -89,7 +90,7 @@ export function PublicRoutePage({
           <section>
             <div className="max-w-3xl">
               <Badge>FAQ</Badge>
-              <h2 className="mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
+              <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight-2 text-white sm:text-4xl">
                 Questions customers ask before sending the move.
               </h2>
             </div>
@@ -110,15 +111,15 @@ export function PublicRoutePage({
           <section>
             <div className="max-w-3xl">
               <Badge>Related pages</Badge>
-              <h2 className="mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
+              <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight-2 text-white sm:text-4xl">
                 Keep exploring the move flow.
               </h2>
             </div>
-            <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <div className="mt-8 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
               {relatedPages.map((relatedPage) => (
-                <Card key={relatedPage.id} className="transition duration-200 hover:-translate-y-1 hover:border-line-hover hover:shadow-lift">
+                <Card key={relatedPage.id} variant="interactive">
                   <CardContent className="p-6">
-                    <p className="font-mono text-xs uppercase tracking-[0.18em] text-blue-soft">{relatedPage.label}</p>
+                    <Eyebrow size="sm">{relatedPage.label}</Eyebrow>
                     <h3 className="mt-3 font-display text-2xl font-semibold text-white">{relatedPage.heroTitle}</h3>
                     <p className="mt-3 leading-7 text-text-secondary">{relatedPage.cardDescription}</p>
                     <Button asChild variant="ghost" className="mt-5 px-0">

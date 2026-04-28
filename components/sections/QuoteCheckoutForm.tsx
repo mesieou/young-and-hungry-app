@@ -3,6 +3,7 @@
 import { useActionState, useRef } from "react";
 import { beginQuoteCheckout } from "@/app/quote/[quoteId]/actions";
 import { Button } from "@/components/ui/Button";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { initialQuoteCheckoutFormState } from "@/lib/core/booking/quote-checkout";
 
 function createClientIdempotencyKey(quoteId: string) {
@@ -45,7 +46,7 @@ export function QuoteCheckoutForm({ quoteId, depositCents, currency }: QuoteChec
       <input type="hidden" name="holdMinutes" value="15" />
 
       <div className="rounded-xl border border-line bg-ink/70 p-4">
-        <p className="font-mono text-xs uppercase tracking-[0.25em] text-text-muted">Deposit due</p>
+        <Eyebrow tone="muted">Deposit due</Eyebrow>
         <p className="mt-2 font-display text-3xl font-semibold">{formatMoney(depositCents, currency)}</p>
         <p className="mt-2 text-sm leading-6 text-text-secondary">
           A 15-minute booking hold is created before deposit payment is collected.

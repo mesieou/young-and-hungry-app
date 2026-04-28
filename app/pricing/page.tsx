@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PublicRoutePage } from "@/components/seo/PublicRoutePage";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { buildPublicPageMetadataById, requirePublicPageById } from "@/lib/seo/public-route-utils";
 
 export const metadata = buildPublicPageMetadataById("pricing");
@@ -18,9 +19,9 @@ export default function PricingPage() {
 
   return (
     <PublicRoutePage page={page}>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
           {pricingRules.map(([name, description]) => (
-            <Card key={name} className="transition duration-200 hover:-translate-y-1 hover:shadow-lift">
+            <Card key={name} variant="interactive">
               <CardContent className="p-6">
                 <h2 className="font-display text-2xl font-semibold">{name}</h2>
                 <p className="mt-3 text-text-secondary">{description}</p>
@@ -31,7 +32,7 @@ export default function PricingPage() {
       <Card className="border-blue/30 bg-blue/10">
           <CardContent className="p-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
             <div>
-              <p className="font-mono text-xs uppercase tracking-[0.22em] text-blue-soft">Estimate structure</p>
+              <Eyebrow>Estimate structure</Eyebrow>
               <p className="mt-3 text-lg font-semibold text-white">
                 Truck/crew time + charged route km + booking/admin fee
               </p>

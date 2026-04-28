@@ -67,7 +67,7 @@ export function ResponsiveDrawer({
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
           <div className="min-w-0">
-            <p className="font-display text-2xl font-semibold tracking-[-0.04em] text-white">{title}</p>
+            <p className="font-display text-2xl font-semibold tracking-tight-2 text-white">{title}</p>
             {description ? <p className="mt-1 text-sm leading-6 text-text-secondary">{description}</p> : null}
           </div>
           <button

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PublicRoutePage } from "@/components/seo/PublicRoutePage";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { buildPublicPageMetadataById, requirePublicPageById } from "@/lib/seo/public-route-utils";
 import { siteConfig } from "@/lib/seo/public-pages";
 
@@ -14,8 +15,8 @@ export default function ContactPage() {
     <PublicRoutePage page={page} width="compact">
         <Card className="yh-gradient-border">
           <CardContent className="p-8 sm:p-10">
-            <p className="font-mono text-xs uppercase tracking-[0.22em] text-blue-soft">Email</p>
-            <a href={`mailto:${siteConfig.email}`} className="mt-3 inline-block font-display text-3xl font-semibold tracking-[-0.04em] text-white">
+            <Eyebrow>Email</Eyebrow>
+            <a href={`mailto:${siteConfig.email}`} className="mt-3 inline-block font-display text-3xl font-semibold tracking-tight-2 text-white">
               {siteConfig.email}
             </a>
             <p className="mt-5 max-w-2xl leading-8 text-text-secondary">

@@ -3,6 +3,7 @@
 import { MapPin } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
+import { inputShellClasses } from "@/components/ui/Input";
 
 const GOOGLE_MAPS_SCRIPT_ID = "yh-google-maps-places";
 
@@ -162,7 +163,7 @@ export function AddressAutocompleteInput({
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : undefined}
           autoComplete="street-address"
-          className="w-full rounded-2xl border border-line bg-ink/70 px-4 py-4 pl-11 text-white outline-none transition focus:border-blue focus:ring-4 focus:ring-blue/30 disabled:opacity-60"
+          className={cn(inputShellClasses, "pl-11")}
         />
       </div>
       {error ? (
