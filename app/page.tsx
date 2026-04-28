@@ -24,7 +24,7 @@ export default function HomePage() {
       <PublicStructuredData page={homePage} />
 
       <PageSection padding="hero" className="relative">
-        <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <div className="grid gap-8 lg:grid-cols-split-hero lg:items-center lg:gap-12">
           <div className="animate-fade-up">
             <Badge tone="gradient">{homePage.heroEyebrow}</Badge>
             <h1 className="mt-7 max-w-4xl font-display text-4xl font-semibold tracking-tight-3 text-white sm:text-6xl lg:text-7xl">
@@ -96,7 +96,7 @@ export default function HomePage() {
 
       <PageSection>
         <div className="rounded-2xl border border-line bg-panel p-6 shadow-card sm:p-10">
-          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+          <div className="grid gap-6 lg:grid-cols-split-form lg:items-center lg:gap-10">
             <div>
               <Badge tone="gradient">How it works</Badge>
               <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight-2 sm:text-4xl">
