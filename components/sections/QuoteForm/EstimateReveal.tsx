@@ -83,8 +83,8 @@ export function EstimateReveal({
                 value={formatLineItemAmount(quoteEstimate.bookingFeeCents)}
               />
               <BreakdownRow
-                label="Possible extra time"
-                detail={`Up to ${formatMinutesForDetail(quoteEstimate.routePricingIncluded ? quoteEstimate.billingIncrementMinutes : quoteEstimate.billingIncrementMinutes * 2)} at ${formatHourlyRate(quoteEstimate.hourlyRateCents)} — covers actual time variance on the day.`}
+                label="If the move runs over"
+                detail={`Time is billed in ${formatMinutesForDetail(quoteEstimate.billingIncrementMinutes)} blocks at ${formatHourlyRate(quoteEstimate.hourlyRateCents)}. If the actual move runs up to ${formatMinutesForDetail(quoteEstimate.routePricingIncluded ? quoteEstimate.billingIncrementMinutes : quoteEstimate.billingIncrementMinutes * 2)} longer than the estimate, you pay the extra block — that's the top of the range.`}
                 value={`up to ${formatLineItemAmount(quoteEstimate.rangeHighCents - quoteEstimate.rangeLowCents)}`}
               />
               <div className="flex items-center justify-between gap-4 border-t border-dashed border-line pt-4">
