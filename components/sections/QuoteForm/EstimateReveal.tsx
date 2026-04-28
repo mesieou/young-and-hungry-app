@@ -82,16 +82,16 @@ export function EstimateReveal({
                 detail={quoteFlowCopy.summary.bookingFeeDetail}
                 value={formatLineItemAmount(quoteEstimate.bookingFeeCents)}
               />
-              <BreakdownRow
-                label="If the move runs over"
-                detail={`Time is billed in ${formatMinutesForDetail(quoteEstimate.billingIncrementMinutes)} blocks at ${formatHourlyRate(quoteEstimate.hourlyRateCents)}. If the actual move runs up to ${formatMinutesForDetail(quoteEstimate.routePricingIncluded ? quoteEstimate.billingIncrementMinutes : quoteEstimate.billingIncrementMinutes * 2)} longer than the estimate, you pay the extra block — that's the top of the range.`}
-                value={`up to ${formatLineItemAmount(quoteEstimate.rangeHighCents - quoteEstimate.rangeLowCents)}`}
-              />
-              <div className="flex items-center justify-between gap-4 border-t border-dashed border-line pt-4">
-                <span className="text-sm font-semibold text-white">Estimated total</span>
-                <span className="font-display text-2xl font-semibold tracking-tight-1 text-white">
-                  {quoteEstimate.rangeLabel}
-                </span>
+              <div className="grid gap-1 border-t border-dashed border-line pt-4">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm font-semibold text-white">Estimated total</span>
+                  <span className="font-display text-2xl font-semibold tracking-tight-1 text-white">
+                    {quoteEstimate.rangeLabel}
+                  </span>
+                </div>
+                <p className="text-xs leading-5 text-text-muted">
+                  Range covers up to {formatMinutesForDetail(quoteEstimate.routePricingIncluded ? quoteEstimate.billingIncrementMinutes : quoteEstimate.billingIncrementMinutes * 2)} over at {formatHourlyRate(quoteEstimate.hourlyRateCents)} if the move tips into the next billing block.
+                </p>
               </div>
             </div>
           </div>
