@@ -170,11 +170,21 @@ export function getQuoteEstimate(snapshot: FormSnapshot, routeEstimate: RouteEst
 }
 
 export function getLabourDetail(quoteEstimate: YoungHungryQuoteEstimate) {
+  const prefix = quoteFlowCopy.estimate.labourDetailPrefix;
   const billableTime = formatCustomerHours(quoteEstimate.billableMinutes);
+  const loadStr = formatMinutesForDetail(quoteEstimate.loadUnloadMinutes);
 
-  if (quoteEstimate.rawEstimatedMinutes === quoteEstimate.billableMinutes) {
-    return `${quoteFlowCopy.estimate.labourDetailPrefix}${billableTime} estimated time`;
+  if (quoteEstimate.routeDurationMinutes === null) {
+    return `${prefix}${loadStr} load/unload + travel time, rounded up to ${billableTime}`;
   }
 
-  return `${quoteFlowCopy.estimate.labourDetailPrefix}${formatMinutesForDetail(quoteEstimate.rawEstimatedMinutes)} estimated, rounded up to ${billableTime}`;
+  const travelStr = formatMinutesForDetail(quoteEstimate.routeDurationMinutes);
+  const totalEstimated = quoteEstimate.loadUnloadMinutes + quoteEstimate.routeDurationMinutes;
+
+  if (totalEstimated === quoteEstimate.billableMinutes) {
+    return `${prefix}${loadStr} load/unload + ${travelStr} travel = ${billableTime} total`;
+  }
+
+  const totalStr = formatMinutesForDetail(totalEstimated);
+  return `${prefix}${loadStr} load/unload + ${travelStr} travel = ${totalStr}, rounded up to ${billableTime}`;
 }

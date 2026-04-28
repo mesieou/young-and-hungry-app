@@ -148,14 +148,13 @@ describe("QuoteForm route pricing integration", () => {
     expect(screen.getByText(/6 tonne truck · \$169\/hr recommended for this size\./i)).toBeTruthy();
     expect(screen.getAllByText("House, 2 bedrooms").length).toBeGreaterThan(0);
     expect(screen.queryByText(/recommended setup/i)).toBeNull();
-    expect(screen.getByText(/truck \+ crew, 225 min estimated, rounded up to 4 hours/i)).toBeTruthy();
+    expect(screen.getByText(/truck \+ crew, 150 min load\/unload \+ 75 min travel = 225 min, rounded up to 4 hours/i)).toBeTruthy();
     expect(screen.getByText("Base -> pickup: 90 min (60 min included, 30 min charged)")).toBeTruthy();
     expect(screen.getByText("Pickup -> drop-off: 20 min")).toBeTruthy();
     expect(screen.getByText("Drop-off -> base: 25 min")).toBeTruthy();
     expect(screen.getByText("Charged travel: 75 min / 48.3 km")).toBeTruthy();
     expect(screen.getByText("$106")).toBeTruthy();
     expect(screen.getByText("$25")).toBeTruthy();
-    expect(screen.getAllByText("$807").length).toBeGreaterThan(0);
   });
 
   it("keeps base-to-pickup free when it is under an hour and still includes return-base travel", async () => {
@@ -176,14 +175,13 @@ describe("QuoteForm route pricing integration", () => {
     expect(screen.getAllByText("$679 - $764").length).toBeGreaterThan(0);
     expect(screen.getByText(/6 tonne truck · \$169\/hr recommended for this size\./i)).toBeTruthy();
     expect(screen.getAllByText("Apartment / unit, 2 bedrooms").length).toBeGreaterThan(0);
-    expect(screen.getByText(/truck \+ crew, 198 min estimated, rounded up to 3.5 hours/i)).toBeTruthy();
+    expect(screen.getByText(/truck \+ crew, 135 min load\/unload \+ 63 min travel = 198 min, rounded up to 3.5 hours/i)).toBeTruthy();
     expect(screen.getByText("Base -> pickup: 52 min, included")).toBeTruthy();
     expect(screen.getByText("Pickup -> drop-off: 28 min")).toBeTruthy();
     expect(screen.getByText("Drop-off -> base: 35 min")).toBeTruthy();
     expect(screen.getByText("Charged travel: 63 min / 28.4 km")).toBeTruthy();
     expect(screen.getByText("$62")).toBeTruthy();
     expect(screen.getByText("$25")).toBeTruthy();
-    expect(screen.getAllByText("$679").length).toBeGreaterThan(0);
   });
 
   it("falls back to pending travel pricing when Google cannot return the route", async () => {
@@ -202,11 +200,10 @@ describe("QuoteForm route pricing integration", () => {
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
     expect(screen.getByText(/4 tonne truck · \$159\/hr recommended for this size\./i)).toBeTruthy();
     expect(screen.getAllByText("Small move").length).toBeGreaterThan(0);
-    expect(screen.getByText(/truck \+ crew, 2 hours estimated time/i)).toBeTruthy();
+    expect(screen.getByText(/truck \+ crew, 75 min load\/unload \+ travel time, rounded up to 2 hours/i)).toBeTruthy();
     expect(screen.getByText(/travel cost is checked before the move is confirmed\./i)).toBeTruthy();
     expect(screen.queryByText(/Base -> pickup:/i)).toBeNull();
     expect(screen.getAllByText("Pending").length).toBeGreaterThan(0);
     expect(screen.getByText("$25")).toBeTruthy();
-    expect(screen.getAllByText("$343").length).toBeGreaterThan(0);
   });
 });

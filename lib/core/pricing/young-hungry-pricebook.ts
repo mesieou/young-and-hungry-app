@@ -74,6 +74,8 @@ export type YoungHungryQuoteEstimate = {
   billingIncrementMinutes: number;
   minimumBillableMinutes: number;
   estimatedLaborMinutes: number;
+  loadUnloadMinutes: number;
+  chargeableLabourTravelMinutes: number;
   serviceAdjustmentMinutes: number;
   routeDistanceKm: number | null;
   routeDurationMinutes: number | null;
@@ -243,10 +245,9 @@ export function calculateYoungHungryQuoteEstimate(
 
   const serviceAdjustmentMinutes = getServiceAdjustmentMinutes(input.serviceType);
   const route = getRoutePricing(input);
-  const estimatedLaborMinutes =
-    pricebook.averageLoadUnloadMinutes +
-    serviceAdjustmentMinutes +
-    (route.routeDurationMinutes ?? pricebook.fallbackChargeableTravelMinutes);
+  const loadUnloadMinutes = pricebook.averageLoadUnloadMinutes + serviceAdjustmentMinutes;
+  const chargeableLabourTravelMinutes = route.routeDurationMinutes ?? pricebook.fallbackChargeableTravelMinutes;
+  const estimatedLaborMinutes = loadUnloadMinutes + chargeableLabourTravelMinutes;
   const rawEstimatedMinutes = Math.max(
     pricebook.minimumBillableMinutes,
     estimatedLaborMinutes
@@ -279,6 +280,8 @@ export function calculateYoungHungryQuoteEstimate(
     billingIncrementMinutes: pricebook.billingIncrementMinutes,
     minimumBillableMinutes: pricebook.minimumBillableMinutes,
     estimatedLaborMinutes,
+    loadUnloadMinutes,
+    chargeableLabourTravelMinutes,
     serviceAdjustmentMinutes,
     routeDistanceKm: route.routeDistanceKm,
     routeDurationMinutes: route.routeDurationMinutes,

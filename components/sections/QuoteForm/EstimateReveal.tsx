@@ -82,12 +82,6 @@ export function EstimateReveal({
                 detail={quoteFlowCopy.summary.bookingFeeDetail}
                 value={formatLineItemAmount(quoteEstimate.bookingFeeCents)}
               />
-              <div className="flex items-center justify-between gap-4 border-t border-dashed border-line pt-4">
-                <span className="text-sm font-semibold text-white">Estimated total</span>
-                <span className="font-display text-2xl font-semibold tracking-tight-1 text-white">
-                  {quoteEstimate.label}
-                </span>
-              </div>
             </div>
           </div>
 
@@ -115,12 +109,12 @@ function BreakdownRow({
   value: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-      <div className="min-w-0">
+    <div className="grid gap-1">
+      <div className="flex items-baseline justify-between gap-4">
         <p className="text-sm font-semibold text-white">{label}</p>
-        {detail ? <div className="mt-1 max-w-xl text-sm leading-6 text-text-secondary">{detail}</div> : null}
+        {value ? <span className="shrink-0 text-base font-semibold text-white">{value}</span> : null}
       </div>
-      {value ? <span className="shrink-0 text-base font-semibold text-white">{value}</span> : null}
+      {detail ? <div className="max-w-xl text-sm leading-6 text-text-secondary">{detail}</div> : null}
     </div>
   );
 }
