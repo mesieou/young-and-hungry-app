@@ -63,9 +63,10 @@ describe("QuoteForm", () => {
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
 
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
-    expect(screen.getByText(/6 tonne truck · \$169\/hr recommended for this size\./i)).toBeTruthy();
-    expect(screen.getByText(/labour/i)).toBeTruthy();
-    expect(screen.getByText(/truck \+ crew, 3 hours 30 min at \$169\/hr — 3 hours load\/unload \+ travel time pending\./i)).toBeTruthy();
+    expect(screen.getByText(/House, 3 bedrooms · 2-man crew \+ 6 tonne truck/i)).toBeTruthy();
+    expect(screen.getAllByText(/labour/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/time on site loading and unloading/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/travel time is confirmed/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/calculated on the day of the job/i)).toBeTruthy();
     expect(screen.queryByText(/route calculation/i)).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /next: schedule/i }));

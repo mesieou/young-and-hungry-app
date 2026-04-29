@@ -90,14 +90,16 @@ export const quoteFlowCopy = {
     intro: "Estimated total for this move.",
     breakdownLabel: "Estimate breakdown",
     roundedLabel: "Rounded dollars",
-    labourDetailPrefix: "Truck + crew, ",
-    travelCoverageWithExcess:
-      "Includes pickup to drop-off, return to base, and any extra base-to-pickup travel beyond the first included hour.",
-    travelCoverageStandard:
-      "Includes pickup to drop-off and return to base. The first hour from base to pickup is included.",
-    travelPending: "Travel cost is checked before the move is confirmed.",
+    labourCaption: "Time on site loading and unloading.",
+    travelGroupLabel: "Travel",
+    travelLegBaseToPickup: "Base → pickup",
+    travelLegPickupToDropoff: "Pickup → drop-off",
+    travelLegDropoffToBase: "Drop-off → base",
+    travelLegFreeNote: "First hour from base to pickup is free.",
+    travelPendingCaption: "Travel time is confirmed once we have your final addresses.",
+    bookingFeeCaption: "Scheduling and quote follow-up.",
     dayOfJobDisclaimer:
-      "Final price is calculated on the day of the job and depends on access, stairs, parking, heavy items, extra handling, and actual loading time."
+      "Times shown are estimates and may change on the day. Final price is calculated on the day of the job and depends on access, stairs, parking, traffic, heavy items, extra handling, and actual loading time."
   },
   success: {
     eyebrow: "Quote request sent",

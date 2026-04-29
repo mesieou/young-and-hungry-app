@@ -31,13 +31,15 @@ describe("Young & Hungry pricebook", () => {
       rawEstimatedMinutes: 183,
       billableMinutes: 210,
       billingIncrementMinutes: 30,
+      loadUnloadMinutes: 120,
+      chargeableTravelMinutes: 63,
+      loadUnloadCents: 31800,
+      travelCents: 16695,
       laborCents: 48495,
-      laborCentsBillable: 55650,
-      routeCents: 6248,
       bookingFeeCents: 2500,
-      priceCents: 57243,
-      rangeLowCents: 57243,
-      rangeHighCents: 64398,
+      priceCents: 50995,
+      rangeLowCents: 50995,
+      rangeHighCents: 58150,
       routeDistanceKm: 28.4,
       routeDurationMinutes: 63,
       chargeableBaseToPickupMinutes: 0,
@@ -46,8 +48,8 @@ describe("Young & Hungry pricebook", () => {
       routePricingIncluded: true,
       isWeekendRate: false
     });
-    expect(estimate?.label).toBe("$572");
-    expect(estimate?.rangeLabel).toBe("$572 - $644");
+    expect(estimate?.label).toBe("$510");
+    expect(estimate?.rangeLabel).toBe("$510 - $582");
   });
 
   it("uses weekend rates when the preferred date is Saturday or Sunday", () => {
@@ -121,11 +123,11 @@ describe("Young & Hungry pricebook", () => {
       routeDistanceKm: null,
       routeDurationMinutes: null,
       routePricingIncluded: false,
-      routeCents: 0,
+      travelCents: 8450,
+      loadUnloadCents: 25350,
       bookingFeeCents: 2500,
       priceCents: 36300
     });
-    expect(estimate?.detail).toContain("route pending");
   });
 
   it("formats AUD without cents for whole-dollar values", () => {

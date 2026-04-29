@@ -1,9 +1,5 @@
-import { quoteFlowCopy } from "@/lib/content/site-copy";
 import { getRecommendedTruckClassForServiceType } from "@/lib/core/booking/quote-request";
-import {
-  calculateYoungHungryQuoteEstimate,
-  type YoungHungryQuoteEstimate
-} from "@/lib/core/pricing/young-hungry-pricebook";
+import { calculateYoungHungryQuoteEstimate } from "@/lib/core/pricing/young-hungry-pricebook";
 import {
   apartmentSizeOptions,
   houseSizeOptions,
@@ -133,35 +129,17 @@ export function formatHourlyRate(cents: number) {
   return `${formatLineItemAmount(cents)}/hr`;
 }
 
-export function formatCustomerHours(minutes: number | null | undefined) {
-  if (typeof minutes !== "number" || !Number.isFinite(minutes)) return "Pending";
-
-  const safeMinutes = Math.max(0, Math.round(minutes));
-  const roundedHalfHours = Math.max(0.5, Math.round(safeMinutes / 30) / 2);
-  const label = Number.isInteger(roundedHalfHours) ? String(roundedHalfHours) : roundedHalfHours.toFixed(1);
-
-  return `${label} ${roundedHalfHours === 1 ? "hour" : "hours"}`;
-}
-
 export function formatTimeForCustomer(minutes: number | null | undefined) {
   if (typeof minutes !== "number" || !Number.isFinite(minutes)) return "Pending";
 
   const total = Math.max(0, Math.round(minutes));
-  if (total < 60) return `${total} min`;
+  if (total < 60) return `${total}m`;
 
   const hours = Math.floor(total / 60);
   const remainder = total % 60;
 
-  if (remainder === 0) return hours === 1 ? "1 hour" : `${hours} hours`;
-  return hours === 1 ? `1 hour ${remainder} min` : `${hours} hours ${remainder} min`;
-}
-
-export function formatDistanceForDetail(distanceKm: number | null | undefined) {
-  if (typeof distanceKm !== "number" || !Number.isFinite(distanceKm)) return "Pending";
-
-  const safeDistance = Math.max(0, Math.round(distanceKm * 10) / 10);
-  const label = Number.isInteger(safeDistance) ? String(safeDistance) : safeDistance.toFixed(1);
-  return `${label} km`;
+  if (remainder === 0) return `${hours}h`;
+  return `${hours}h ${remainder}m`;
 }
 
 export function getQuoteEstimate(snapshot: FormSnapshot, routeEstimate: RouteEstimateState) {
@@ -173,18 +151,4 @@ export function getQuoteEstimate(snapshot: FormSnapshot, routeEstimate: RouteEst
     pickupToDropoff: routeEstimate.status === "ready" ? routeEstimate.pickupToDropoff : null,
     dropoffToBase: routeEstimate.status === "ready" ? routeEstimate.dropoffToBase : null
   });
-}
-
-export function getLabourDetail(quoteEstimate: YoungHungryQuoteEstimate) {
-  const prefix = quoteFlowCopy.estimate.labourDetailPrefix;
-  const estimatedTime = formatTimeForCustomer(quoteEstimate.rawEstimatedMinutes);
-  const hourlyStr = formatHourlyRate(quoteEstimate.hourlyRateCents);
-  const loadStr = formatTimeForCustomer(quoteEstimate.loadUnloadMinutes);
-
-  if (quoteEstimate.routeDurationMinutes === null) {
-    return `${prefix}${estimatedTime} at ${hourlyStr} — ${loadStr} load/unload + travel time pending.`;
-  }
-
-  const travelStr = formatTimeForCustomer(quoteEstimate.routeDurationMinutes);
-  return `${prefix}${estimatedTime} at ${hourlyStr} — covers ${loadStr} load/unload + ${travelStr} travel.`;
 }

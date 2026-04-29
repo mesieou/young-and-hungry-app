@@ -1,4 +1,4 @@
-export const YH_PRICEBOOK_VERSION = "yh-pricebook-2026-04-28-v3";
+export const YH_PRICEBOOK_VERSION = "yh-pricebook-2026-04-29-v4";
 
 const pricebook = {
   currency: "AUD",
@@ -7,7 +7,6 @@ const pricebook = {
   fallbackChargeableTravelMinutes: 30,
   freeBaseToPickupMinutes: 60,
   billingIncrementMinutes: 30,
-  distanceRateCentsPerKm: 220,
   bookingFeeCents: 2500,
   truckRates: {
     four_tonne: {
@@ -66,18 +65,17 @@ export type YoungHungryQuoteEstimate = {
   rangeLowCents: number;
   rangeHighCents: number;
   laborCents: number;
-  routeCents: number;
+  loadUnloadCents: number;
+  travelCents: number;
   bookingFeeCents: number;
   hourlyRateCents: number;
   rawEstimatedMinutes: number;
   billableMinutes: number;
   billingIncrementMinutes: number;
   minimumBillableMinutes: number;
-  estimatedLaborMinutes: number;
   loadUnloadMinutes: number;
-  chargeableLabourTravelMinutes: number;
+  chargeableTravelMinutes: number;
   serviceAdjustmentMinutes: number;
-  laborCentsBillable: number;
   routeDistanceKm: number | null;
   routeDurationMinutes: number | null;
   pickupToDropoffDistanceKm: number | null;
@@ -233,12 +231,6 @@ function formatHoursForCopy(minutes: number) {
   return `${label} ${hours === 1 ? "hour" : "hours"}`;
 }
 
-function formatDistanceForCopy(distanceKm: number | null) {
-  if (distanceKm === null) return "route pending";
-
-  return `${Math.round(distanceKm)} km travel`;
-}
-
 export function calculateYoungHungryQuoteEstimate(
   input: YoungHungryQuoteEstimateInput
 ): YoungHungryQuoteEstimate | null {
@@ -246,24 +238,24 @@ export function calculateYoungHungryQuoteEstimate(
 
   const serviceAdjustmentMinutes = getServiceAdjustmentMinutes(input.serviceType);
   const route = getRoutePricing(input);
-  const loadUnloadMinutes = pricebook.averageLoadUnloadMinutes + serviceAdjustmentMinutes;
-  const chargeableLabourTravelMinutes = route.routeDurationMinutes ?? pricebook.fallbackChargeableTravelMinutes;
-  const estimatedLaborMinutes = loadUnloadMinutes + chargeableLabourTravelMinutes;
+  const baseLoadUnloadMinutes = pricebook.averageLoadUnloadMinutes + serviceAdjustmentMinutes;
+  const chargeableTravelMinutes = route.routeDurationMinutes ?? pricebook.fallbackChargeableTravelMinutes;
   const rawEstimatedMinutes = Math.max(
     pricebook.minimumBillableMinutes,
-    estimatedLaborMinutes
+    baseLoadUnloadMinutes + chargeableTravelMinutes
   );
+  const loadUnloadMinutes = rawEstimatedMinutes - chargeableTravelMinutes;
   const billableMinutes = roundUpToIncrement(rawEstimatedMinutes, pricebook.billingIncrementMinutes);
   const isWeekendRate = isWeekendDate(input.preferredDate);
   const truckRate = pricebook.truckRates[input.truckClass];
   const hourlyRateCents = isWeekendRate ? truckRate.weekendHourlyCents : truckRate.weekdayHourlyCents;
-  const laborCents = Math.round((hourlyRateCents * rawEstimatedMinutes) / 60);
-  const laborCentsBillable = Math.round((hourlyRateCents * billableMinutes) / 60);
-  const routeCents = route.routeDistanceKm === null ? 0 : Math.round(route.routeDistanceKm * pricebook.distanceRateCentsPerKm);
+  const loadUnloadCents = Math.round((hourlyRateCents * loadUnloadMinutes) / 60);
+  const travelCents = Math.round((hourlyRateCents * chargeableTravelMinutes) / 60);
+  const laborCents = loadUnloadCents + travelCents;
   const bookingFeeCents = pricebook.bookingFeeCents;
-  const priceCents = laborCents + routeCents + bookingFeeCents;
+  const priceCents = laborCents + bookingFeeCents;
   const rangeLowCents = priceCents;
-  const rangeHighCents = laborCentsBillable + routeCents + bookingFeeCents;
+  const rangeHighCents = Math.round((hourlyRateCents * billableMinutes) / 60) + bookingFeeCents;
   const rangeLabel =
     rangeHighCents > rangeLowCents
       ? `${formatAudRounded(rangeLowCents)} - ${formatAudRounded(rangeHighCents, "ceil")}`
@@ -276,17 +268,16 @@ export function calculateYoungHungryQuoteEstimate(
     rangeLowCents,
     rangeHighCents,
     laborCents,
-    laborCentsBillable,
-    routeCents,
+    loadUnloadCents,
+    travelCents,
     bookingFeeCents,
     hourlyRateCents,
     rawEstimatedMinutes,
     billableMinutes,
     billingIncrementMinutes: pricebook.billingIncrementMinutes,
     minimumBillableMinutes: pricebook.minimumBillableMinutes,
-    estimatedLaborMinutes,
     loadUnloadMinutes,
-    chargeableLabourTravelMinutes,
+    chargeableTravelMinutes,
     serviceAdjustmentMinutes,
     routeDistanceKm: route.routeDistanceKm,
     routeDurationMinutes: route.routeDurationMinutes,
@@ -303,7 +294,7 @@ export function calculateYoungHungryQuoteEstimate(
     isWeekendRate,
     label: formatAudRounded(priceCents),
     rangeLabel,
-    detail: `${formatHoursForCopy(rawEstimatedMinutes)} estimate, ${formatDistanceForCopy(route.routeDistanceKm)}${isWeekendRate ? ", weekend rate" : ""}`,
+    detail: `${formatHoursForCopy(rawEstimatedMinutes)} estimate${isWeekendRate ? ", weekend rate" : ""}`,
     lineItems: [
       {
         label: "First hour from base to pickup",
@@ -311,14 +302,14 @@ export function calculateYoungHungryQuoteEstimate(
         value: "Included"
       },
       {
-        label: `Truck + crew (${formatHoursForCopy(rawEstimatedMinutes)} estimate)`,
-        amountCents: laborCents
+        label: `Labour (${formatHoursForCopy(loadUnloadMinutes)})`,
+        amountCents: loadUnloadCents
       },
       {
         label: route.routePricingIncluded
-          ? `Travel distance (${Math.round(route.routeDistanceKm ?? 0)} km)`
-          : "Travel distance",
-        amountCents: routeCents,
+          ? `Travel time (${formatHoursForCopy(chargeableTravelMinutes)})`
+          : "Travel time",
+        amountCents: travelCents,
         value: route.routePricingIncluded ? undefined : "Pending"
       },
       {

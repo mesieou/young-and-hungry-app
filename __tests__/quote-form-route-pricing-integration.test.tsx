@@ -138,23 +138,31 @@ describe("QuoteForm route pricing integration", () => {
     fireEvent.click(screen.getByRole("radio", { name: /2 bedrooms/i }));
 
     await waitFor(() => {
-      expect(screen.getAllByText("$765 - $808").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("$659 - $701").length).toBeGreaterThan(0);
     });
 
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
 
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
-    expect(screen.getAllByText("$765 - $808").length).toBeGreaterThan(0);
-    expect(screen.getByText(/6 tonne truck · \$169\/hr recommended for this size\./i)).toBeTruthy();
+    expect(screen.getAllByText("$659 - $701").length).toBeGreaterThan(0);
+    expect(screen.getByText(/House, 2 bedrooms · 2-man crew \+ 6 tonne truck/i)).toBeTruthy();
     expect(screen.getAllByText("House, 2 bedrooms").length).toBeGreaterThan(0);
     expect(screen.queryByText(/recommended setup/i)).toBeNull();
-    expect(screen.getByText(/truck \+ crew, 3 hours 45 min at \$169\/hr — covers 2 hours 30 min load\/unload \+ 1 hour 15 min travel\./i)).toBeTruthy();
-    expect(screen.getByText("Base -> pickup: 1 hour 30 min (1 hour included, 30 min charged)")).toBeTruthy();
-    expect(screen.getByText("Pickup -> drop-off: 20 min")).toBeTruthy();
-    expect(screen.getByText("Drop-off -> base: 25 min")).toBeTruthy();
-    expect(screen.getByText("Charged travel: 1 hour 15 min / 48.3 km")).toBeTruthy();
-    expect(screen.getByText("$106")).toBeTruthy();
-    expect(screen.getByText("$25")).toBeTruthy();
+    expect(screen.getAllByText(/labour/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^Travel$/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("2h 30m").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Base → pickup/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("30m").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/first hour from base to pickup is free/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Pickup → drop-off/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("20m").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Drop-off → base/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("25m").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$423").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$85").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$56").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$70").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$25").length).toBeGreaterThan(0);
   });
 
   it("keeps base-to-pickup free when it is under an hour and still includes return-base travel", async () => {
@@ -166,22 +174,29 @@ describe("QuoteForm route pricing integration", () => {
     fireEvent.click(screen.getByRole("radio", { name: /2 bedrooms/i }));
 
     await waitFor(() => {
-      expect(screen.getAllByText("$645 - $679").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("$583 - $617").length).toBeGreaterThan(0);
     });
 
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
 
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
-    expect(screen.getAllByText("$645 - $679").length).toBeGreaterThan(0);
-    expect(screen.getByText(/6 tonne truck · \$169\/hr recommended for this size\./i)).toBeTruthy();
+    expect(screen.getAllByText("$583 - $617").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Apartment \/ unit, 2 bedrooms · 2-man crew \+ 6 tonne truck/i)).toBeTruthy();
     expect(screen.getAllByText("Apartment / unit, 2 bedrooms").length).toBeGreaterThan(0);
-    expect(screen.getByText(/truck \+ crew, 3 hours 18 min at \$169\/hr — covers 2 hours 15 min load\/unload \+ 1 hour 3 min travel\./i)).toBeTruthy();
-    expect(screen.getByText("Base -> pickup: 52 min, included")).toBeTruthy();
-    expect(screen.getByText("Pickup -> drop-off: 28 min")).toBeTruthy();
-    expect(screen.getByText("Drop-off -> base: 35 min")).toBeTruthy();
-    expect(screen.getByText("Charged travel: 1 hour 3 min / 28.4 km")).toBeTruthy();
-    expect(screen.getByText("$62")).toBeTruthy();
-    expect(screen.getByText("$25")).toBeTruthy();
+    expect(screen.getAllByText(/labour/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^Travel$/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Base → pickup/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/first hour from base to pickup is free/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Included").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Pickup → drop-off/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("28m").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Drop-off → base/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("35m").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("2h 15m").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$380").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$79").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$99").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$25").length).toBeGreaterThan(0);
   });
 
   it("falls back to pending travel pricing when Google cannot return the route", async () => {
@@ -198,12 +213,12 @@ describe("QuoteForm route pricing integration", () => {
     fireEvent.click(screen.getByRole("button", { name: /next: view estimate/i }));
 
     expect(screen.getByRole("heading", { name: /your estimate/i })).toBeTruthy();
-    expect(screen.getByText(/4 tonne truck · \$159\/hr recommended for this size\./i)).toBeTruthy();
+    expect(screen.getByText(/Small move · 2-man crew \+ 4 tonne truck/i)).toBeTruthy();
     expect(screen.getAllByText("Small move").length).toBeGreaterThan(0);
-    expect(screen.getByText(/truck \+ crew, 2 hours at \$159\/hr — 1 hour 15 min load\/unload \+ travel time pending\./i)).toBeTruthy();
-    expect(screen.getByText(/travel cost is checked before the move is confirmed\./i)).toBeTruthy();
+    expect(screen.getAllByText(/labour/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/travel time is confirmed once we have your final addresses/i).length).toBeGreaterThan(0);
     expect(screen.queryByText(/Base -> pickup:/i)).toBeNull();
     expect(screen.getAllByText("Pending").length).toBeGreaterThan(0);
-    expect(screen.getByText("$25")).toBeTruthy();
+    expect(screen.getAllByText("$25").length).toBeGreaterThan(0);
   });
 });
