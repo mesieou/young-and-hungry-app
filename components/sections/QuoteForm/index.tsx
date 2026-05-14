@@ -43,7 +43,6 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
   const [currentStep, setCurrentStep] = useState(hasInitialRoute ? 1 : 0);
   const [stepError, setStepError] = useState("");
   const [formSnapshot, setFormSnapshot] = useState<FormSnapshot>({
-    preferredTimeWindow: "flexible",
     pickupAddress: initialPickupAddress,
     dropoffAddress: initialDropoffAddress
   });
@@ -158,7 +157,6 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
 
   function syncSummary() {
     setFormSnapshot((previous) => ({
-      preferredTimeWindow: "flexible",
       ...previous,
       ...getFormSnapshot(formRef.current)
     }));
@@ -200,22 +198,42 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
       }
     }
 
+    if (stepIndex === 3) {
+      const preferredDate = getFormValue(form, "preferredDate");
+      const preferredTimeWindow = getFormValue(form, "preferredTimeWindow");
+
+      if (!preferredDate) {
+        setStepError(quoteFlowCopy.validation.preferredDateRequired);
+        return false;
+      }
+
+      if (!preferredTimeWindow) {
+        setStepError(quoteFlowCopy.validation.preferredTimeWindowRequired);
+        return false;
+      }
+    }
+
     if (stepIndex === 4) {
+      const notes = getFormValue(form, "notes");
       const name = getFormValue(form, "name");
-      const email = getFormValue(form, "email");
       const phone = getFormValue(form, "phone");
+
+      if (!notes) {
+        setStepError(quoteFlowCopy.validation.notesRequired);
+        return false;
+      }
 
       if (name.length < 2) {
         setStepError(quoteFlowCopy.validation.nameRequired);
         return false;
       }
 
-      if (!email && !phone) {
-        setStepError(quoteFlowCopy.validation.contactRequired);
+      if (!phone) {
+        setStepError(quoteFlowCopy.validation.phoneRequired);
         return false;
       }
 
-      if (phone && !isValidAustralianPhone(phone)) {
+      if (!isValidAustralianPhone(phone)) {
         setStepError(quoteFlowCopy.validation.phoneInvalid);
         return false;
       }
@@ -492,7 +510,16 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
               <label htmlFor="preferredDate" className="text-sm font-medium text-text-secondary">
                 Preferred date
               </label>
-              <input id="preferredDate" name="preferredDate" type="date" className={inputClass} disabled={isSuccess} />
+              <input
+                id="preferredDate"
+                name="preferredDate"
+                type="date"
+                className={inputClass}
+                required
+                aria-invalid={Boolean(state.fieldErrors?.preferredDate)}
+                disabled={isSuccess}
+              />
+              {state.fieldErrors?.preferredDate ? <p className="text-sm text-error">{state.fieldErrors.preferredDate}</p> : null}
             </div>
 
             <fieldset className="grid gap-3">
@@ -508,7 +535,8 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
                       type="radio"
                       name="preferredTimeWindow"
                       value={option.value}
-                      defaultChecked={option.value === "flexible"}
+                      required
+                      aria-invalid={Boolean(state.fieldErrors?.preferredTimeWindow)}
                       disabled={isSuccess}
                     />
                     <span className="block font-semibold text-white peer-checked:text-blue-soft">{option.label}</span>
@@ -516,6 +544,7 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
                   </label>
                 ))}
               </div>
+              {state.fieldErrors?.preferredTimeWindow ? <p className="text-sm text-error">{state.fieldErrors.preferredTimeWindow}</p> : null}
             </fieldset>
           </section>
 
@@ -530,6 +559,7 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
                 rows={6}
                 className={inputClass}
                 placeholder="Inventory, stairs, lift, parking, access, fragile items..."
+                required
                 aria-invalid={Boolean(state.fieldErrors?.notes)}
                 disabled={isSuccess}
               />
@@ -577,6 +607,7 @@ export function QuoteForm({ initialPickupAddress = "", initialDropoffAddress = "
                 id="phone"
                 name="phone"
                 label="Phone"
+                required
                 disabled={isSuccess}
                 error={state.fieldErrors?.phone}
                 onValueChange={(value) => updateSnapshotValue("phone", value)}

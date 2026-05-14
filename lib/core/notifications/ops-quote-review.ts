@@ -1,4 +1,5 @@
 import {
+  getPreferredTimeWindowDescription,
   getPreferredTimeWindowLabel,
   getTruckClassLabel,
   type QuoteRequestInput
@@ -30,7 +31,6 @@ export type OpsQuoteReviewEmailInput = {
   quoteId: string;
   request: QuoteRequestInput;
   quoteEstimate?: YoungHungryQuoteEstimate | null;
-  submittedAt?: Date;
 };
 
 export type OpsQuoteReviewNotificationResult =
@@ -61,14 +61,52 @@ function formatLabel(label: string, value: string | undefined) {
   return `${label}: ${normalizeOptional(value)}`;
 }
 
+const quoteEmailPreferredDateFormatter = new Intl.DateTimeFormat("en-AU", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC"
+});
+
+function formatPreferredDate(value: string | undefined) {
+  if (!value?.trim()) {
+    return "Not provided";
+  }
+
+  const normalized = value.trim();
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return normalized;
+  }
+
+  return quoteEmailPreferredDateFormatter.format(new Date(`${normalized}T12:00:00.000Z`));
+}
+
+function formatPreferredTime(value: string | undefined) {
+  const label = getPreferredTimeWindowLabel(value);
+  const description = getPreferredTimeWindowDescription(value);
+
+  if (!label) {
+    return "Not provided";
+  }
+
+  if (!description || label === "Flexible") {
+    return label;
+  }
+
+  return `${label} (${description})`;
+}
+
 export function buildOpsQuoteReviewEmail(input: OpsQuoteReviewEmailInput) {
-  const submittedAt = input.submittedAt ?? new Date();
   const truckClassLabel = getTruckClassLabel(input.request.truckClass) ?? input.request.truckClass;
-  const timeWindowLabel = getPreferredTimeWindowLabel(input.request.preferredTimeWindow);
+  const preferredDateLabel = "Requested move date";
+  const preferredTimeLabel = "Requested move time";
+  const preferredDate = formatPreferredDate(input.request.preferredDate);
+  const preferredTime = formatPreferredTime(input.request.preferredTimeWindow);
   const quoteEstimate = input.quoteEstimate ?? calculateYoungHungryQuoteEstimate(input.request);
   const rows = [
     ["Quote ID", input.quoteId],
-    ["Submitted", submittedAt.toISOString()],
     ["Name", input.request.name],
     ["Email", normalizeOptional(input.request.email)],
     ["Phone", normalizeOptional(input.request.phone)],
@@ -78,8 +116,8 @@ export function buildOpsQuoteReviewEmail(input: OpsQuoteReviewEmailInput) {
     ["Estimated quote", quoteEstimate ? `${quoteEstimate.rangeLabel} (${quoteEstimate.detail})` : "Not calculated"],
     ["Pricing version", quoteEstimate?.pricingVersion ?? "Not calculated"],
     ["Service type", input.request.serviceType],
-    ["Preferred date", normalizeOptional(input.request.preferredDate)],
-    ["Preferred time", timeWindowLabel],
+    [preferredDateLabel, preferredDate],
+    [preferredTimeLabel, preferredTime],
     ["Notes", normalizeOptional(input.request.notes)]
   ] as const;
 
@@ -88,7 +126,6 @@ export function buildOpsQuoteReviewEmail(input: OpsQuoteReviewEmailInput) {
     "New Young & Hungry quote request",
     "",
     formatLabel("Quote ID", input.quoteId),
-    formatLabel("Submitted", submittedAt.toISOString()),
     formatLabel("Name", input.request.name),
     formatLabel("Email", input.request.email),
     formatLabel("Phone", input.request.phone),
@@ -98,8 +135,8 @@ export function buildOpsQuoteReviewEmail(input: OpsQuoteReviewEmailInput) {
     formatLabel("Estimated quote", quoteEstimate ? `${quoteEstimate.rangeLabel} (${quoteEstimate.detail})` : undefined),
     formatLabel("Pricing version", quoteEstimate?.pricingVersion),
     formatLabel("Service type", input.request.serviceType),
-    formatLabel("Preferred date", input.request.preferredDate),
-    formatLabel("Preferred time", timeWindowLabel),
+    formatLabel(preferredDateLabel, preferredDate),
+    formatLabel(preferredTimeLabel, preferredTime),
     "",
     "Notes:",
     normalizeOptional(input.request.notes)

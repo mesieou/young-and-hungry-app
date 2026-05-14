@@ -62,7 +62,11 @@ export const quoteFlowCopy = {
     routeRequired: "Enter pickup and drop-off addresses before choosing the move type.",
     truckRequired: "Choose what you are moving before viewing the estimate.",
     moveSizeRequired: "Choose the move size before viewing the estimate.",
+    preferredDateRequired: "Choose the move date before continuing.",
+    preferredTimeWindowRequired: "Choose a preferred time window before continuing.",
+    notesRequired: "Enter move details before sending your quote request.",
     nameRequired: "Enter your name before sending your quote request.",
+    phoneRequired: "Enter your phone number before sending your quote request.",
     contactRequired: "Enter an email or phone number so we can contact you.",
     phoneInvalid: "Enter a valid Australian phone number."
   },

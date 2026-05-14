@@ -9,7 +9,11 @@ const optionalText = z.preprocess(
     .optional()
 );
 
+const requiredPhoneMessage = "Enter your phone number.";
 const invalidPhoneMessage = "Enter a valid Australian phone number.";
+const invalidPreferredDateMessage = "Choose the move date.";
+const invalidPreferredTimeWindowMessage = "Choose a preferred time window.";
+const requiredNotesMessage = "Enter move details.";
 
 export const truckClassOptions = [
   {
@@ -72,18 +76,29 @@ const truckClassSchema = z.preprocess(
 );
 
 const preferredTimeWindowSchema = z.preprocess(
-  (value) => (value === "" || value == null ? "flexible" : value),
-  z.enum(preferredTimeWindowValues)
+  (value) => (typeof value === "string" ? value.trim() : ""),
+  z
+    .string()
+    .min(1, invalidPreferredTimeWindowMessage)
+    .refine((value): value is PreferredTimeWindow => preferredTimeWindowValues.includes(value as PreferredTimeWindow), {
+      message: invalidPreferredTimeWindowMessage
+    })
+);
+
+const preferredDateSchema = z.preprocess(
+  (value) => (typeof value === "string" ? value.trim() : ""),
+  z
+    .string()
+    .min(1, invalidPreferredDateMessage)
+    .regex(/^\d{4}-\d{2}-\d{2}$/, invalidPreferredDateMessage)
 );
 
 const phoneSchema = z
-  .preprocess((value) => {
-    const text = typeof value === "string" ? value.trim() : "";
-
-    if (!text) return undefined;
-
-    return normalizeAustralianPhone(text) ?? text;
-  }, z.string().optional())
+  .preprocess(
+    (value) => (typeof value === "string" ? value.trim() : ""),
+    z.string().min(1, requiredPhoneMessage)
+  )
+  .transform((value) => normalizeAustralianPhone(value) ?? value)
   .superRefine((value, context) => {
     if (value && !isValidAustralianPhone(value)) {
       context.addIssue({
@@ -92,6 +107,11 @@ const phoneSchema = z
       });
     }
   });
+
+const notesSchema = z.preprocess(
+  (value) => (typeof value === "string" ? value.trim() : ""),
+  z.string().min(1, requiredNotesMessage).max(2000, "Notes are too long.")
+);
 
 export type TruckClass = (typeof truckClassValues)[number];
 export type PreferredTimeWindow = (typeof preferredTimeWindowValues)[number];
@@ -133,7 +153,11 @@ export function getTruckClassLabel(value: string | undefined) {
 }
 
 export function getPreferredTimeWindowLabel(value: string | undefined) {
-  return preferredTimeWindowOptions.find((option) => option.value === value)?.label ?? "Flexible";
+  return preferredTimeWindowOptions.find((option) => option.value === value)?.label;
+}
+
+export function getPreferredTimeWindowDescription(value: string | undefined) {
+  return preferredTimeWindowOptions.find((option) => option.value === value)?.description;
 }
 
 export function normalizeAustralianPhone(value: string | undefined) {
@@ -168,18 +192,9 @@ export const quoteRequestSchema = z
     dropoffAddress: z.string().trim().min(3, "Enter the dropoff address.").max(300, "Dropoff address is too long."),
     truckClass: truckClassSchema,
     serviceType: z.string().trim().min(2).max(80).default("removal"),
-    preferredDate: optionalText,
+    preferredDate: preferredDateSchema,
     preferredTimeWindow: preferredTimeWindowSchema,
-    notes: optionalText.pipe(z.string().max(2000, "Notes are too long.").optional())
-  })
-  .superRefine((value, context) => {
-    if (!value.email && !value.phone) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["email"],
-        message: "Enter an email or phone number."
-      });
-    }
+    notes: notesSchema
   });
 
 export type QuoteRequestInput = z.infer<typeof quoteRequestSchema>;
@@ -207,7 +222,7 @@ export function parseQuoteRequestFormData(formData: FormData) {
     truckClass: formData.get("truckClass"),
     serviceType: formData.get("serviceType") ?? "removal",
     preferredDate: formData.get("preferredDate"),
-    preferredTimeWindow: formData.get("preferredTimeWindow") ?? "flexible",
+    preferredTimeWindow: formData.get("preferredTimeWindow"),
     notes: formData.get("notes")
   });
 }

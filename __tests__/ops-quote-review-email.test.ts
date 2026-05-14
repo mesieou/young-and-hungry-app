@@ -31,8 +31,7 @@ describe("ops quote review email", () => {
   it("builds a structured email with all quote review details", () => {
     const email = buildOpsQuoteReviewEmail({
       quoteId: "11111111-1111-4111-8111-111111111111",
-      request,
-      submittedAt: new Date("2026-04-22T00:00:00.000Z")
+      request
     });
 
     expect(email.subject).toContain("South Yarra VIC -> Richmond VIC");
@@ -43,10 +42,12 @@ describe("ops quote review email", () => {
     expect(email.text).toContain("Truck class: 6 tonne truck");
     expect(email.text).toContain("Estimated quote: $448");
     expect(email.text).toContain("Pricing version: yh-pricebook-2026-04-29-v4");
-    expect(email.text).toContain("Preferred date: 2026-05-01");
-    expect(email.text).toContain("Preferred time: Afternoon");
+    expect(email.text).toContain("Requested move date: Friday 1 May 2026");
+    expect(email.text).toContain("Requested move time: Afternoon (1:00pm - 4:00pm)");
     expect(email.text).toContain("Two flights of stairs.");
     expect(email.html).toContain("New quote request");
+    expect(email.html).toContain("Requested move date");
+    expect(email.html).toContain("Requested move time");
   });
 
   it("records a failed notification and ops issue when email is not configured", async () => {
