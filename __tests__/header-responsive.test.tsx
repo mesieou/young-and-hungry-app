@@ -1,9 +1,12 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { Header } from "@/components/layout/Header";
+import { getPrimaryNav } from "@/lib/navigation/public-site";
 
 describe("Header responsive navigation", () => {
+  const navItems = getPrimaryNav();
+
   it("opens the mobile drawer navigation and exposes the main routes", () => {
-    render(<Header />);
+    render(<Header navItems={navItems} />);
 
     expect(screen.queryByRole("dialog", { name: /navigation/i })).toBeNull();
 
@@ -20,7 +23,7 @@ describe("Header responsive navigation", () => {
   });
 
   it("closes the mobile drawer navigation", () => {
-    render(<Header />);
+    render(<Header navItems={navItems} />);
 
     fireEvent.click(screen.getByRole("button", { name: /open navigation menu/i }));
     fireEvent.click(within(screen.getByRole("dialog", { name: /navigation/i })).getByRole("button", { name: /close navigation/i }));

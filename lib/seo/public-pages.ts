@@ -12,9 +12,34 @@ export const siteConfig = {
   ogImage: OG_IMAGE
 } as const;
 
-export type PublicPageFamily = "core" | "service" | "location";
-export type PageIntent = "commercial" | "local" | "informational";
-export type PublicSchemaType = "WebPage" | "Service" | "FAQPage" | "MovingCompany";
+export type PublicPageFamily =
+  | "core"
+  | "service"
+  | "location"
+  | "guide"
+  | "cost"
+  | "comparison"
+  | "glossary";
+export type PageIntent = "commercial" | "local" | "informational" | "comparison" | "definition";
+export type PublicSchemaType =
+  | "WebPage"
+  | "Service"
+  | "FAQPage"
+  | "MovingCompany"
+  | "Article"
+  | "DefinedTerm";
+export type PublicPageKind = "landing" | "hub" | "leaf";
+export type SitemapFamily = "core" | "services" | "locations" | "resources";
+
+const FAMILY_TO_SITEMAP: Record<PublicPageFamily, SitemapFamily> = {
+  core: "core",
+  service: "services",
+  location: "locations",
+  guide: "resources",
+  cost: "resources",
+  comparison: "resources",
+  glossary: "resources"
+};
 
 export interface PublicPageSection {
   title: string;
@@ -31,6 +56,7 @@ export interface FaqEntry {
 export interface PublicPageEntry {
   id: string;
   family: PublicPageFamily;
+  kind: PublicPageKind;
   label: string;
   canonicalPath: string;
   locale: "en-au";
@@ -56,9 +82,18 @@ export interface PublicPageEntry {
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
   priority: number;
   updatedAt: string;
+  parentHub?: string;
+  navOrder?: number;
+  navLabel?: string;
+  sitemapFamily?: SitemapFamily;
 }
 
-type CorePageConfig = Omit<PublicPageEntry, "family" | "locale" | "indexable">;
+type CorePageConfig = Omit<PublicPageEntry, "family" | "locale" | "indexable" | "kind"> & {
+  kind?: PublicPageKind;
+  family?: PublicPageFamily;
+  sitemapFamily?: SitemapFamily;
+  indexable?: boolean;
+};
 
 type ServicePageConfig = {
   id: string;
@@ -88,6 +123,28 @@ type LocationPageConfig = {
   localAngle: string;
   accessNotes: string;
   nearbySuburbs: string[];
+};
+
+type ResourcePageConfig = {
+  slug: string;
+  label: string;
+  title: string;
+  description: string;
+  heroEyebrow: string;
+  heroTitle: string;
+  heroDescription: string;
+  cardDescription: string;
+  primaryKeyword: string;
+  secondaryKeywords: string[];
+  highlights: string[];
+  sections: PublicPageSection[];
+  faqIds?: string[];
+  relatedIds: string[];
+  cta: {
+    label: string;
+    href: string;
+  };
+  updatedAt: string;
 };
 
 export const faqEntries: FaqEntry[] = [
@@ -132,6 +189,7 @@ export const faqEntries: FaqEntry[] = [
 const corePages: CorePageConfig[] = [
   {
     id: "home",
+    kind: "landing",
     label: "Home",
     canonicalPath: "/",
     pageIntent: "commercial",
@@ -168,6 +226,8 @@ const corePages: CorePageConfig[] = [
   },
   {
     id: "how-it-works",
+    navOrder: 0,
+    navLabel: "How it works",
     label: "How it works",
     canonicalPath: "/how-it-works",
     pageIntent: "informational",
@@ -211,6 +271,8 @@ const corePages: CorePageConfig[] = [
   },
   {
     id: "pricing",
+    navOrder: 4,
+    navLabel: "Pricing",
     label: "Pricing",
     canonicalPath: "/pricing",
     pageIntent: "commercial",
@@ -254,6 +316,11 @@ const corePages: CorePageConfig[] = [
   },
   {
     id: "services-hub",
+    kind: "hub",
+    family: "service",
+    sitemapFamily: "services",
+    navOrder: 1,
+    navLabel: "Services",
     label: "Services",
     canonicalPath: "/services",
     pageIntent: "commercial",
@@ -290,6 +357,8 @@ const corePages: CorePageConfig[] = [
   },
   {
     id: "faq",
+    navOrder: 5,
+    navLabel: "FAQ",
     label: "FAQ",
     canonicalPath: "/faq",
     pageIntent: "informational",
@@ -395,6 +464,251 @@ const corePages: CorePageConfig[] = [
     changeFrequency: "weekly",
     priority: 0.95,
     updatedAt: "2026-04-24"
+  },
+  {
+    id: "locations-hub",
+    kind: "hub",
+    family: "location",
+    sitemapFamily: "locations",
+    navOrder: 2,
+    navLabel: "Locations",
+    label: "Locations",
+    canonicalPath: "/locations",
+    pageIntent: "local",
+    title: "Melbourne Suburbs Young & Hungry Covers",
+    description:
+      "Browse Melbourne suburbs Young & Hungry covers for apartment moves, small removals, furniture jobs, and short local moves.",
+    heroEyebrow: "Melbourne suburbs",
+    heroTitle: "Suburbs we cover for Melbourne moves.",
+    heroDescription:
+      "Young & Hungry is built for Melbourne and inner-suburb moves where access, parking, and route clarity matter. Pick a suburb to see how we quote local jobs.",
+    primaryKeyword: "melbourne suburbs removalists",
+    secondaryKeywords: [
+      "removalists melbourne suburbs",
+      "moving company melbourne suburbs",
+      "melbourne removalist coverage"
+    ],
+    cardDescription: "Melbourne suburbs covered by Young & Hungry.",
+    highlights: ["Inner Melbourne ring", "Apartment-heavy suburbs", "Local route awareness", "Fast estimate flow"],
+    sections: [
+      {
+        title: "What a suburb page should tell you",
+        paragraphs: [
+          "Each suburb page covers what makes that area different to quote: parking patterns, lift access, stair counts, building types, and the nearby suburbs we usually pair with it.",
+          "If your suburb is not listed yet, the closest neighbour is usually a fair guide. Send the route through the estimate flow and we can confirm coverage."
+        ]
+      }
+    ],
+    faqIds: ["service-area"],
+    relatedIds: ["services-hub", "quote", "pricing"],
+    cta: {
+      label: "Start your estimate",
+      href: "/quote"
+    },
+    schemaType: "WebPage",
+    changeFrequency: "monthly",
+    priority: 0.78,
+    updatedAt: "2026-05-14"
+  },
+  {
+    id: "resources-hub",
+    kind: "hub",
+    sitemapFamily: "resources",
+    navOrder: 3,
+    navLabel: "Resources",
+    label: "Resources",
+    canonicalPath: "/resources",
+    pageIntent: "informational",
+    title: "Melbourne Moving Cost, Comparison, and Guides",
+    description:
+      "Cost guides, comparison pages, packing checklists, and definitions for moving in Melbourne — all written for the access patterns inner-Melbourne moves actually have.",
+    heroEyebrow: "Resources",
+    heroTitle: "Real-world resources for moving in Melbourne.",
+    heroDescription:
+      "Cost guides, comparison pages, moving-day checklists, and short definitions of the pricing terms removalists actually use.",
+    primaryKeyword: "melbourne moving guides",
+    secondaryKeywords: [
+      "melbourne moving cost guides",
+      "removalist cost guide melbourne",
+      "moving guides australia"
+    ],
+    cardDescription: "Cost guides, comparisons, and moving-day checklists.",
+    highlights: ["Cost guides", "Comparison pages", "Moving-day guides", "Glossary"],
+    sections: [
+      {
+        title: "What lives in resources",
+        paragraphs: [
+          "Resources cover the questions customers ask before they request an estimate: how much a move costs, hourly versus flat-rate pricing, what changes the final price, and how to handle stairs, lifts, and parking on the day.",
+          "Each piece links back to a service or location page so the next step is always one click away."
+        ]
+      }
+    ],
+    faqIds: ["pricing-rules", "final-price"],
+    relatedIds: ["services-hub", "pricing", "quote"],
+    cta: {
+      label: "Get a fast estimate",
+      href: "/quote"
+    },
+    schemaType: "WebPage",
+    changeFrequency: "monthly",
+    priority: 0.75,
+    updatedAt: "2026-05-14"
+  },
+  {
+    id: "resources-guides-hub",
+    kind: "hub",
+    family: "guide",
+    sitemapFamily: "resources",
+    parentHub: "resources-hub",
+    label: "Guides",
+    canonicalPath: "/resources/guides",
+    pageIntent: "informational",
+    title: "Melbourne Moving Guides and Checklists",
+    description:
+      "Practical Melbourne moving guides — packing checklists, moving-day plans, stair carries, lift bookings, and what to do when parking is tight.",
+    heroEyebrow: "Guides",
+    heroTitle: "Practical moving guides for Melbourne moves.",
+    heroDescription:
+      "Checklists and explainers for the parts of a move that actually go wrong: parking, stairs, lift bookings, packing, and timing.",
+    primaryKeyword: "melbourne moving guides",
+    secondaryKeywords: ["moving guides melbourne", "moving day checklist melbourne", "packing checklist melbourne"],
+    cardDescription: "Practical guides for the parts of a move that trip people up.",
+    highlights: ["Moving-day checklists", "Stairs and lifts", "Parking and access", "Packing tips"],
+    sections: [
+      {
+        title: "Why these guides exist",
+        paragraphs: [
+          "Most moving content online is generic. These guides are written for inner-Melbourne moves where parking, stair carries, and lift bookings change the day more than truck size does."
+        ]
+      }
+    ],
+    faqIds: [],
+    relatedIds: ["resources-hub", "services-hub", "quote"],
+    cta: {
+      label: "Get a fast estimate",
+      href: "/quote"
+    },
+    schemaType: "WebPage",
+    changeFrequency: "monthly",
+    priority: 0.72,
+    updatedAt: "2026-05-14"
+  },
+  {
+    id: "resources-cost-hub",
+    kind: "hub",
+    family: "cost",
+    sitemapFamily: "resources",
+    parentHub: "resources-hub",
+    label: "Cost",
+    canonicalPath: "/resources/cost",
+    pageIntent: "commercial",
+    title: "Melbourne Moving Costs and Hourly Rates",
+    description:
+      "How much do removalists cost in Melbourne? Hourly rates by truck size, cost-by-bedroom guides, and a moving cost calculator.",
+    heroEyebrow: "Cost",
+    heroTitle: "What a Melbourne move actually costs.",
+    heroDescription:
+      "Hourly rates by truck size, cost-by-bedroom guides, weekend uplift, and a calculator for the most common Melbourne move shapes.",
+    primaryKeyword: "removalist cost melbourne",
+    secondaryKeywords: ["how much do removalists cost melbourne", "melbourne moving cost", "removalist hourly rate melbourne"],
+    cardDescription: "Hourly rates, cost-by-bedroom guides, and the moving cost calculator.",
+    highlights: ["Hourly rates by truck", "Cost by bedroom", "Weekend uplift", "Moving calculator"],
+    sections: [
+      {
+        title: "How we publish prices",
+        paragraphs: [
+          "Every cost page shows the real Young & Hungry hourly rate for the relevant truck class, the pricing rules that apply (first hour to pickup included, half-hour billing, return trip), and the on-day variables that can change the final number."
+        ]
+      }
+    ],
+    faqIds: ["pricing-rules", "final-price"],
+    relatedIds: ["pricing", "resources-hub", "quote"],
+    cta: {
+      label: "See your estimate",
+      href: "/quote"
+    },
+    schemaType: "WebPage",
+    changeFrequency: "monthly",
+    priority: 0.78,
+    updatedAt: "2026-05-14"
+  },
+  {
+    id: "resources-comparison-hub",
+    kind: "hub",
+    family: "comparison",
+    sitemapFamily: "resources",
+    parentHub: "resources-hub",
+    label: "Comparisons",
+    canonicalPath: "/resources/comparison",
+    pageIntent: "comparison",
+    title: "Compare Melbourne Moving Options",
+    description:
+      "Compare hourly versus flat-rate removalists, DIY van hire versus a removalist, and man with a van versus a full removalist crew.",
+    heroEyebrow: "Comparisons",
+    heroTitle: "Pick the right kind of move for the job.",
+    heroDescription:
+      "Side-by-side comparisons of the most common Melbourne moving choices: hourly vs flat rate, DIY van hire vs hiring a removalist, man with a van vs full removalist crew.",
+    primaryKeyword: "removalist comparison melbourne",
+    secondaryKeywords: ["hourly vs flat rate removalists", "diy van hire vs removalists", "best removalists melbourne"],
+    cardDescription: "Honest side-by-side comparisons of moving options.",
+    highlights: ["Hourly vs flat rate", "DIY vs removalist", "Man with a van vs full crew", "When Y&H is not the fit"],
+    sections: [
+      {
+        title: "Why comparison pages",
+        paragraphs: [
+          "Customers comparing options often haven't decided what kind of move they need. Each comparison page makes a clear recommendation by job size, budget, and access conditions — including when Young & Hungry is not the right fit."
+        ]
+      }
+    ],
+    faqIds: [],
+    relatedIds: ["pricing", "resources-hub", "quote"],
+    cta: {
+      label: "See your estimate",
+      href: "/quote"
+    },
+    schemaType: "WebPage",
+    changeFrequency: "monthly",
+    priority: 0.74,
+    updatedAt: "2026-05-14"
+  },
+  {
+    id: "resources-glossary-hub",
+    kind: "hub",
+    family: "glossary",
+    sitemapFamily: "resources",
+    parentHub: "resources-hub",
+    label: "Glossary",
+    canonicalPath: "/resources/glossary",
+    pageIntent: "definition",
+    title: "Removalist Pricing and Service Glossary",
+    description:
+      "Short, plain-English definitions of removalist terms — truck classes, hourly billing, return trip charges, callout fees, packing blankets, and loading zone permits.",
+    heroEyebrow: "Glossary",
+    heroTitle: "Plain-English definitions of removalist terms.",
+    heroDescription:
+      "Short definitions of the pricing terms, equipment names, and access concepts removalists use — written without the jargon.",
+    primaryKeyword: "removalist glossary",
+    secondaryKeywords: ["removalist terms", "moving terminology", "what is a removalist"],
+    cardDescription: "Definitions of the pricing terms, equipment, and access words removalists use.",
+    highlights: ["Pricing terms", "Truck classes", "Equipment", "Access concepts"],
+    sections: [
+      {
+        title: "How to use the glossary",
+        paragraphs: [
+          "Each entry is short, links to the relevant service or pricing page, and explains why the term matters when you book a move. If you spot a missing term, send it through the contact page."
+        ]
+      }
+    ],
+    faqIds: [],
+    relatedIds: ["pricing", "resources-hub", "services-hub"],
+    cta: {
+      label: "Get a fast estimate",
+      href: "/quote"
+    },
+    schemaType: "WebPage",
+    changeFrequency: "monthly",
+    priority: 0.6,
+    updatedAt: "2026-05-14"
   }
 ] as const;
 
@@ -653,12 +967,163 @@ const locationPagesConfig: LocationPageConfig[] = [
   }
 ] as const;
 
+const costPagesConfig: ResourcePageConfig[] = [
+  {
+    slug: "removalist-cost-melbourne",
+    label: "Removalist cost Melbourne",
+    title: "How Much Do Removalists Cost in Melbourne | Real Hourly Rates by Truck Size",
+    description:
+      "Real removalist hourly rates in Melbourne by truck size, plus how the first hour to pickup, half-hour billing, return trip, and weekend uplift change the final number.",
+    heroEyebrow: "Cost",
+    heroTitle: "How much do removalists cost in Melbourne?",
+    heroDescription:
+      "Most Melbourne removalists charge by the hour. The number depends on truck size, day of week, route distance, and the on-day variables nobody quotes upfront.",
+    cardDescription: "Hourly rates by truck size, plus the rules that change the final number.",
+    primaryKeyword: "removalist cost melbourne",
+    secondaryKeywords: [
+      "how much do removalists cost melbourne",
+      "melbourne moving cost",
+      "removalist hourly rate melbourne",
+      "moving cost melbourne"
+    ],
+    highlights: [
+      "$159-$179/hr by truck and day",
+      "First hour to pickup included",
+      "Half-hour billing increments",
+      "Return trip included"
+    ],
+    sections: [
+      {
+        title: "Hourly rates by truck size",
+        paragraphs: [
+          "Young & Hungry runs two truck classes for Melbourne moves. The 4-tonne fits most studios, 1-bedroom moves, and item deliveries. The 6-tonne is sized for 2 and 3-bedroom apartment or house moves.",
+          "Both rates include the truck, the crew, fuel, basic equipment, and the standard pricing rules below. There is no separate callout fee."
+        ],
+        bullets: [
+          "4-tonne truck: $159/hr weekday, $169/hr weekend",
+          "6-tonne truck: $169/hr weekday, $179/hr weekend",
+          "Booking fee: $25 AUD"
+        ]
+      },
+      {
+        title: "Pricing rules that change the total",
+        paragraphs: [
+          "The hourly rate is only one input. Three rules decide what shows up on the invoice.",
+          "First hour to pickup is included. Half-hour billing means the clock rounds to 30-minute blocks, not 15. Return trip is included so you do not pay the truck back to depot."
+        ],
+        bullets: [
+          "Free first hour from base to pickup",
+          "30-minute billing increment, rounded up",
+          "Minimum 2-hour billable",
+          "Return trip from drop-off included"
+        ]
+      },
+      {
+        title: "What changes the final price on the day",
+        paragraphs: [
+          "Estimates use the route, truck choice, and average load times. The final number reflects the real conditions: stairs, parking distance, lift availability, heavy items, and any extra handling.",
+          "Apartment moves with stairs and tight parking can run 30-60 minutes longer than estimated. Inner-CBD moves with loading-zone access usually land closer to estimate."
+        ]
+      },
+      {
+        title: "A real Melbourne example",
+        paragraphs: [
+          "A 1-bedroom apartment move from Richmond to Brunswick with a 6-tonne truck on a Saturday: roughly 40 minutes pickup, 25 minutes drive, 35 minutes drop-off. With the first hour included and the return trip included, you are billed for 2 hours at $179/hr plus the $25 booking fee. Total: $383.",
+          "Same move with bad parking and a stair carry on the drop-off: add a 30-minute block, total $472."
+        ]
+      }
+    ],
+    faqIds: ["pricing-rules", "final-price", "truck-size"],
+    relatedIds: [
+      "pricing",
+      "service-apartment-moves",
+      "service-small-moves",
+      "resources-cost-hub",
+      "quote"
+    ],
+    cta: {
+      label: "Run your estimate",
+      href: "/quote"
+    },
+    updatedAt: "2026-05-14"
+  }
+];
+
+const guidePagesConfig: ResourcePageConfig[] = [];
+const comparisonPagesConfig: ResourcePageConfig[] = [];
+const glossaryPagesConfig: ResourcePageConfig[] = [];
+
+function createResourcePage(
+  page: ResourcePageConfig,
+  family: "guide" | "cost" | "comparison" | "glossary"
+): PublicPageEntry {
+  const familyToPath: Record<typeof family, string> = {
+    guide: "guides",
+    cost: "cost",
+    comparison: "comparison",
+    glossary: "glossary"
+  };
+  const familyToHub: Record<typeof family, string> = {
+    guide: "resources-guides-hub",
+    cost: "resources-cost-hub",
+    comparison: "resources-comparison-hub",
+    glossary: "resources-glossary-hub"
+  };
+  const familyToSchema: Record<typeof family, PublicSchemaType> = {
+    guide: "Article",
+    cost: "WebPage",
+    comparison: "WebPage",
+    glossary: "DefinedTerm"
+  };
+  const familyToIntent: Record<typeof family, PageIntent> = {
+    guide: "informational",
+    cost: "commercial",
+    comparison: "comparison",
+    glossary: "definition"
+  };
+  const familyToPriority: Record<typeof family, number> = {
+    guide: 0.7,
+    cost: 0.78,
+    comparison: 0.74,
+    glossary: 0.6
+  };
+
+  return {
+    ...page,
+    id: `${family}-${page.slug}`,
+    family,
+    kind: "leaf",
+    locale: "en-au",
+    indexable: true,
+    pageIntent: familyToIntent[family],
+    canonicalPath: `/resources/${familyToPath[family]}/${page.slug}`,
+    parentHub: familyToHub[family],
+    schemaType: familyToSchema[family],
+    changeFrequency: "monthly",
+    priority: familyToPriority[family]
+  };
+}
+
+function createGuidePage(page: ResourcePageConfig) {
+  return createResourcePage(page, "guide");
+}
+function createCostPage(page: ResourcePageConfig) {
+  return createResourcePage(page, "cost");
+}
+function createComparisonPage(page: ResourcePageConfig) {
+  return createResourcePage(page, "comparison");
+}
+function createGlossaryPage(page: ResourcePageConfig) {
+  return createResourcePage(page, "glossary");
+}
+
 function createCorePage(page: CorePageConfig): PublicPageEntry {
   return {
     ...page,
-    family: "core",
+    family: page.family ?? "core",
+    kind: page.kind ?? "leaf",
     locale: "en-au",
-    indexable: true
+    indexable: page.indexable ?? true
   };
 }
 
@@ -666,6 +1131,7 @@ function createServicePage(page: ServicePageConfig): PublicPageEntry {
   return {
     ...page,
     family: "service",
+    kind: "leaf",
     locale: "en-au",
     indexable: true,
     pageIntent: "commercial",
@@ -674,7 +1140,8 @@ function createServicePage(page: ServicePageConfig): PublicPageEntry {
     schemaType: "Service",
     changeFrequency: "monthly",
     priority: 0.82,
-    updatedAt: "2026-04-24"
+    updatedAt: "2026-04-24",
+    parentHub: "services-hub"
   };
 }
 
@@ -682,6 +1149,8 @@ function createLocationPage(page: LocationPageConfig): PublicPageEntry {
   return {
     id: `location-${page.slug}`,
     family: "location",
+    kind: "leaf",
+    parentHub: "locations-hub",
     label: page.label,
     canonicalPath: `/locations/${page.slug}`,
     locale: "en-au",
@@ -737,7 +1206,11 @@ function createLocationPage(page: LocationPageConfig): PublicPageEntry {
 export const publicPages = [
   ...corePages.map(createCorePage),
   ...servicePagesConfig.map(createServicePage),
-  ...locationPagesConfig.map(createLocationPage)
+  ...locationPagesConfig.map(createLocationPage),
+  ...guidePagesConfig.map(createGuidePage),
+  ...costPagesConfig.map(createCostPage),
+  ...comparisonPagesConfig.map(createComparisonPage),
+  ...glossaryPagesConfig.map(createGlossaryPage)
 ] as const;
 
 export function getPublicPageById(id: string) {
@@ -774,7 +1247,7 @@ export function getIndexablePublicPages() {
 
 export function getStaticParamsForFamily(family: PublicPageFamily) {
   return publicPages
-    .filter((page) => page.family === family)
+    .filter((page) => page.family === family && page.kind === "leaf")
     .map((page) => {
       const slug = page.canonicalPath.split("/").filter(Boolean).pop();
 
@@ -784,6 +1257,64 @@ export function getStaticParamsForFamily(family: PublicPageFamily) {
 
       return { slug };
     });
+}
+
+export function getSitemapFamilyForPage(page: PublicPageEntry): SitemapFamily {
+  return page.sitemapFamily ?? FAMILY_TO_SITEMAP[page.family];
+}
+
+export function buildSitemapUrl(path: string) {
+  return `${siteConfig.url}${path}`;
+}
+
+export function getSitemapEntriesByFamily() {
+  const families: Record<SitemapFamily, PublicPageEntry[]> = {
+    core: [],
+    services: [],
+    locations: [],
+    resources: []
+  };
+
+  for (const page of getIndexablePublicPages()) {
+    families[getSitemapFamilyForPage(page)].push(page);
+  }
+
+  return families;
+}
+
+export function getNavHubByFamily(family: PublicPageFamily) {
+  return publicPages.find((page) => page.family === family && page.kind === "hub");
+}
+
+export function getNavLeavesByFamily(family: PublicPageFamily) {
+  return publicPages
+    .filter((page) => page.family === family && page.kind === "leaf" && page.indexable && typeof page.navOrder === "number")
+    .sort((a, b) => (a.navOrder ?? 0) - (b.navOrder ?? 0));
+}
+
+export function getBreadcrumbTrail(page: PublicPageEntry): PublicPageEntry[] {
+  if (page.id === "home") {
+    return [page];
+  }
+
+  const trail: PublicPageEntry[] = [page];
+  let current: PublicPageEntry = page;
+
+  while (current.parentHub) {
+    const parent = getPublicPageById(current.parentHub);
+    if (!parent || trail.some((entry) => entry.id === parent.id)) {
+      break;
+    }
+    trail.unshift(parent);
+    current = parent;
+  }
+
+  const home = getPublicPageById("home");
+  if (home && trail[0]?.id !== "home") {
+    trail.unshift(home);
+  }
+
+  return trail;
 }
 
 function buildAbsoluteTitle(title: string) {
@@ -838,28 +1369,16 @@ export function buildPublicRoute(path: string) {
 }
 
 export function buildBreadcrumbStructuredData(page: PublicPageEntry) {
-  const items: Array<{ name: string; item: string }> = [{ name: "Home", item: siteConfig.url }];
-
-  if (page.family === "service") {
-    items.push({
-      name: "Services",
-      item: `${siteConfig.url}/services`
-    });
-  }
-
-  items.push({
-    name: page.label,
-    item: `${siteConfig.url}${page.canonicalPath}`
-  });
+  const trail = getBreadcrumbTrail(page);
 
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
+    itemListElement: trail.map((entry, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      name: item.name,
-      item: item.item
+      name: entry.id === "home" ? "Home" : entry.label,
+      item: entry.id === "home" ? siteConfig.url : `${siteConfig.url}${entry.canonicalPath}`
     }))
   };
 }
@@ -910,6 +1429,43 @@ export function buildPublicPageStructuredData(page: PublicPageEntry) {
           text: faq.answer
         }
       }))
+    };
+  }
+
+  if (page.schemaType === "Article") {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: page.heroTitle,
+      description: page.description,
+      url: `${siteConfig.url}${page.canonicalPath}`,
+      datePublished: page.updatedAt,
+      dateModified: page.updatedAt,
+      author: {
+        "@type": "Organization",
+        name: siteConfig.legalName,
+        url: siteConfig.url
+      },
+      publisher: {
+        "@type": "Organization",
+        name: siteConfig.legalName,
+        url: siteConfig.url,
+        logo: {
+          "@type": "ImageObject",
+          url: `${siteConfig.url}/young-and-hungry-logo-icon.svg`
+        }
+      }
+    };
+  }
+
+  if (page.schemaType === "DefinedTerm") {
+    return {
+      "@context": "https://schema.org",
+      "@type": "DefinedTerm",
+      name: page.label,
+      description: page.description,
+      url: `${siteConfig.url}${page.canonicalPath}`,
+      inDefinedTermSet: `${siteConfig.url}/resources/glossary`
     };
   }
 

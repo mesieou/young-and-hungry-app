@@ -1,8 +1,14 @@
+import type { Route } from "next";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { SiteContainer } from "@/components/layout/SiteContainer";
+import type { NavItem } from "@/lib/navigation/public-site";
 
-export function Footer() {
+type FooterProps = {
+  links: NavItem[];
+};
+
+export function Footer({ links }: FooterProps) {
   return (
     <footer className="border-t border-line py-10">
       <SiteContainer className="flex flex-col gap-6 text-sm text-text-muted md:flex-row md:items-center md:justify-between">
@@ -12,11 +18,11 @@ export function Footer() {
           <p>© {new Date().getFullYear()} Young & Hungry. All rights reserved.</p>
         </div>
         <div className="flex flex-wrap gap-5">
-          <Link href="/services" className="transition hover:text-white">Services</Link>
-          <Link href="/pricing" className="transition hover:text-white">Pricing</Link>
-          <Link href="/contact" className="transition hover:text-white">Contact</Link>
-          <Link href="/quote" className="transition hover:text-white">Estimate</Link>
-          <Link href="/faq" className="transition hover:text-white">FAQ</Link>
+          {links.map((link) => (
+            <Link key={link.id} href={link.href as Route} className="transition hover:text-white">
+              {link.label}
+            </Link>
+          ))}
         </div>
       </SiteContainer>
     </footer>
