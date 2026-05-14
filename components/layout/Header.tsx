@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -7,15 +8,13 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { SiteContainer } from "@/components/layout/SiteContainer";
 import { Button } from "@/components/ui/Button";
 import { ResponsiveDrawer } from "@/components/ui/ResponsiveDrawer";
+import type { NavItem } from "@/lib/navigation/public-site";
 
-const navItems = [
-  ["How it works", "/how-it-works"],
-  ["Services", "/services"],
-  ["Pricing", "/pricing"],
-  ["FAQ", "/faq"]
-] as const;
+type HeaderProps = {
+  navItems: NavItem[];
+};
 
-export function Header() {
+export function Header({ navItems }: HeaderProps) {
   const [isNavOpen, setIsNavOpen] = useState(false);
 
   return (
@@ -24,9 +23,13 @@ export function Header() {
         <SiteContainer className="flex h-20 items-center justify-between gap-4">
           <BrandLogo priority className="min-w-0 shrink-0" imageClassName="h-10 sm:h-12 md:h-14" />
           <nav className="hidden items-center gap-7 md:flex">
-            {navItems.map(([label, href]) => (
-              <Link key={href} href={href} className="text-sm font-medium text-text-secondary transition hover:text-white">
-                {label}
+            {navItems.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href as Route}
+                className="text-sm font-medium text-text-secondary transition hover:text-white"
+              >
+                {item.label}
               </Link>
             ))}
           </nav>
@@ -56,14 +59,14 @@ export function Header() {
         description="Browse the main Young & Hungry pages."
       >
         <nav className="grid gap-3">
-          {navItems.map(([label, href]) => (
+          {navItems.map((item) => (
             <Link
-              key={href}
-              href={href}
+              key={item.id}
+              href={item.href as Route}
               className="rounded-2xl border border-line bg-ink/70 px-4 py-4 text-sm font-semibold text-white transition hover:border-line-hover hover:bg-navy"
               onClick={() => setIsNavOpen(false)}
             >
-              {label}
+              {item.label}
             </Link>
           ))}
           <Button asChild size="lg" className="mt-2 w-full">

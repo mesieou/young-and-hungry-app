@@ -24,7 +24,7 @@ describe("quote request validation", () => {
         idempotencyKey: "quote-request-key-1",
         name: "Juan Customer",
         email: "juan@example.com",
-        phone: "",
+        phone: "0412 345 678",
         pickupAddress: "South Yarra VIC",
         dropoffAddress: "Richmond VIC",
         truckClass: "four_tonne",
@@ -38,26 +38,100 @@ describe("quote request validation", () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.email).toBe("juan@example.com");
-      expect(result.data.phone).toBeUndefined();
+      expect(result.data.phone).toBe("+61412345678");
       expect(result.data.truckClass).toBe("four_tonne");
       expect(result.data.serviceType).toBe("small_move");
       expect(result.data.preferredTimeWindow).toBe("morning_0700_1000");
     }
   });
 
-  it("requires either email or phone", () => {
+  it("requires a phone number even when email is provided", () => {
     const result = quoteRequestSchema.safeParse({
       idempotencyKey: "quote-request-key-2",
       name: "Juan Customer",
+      email: "juan@example.com",
+      phone: "",
       pickupAddress: "South Yarra VIC",
       dropoffAddress: "Richmond VIC",
       truckClass: "six_tonne",
-      serviceType: "removal"
+      serviceType: "removal",
+      preferredDate: "2026-05-01",
+      preferredTimeWindow: "midday_1000_1300",
+      notes: "Boxes and small furniture."
     });
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(getQuoteRequestFieldErrors(result.error).email).toBe("Enter an email or phone number.");
+      expect(getQuoteRequestFieldErrors(result.error).phone).toBe("Enter your phone number.");
+    }
+  });
+
+  it("requires a preferred date", () => {
+    const result = parseQuoteRequestFormData(
+      makeFormData({
+        idempotencyKey: "quote-request-key-missing-date",
+        name: "Juan Customer",
+        email: "juan@example.com",
+        phone: "0412 345 678",
+        pickupAddress: "South Yarra VIC",
+        dropoffAddress: "Richmond VIC",
+        truckClass: "four_tonne",
+        serviceType: "small_move",
+        preferredDate: "",
+        preferredTimeWindow: "morning_0700_1000",
+        notes: "Boxes and small furniture."
+      })
+    );
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(getQuoteRequestFieldErrors(result.error).preferredDate).toBe("Choose the move date.");
+    }
+  });
+
+  it("requires a preferred time window", () => {
+    const result = parseQuoteRequestFormData(
+      makeFormData({
+        idempotencyKey: "quote-request-key-missing-time",
+        name: "Juan Customer",
+        email: "juan@example.com",
+        phone: "0412 345 678",
+        pickupAddress: "South Yarra VIC",
+        dropoffAddress: "Richmond VIC",
+        truckClass: "four_tonne",
+        serviceType: "small_move",
+        preferredDate: "2026-05-01",
+        preferredTimeWindow: "",
+        notes: "Boxes and small furniture."
+      })
+    );
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(getQuoteRequestFieldErrors(result.error).preferredTimeWindow).toBe("Choose a preferred time window.");
+    }
+  });
+
+  it("requires move details", () => {
+    const result = parseQuoteRequestFormData(
+      makeFormData({
+        idempotencyKey: "quote-request-key-missing-notes",
+        name: "Juan Customer",
+        email: "juan@example.com",
+        phone: "0412 345 678",
+        pickupAddress: "South Yarra VIC",
+        dropoffAddress: "Richmond VIC",
+        truckClass: "four_tonne",
+        serviceType: "small_move",
+        preferredDate: "2026-05-01",
+        preferredTimeWindow: "morning_0700_1000",
+        notes: ""
+      })
+    );
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(getQuoteRequestFieldErrors(result.error).notes).toBe("Enter move details.");
     }
   });
 
@@ -75,7 +149,10 @@ describe("quote request validation", () => {
         pickupAddress: "South Yarra VIC",
         dropoffAddress: "Richmond VIC",
         truckClass: "four_tonne",
-        serviceType: "apartment_move"
+        serviceType: "apartment_move",
+        preferredDate: "2026-05-01",
+        preferredTimeWindow: "morning_0700_1000",
+        notes: "Two flights of stairs."
       })
     );
 
@@ -91,11 +168,14 @@ describe("quote request validation", () => {
         idempotencyKey: "quote-request-key-truck",
         name: "Juan Customer",
         email: "juan@example.com",
-        phone: "",
+        phone: "0412 345 678",
         pickupAddress: "South Yarra VIC",
         dropoffAddress: "Richmond VIC",
         truckClass: "ten_tonne",
-        serviceType: "apartment_two_bed"
+        serviceType: "apartment_two_bed",
+        preferredDate: "2026-05-01",
+        preferredTimeWindow: "morning_0700_1000",
+        notes: "Two flights of stairs."
       })
     );
 
@@ -129,7 +209,10 @@ describe("quote request validation", () => {
         pickupAddress: "South Yarra VIC",
         dropoffAddress: "Richmond VIC",
         truckClass: "six_tonne",
-        serviceType: "apartment_move"
+        serviceType: "apartment_move",
+        preferredDate: "2026-05-01",
+        preferredTimeWindow: "midday_1000_1300",
+        notes: "Two flights of stairs."
       })
     );
 
@@ -145,10 +228,14 @@ describe("quote request validation", () => {
         idempotencyKey: "short",
         name: "",
         email: "not-an-email",
+        phone: "",
         pickupAddress: "",
         dropoffAddress: "R",
         truckClass: "",
-        serviceType: "removal"
+        serviceType: "removal",
+        preferredDate: "",
+        preferredTimeWindow: "",
+        notes: ""
       })
     );
 
@@ -158,9 +245,13 @@ describe("quote request validation", () => {
       expect(errors.idempotencyKey).toBe("Missing request key.");
       expect(errors.name).toBe("Enter your name.");
       expect(errors.email).toBe("Enter a valid email.");
+      expect(errors.phone).toBe("Enter your phone number.");
       expect(errors.pickupAddress).toBe("Enter the pickup address.");
       expect(errors.dropoffAddress).toBe("Enter the dropoff address.");
       expect(errors.truckClass).toBe("Choose what you are moving.");
+      expect(errors.preferredDate).toBe("Choose the move date.");
+      expect(errors.preferredTimeWindow).toBe("Choose a preferred time window.");
+      expect(errors.notes).toBe("Enter move details.");
     }
   });
 });

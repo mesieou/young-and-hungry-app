@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { PublicStructuredData } from "@/components/seo/PublicStructuredData";
 import {
   getFaqEntriesForPage,
@@ -27,6 +28,7 @@ export function PublicRoutePage({
 }: PublicRoutePageProps) {
   const faqs = getFaqEntriesForPage(page);
   const relatedPages = getRelatedPages(page);
+  const showBreadcrumbs = page.id !== "home";
 
   return (
     <PageSection width={width}>
@@ -34,6 +36,11 @@ export function PublicRoutePage({
 
       <div className="grid gap-10">
         <div className="max-w-4xl">
+          {showBreadcrumbs ? (
+            <div className="mb-5">
+              <Breadcrumbs page={page} />
+            </div>
+          ) : null}
           <Badge tone="gradient">{page.heroEyebrow}</Badge>
           <h1 className="mt-5 font-display text-4xl font-semibold tracking-tight-3 text-white sm:text-5xl">
             {page.heroTitle}

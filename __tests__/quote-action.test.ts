@@ -63,7 +63,7 @@ function validFormData(overrides: Record<string, string> = {}) {
     idempotencyKey: "quote-action-request-key",
     name: "Juan Customer",
     email: "juan@example.com",
-    phone: "",
+    phone: "0412 345 678",
     pickupAddress: "South Yarra VIC",
     dropoffAddress: "Richmond VIC",
     truckClass: "four_tonne",
@@ -179,7 +179,7 @@ describe("submitQuoteRequest", () => {
     });
     expect(mockNotifyOpsQuoteReview).toHaveBeenCalledWith(
       { rpc },
-      {
+      expect.objectContaining({
         quoteId: "11111111-1111-4111-8111-111111111111",
         request: expect.objectContaining({
           name: "Juan Customer",
@@ -195,7 +195,7 @@ describe("submitQuoteRequest", () => {
           priceCents: 58270,
           rangeLabel: "$583 - $617"
         })
-      }
+      })
     );
   });
 

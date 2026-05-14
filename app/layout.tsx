@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { getFooterLinks, getPrimaryNav } from "@/lib/navigation/public-site";
 import { getPublicPageById, siteConfig } from "@/lib/seo/public-pages";
+
+const gscVerification = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
 
 const homePage = getPublicPageById("home");
 
@@ -45,17 +49,22 @@ export const metadata: Metadata = {
     title: `${homePage.title} | ${siteConfig.name}`,
     description: homePage.description,
     images: ["/young-and-hungry-horizontal-logo.svg"]
-  }
+  },
+  verification: gscVerification ? { google: gscVerification } : undefined
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const navItems = getPrimaryNav();
+  const footerLinks = getFooterLinks();
+
   return (
     <html lang="en">
       <body className="font-sans antialiased">
         <div className="pointer-events-none fixed inset-0 -z-10 yh-grid-bg" />
-        <Header />
+        <Header navItems={navItems} />
         <main>{children}</main>
-        <Footer />
+        <Footer links={footerLinks} />
+        <GoogleAnalytics />
       </body>
     </html>
   );

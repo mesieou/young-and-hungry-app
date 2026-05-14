@@ -12,6 +12,7 @@ type PhoneInputProps = {
   defaultValue?: string;
   placeholder?: string;
   disabled?: boolean;
+  required?: boolean;
   error?: string;
   className?: string;
   onValueChange?: (value: string) => void;
@@ -42,6 +43,7 @@ export function PhoneInput({
   defaultValue = "",
   placeholder = "412 345 678",
   disabled = false,
+  required = false,
   error,
   className,
   onValueChange
@@ -72,7 +74,9 @@ export function PhoneInput({
           onChange={(event) => handleChange(event.target.value)}
           placeholder={placeholder}
           disabled={disabled}
+          required={required}
           aria-invalid={Boolean(error)}
+          aria-required={required}
           aria-describedby={error ? `${id}-error` : undefined}
           autoComplete="tel-national"
           className="min-w-0 flex-1 bg-transparent px-4 py-3 text-white outline-none placeholder:text-text-muted disabled:opacity-60"
